@@ -6,6 +6,7 @@ use App\Http\Controllers\MallController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\MallController as AdminMallController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -49,4 +50,7 @@ Route::prefix('admin')->middleware(['auth','can:manage-users'])->group(function 
 
     // roles & permissions
     Route::resource('roles', RoleController::class, ['as' => 'admin']);
+
+    // admin malls
+    Route::resource('malls', AdminMallController::class, ['as' => 'admin']);
 });
