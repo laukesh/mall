@@ -1,10 +1,8 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Profile</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title','Profile')
+
+@section('content')
     <h1>Profile</h1>
 
     @if(session('success'))<div>{{ session('success') }}</div>@endif
@@ -36,5 +34,4 @@
         @csrf
         <button type="submit">Logout</button>
     </form>
-</body>
-</html>
+@endsection

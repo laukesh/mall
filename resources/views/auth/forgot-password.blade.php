@@ -1,10 +1,8 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Forgot Password</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title','Forgot Password')
+
+@section('content')
     <h1>Forgot Password</h1>
     @if(session('status'))<div>{{ session('status') }}</div>@endif
     @if($errors->any())
@@ -19,5 +17,4 @@
         <label>Email <input type="email" name="email" required></label><br>
         <button type="submit">Send Reset Link</button>
     </form>
-</body>
-</html>
+@endsection

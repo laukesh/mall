@@ -1,10 +1,8 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Register</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title','Register')
+
+@section('content')
     <h1>Register</h1>
     @if($errors->any())
         <ul>
@@ -21,5 +19,4 @@
         <label>Confirm Password <input type="password" name="password_confirmation" required></label><br>
         <button type="submit">Register</button>
     </form>
-</body>
-</html>
+@endsection

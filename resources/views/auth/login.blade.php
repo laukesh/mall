@@ -1,10 +1,8 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Login</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title','Login')
+
+@section('content')
     <h1>Login</h1>
     @if($errors->any())
         <ul>
@@ -20,5 +18,4 @@
         <label>Remember <input type="checkbox" name="remember"></label><br>
         <button type="submit">Login</button>
     </form>
-</body>
-</html>
+@endsection
