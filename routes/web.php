@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\MallController;
 use App\Http\Controllers\Admin\MallController as AdminMallController;
 
 Route::get('/', function () {
@@ -38,10 +39,13 @@ Route::get('/users/statuses', [AuthController::class, 'statuses'])->name('users.
 
 // Public Mall resource
 Route::resource('malls', MallController::class);
+Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
 
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
 // Admin area (protected by auth + manage-users gate)
 Route::prefix('admin')->middleware(['auth','can:manage-users', 'can:manage-malls','can:view-audits','can:manage-roles'])->name('admin.')->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 
     // User management
     Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
