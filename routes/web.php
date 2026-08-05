@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MallController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoleController;
@@ -41,7 +40,7 @@ Route::get('/users/statuses', [AuthController::class, 'statuses'])->name('users.
 Route::resource('malls', MallController::class);
 
 // Admin area (protected by auth + manage-users gate)
-Route::prefix('admin')->middleware(['auth','can:manage-users'])->name('admin.')->group(function () {
+Route::prefix('admin')->middleware(['auth','can:manage-users', 'can:manage-malls','can:view-audits','can:manage-roles'])->name('admin.')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // User management
