@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MallController;
+use App\Http\Controllers\Admin\MallController;
 use App\Http\Controllers\Admin\UserManagementController;
 
 Route::get('/', function () {
@@ -20,22 +20,18 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->midd
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/profile', [AuthController::class, 'profileForm'])->name('profile.form')->middleware('auth');
-Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update')->middleware('auth');
-Route::post('/change-password', [AuthController::class, 'changePassword'])->name('change.password')->middleware('auth');
 
-// admin actions (legacy still accessible via auth controller but prefer new admin UI)
-Route::post('/users/{id}/assign-role', [AuthController::class, 'assignRole'])->name('users.assign')->middleware('auth','can:manage-users');
-Route::post('/users/{id}/revoke-role', [AuthController::class, 'revokeRole'])->name('users.revoke')->middleware('auth','can:manage-users');
-Route::post('/users/{id}/activate', [AuthController::class, 'activate'])->name('users.activate')->middleware('auth','can:manage-users');
-Route::post('/users/{id}/deactivate', [AuthController::class, 'deactivate'])->name('users.deactivate')->middleware('auth','can:manage-users');
-Route::get('/users/statuses', [AuthController::class, 'statuses'])->name('users.statuses')->middleware('auth','can:manage-users');
+    Route::get('/profile', [AuthController::class, 'profileForm'])->name('profile.form')->middleware('auth');
+    Route::get('/dashboard', [AuthController::class, 'dashboardForm'])->name('dashboard.form')->middleware('auth');
+    Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update')->middleware('auth');
+    Route::post('/change-password', [AuthController::class, 'changePassword'])->name('change.password')->middleware('auth');
 
-// Mall resource (web)
-Route::resource('malls', MallController::class);
+
+
 
 // Admin UI for user management
 Route::prefix('admin')->middleware(['auth','can:manage-users'])->group(function () {
+    Route::resource('malls', MallController::class);
     Route::get('users', [UserManagementController::class, 'index'])->name('admin.users.index');
     Route::get('users/{id}', [UserManagementController::class, 'show'])->name('admin.users.show');
     Route::post('users/{id}/assign-role', [UserManagementController::class, 'assignRole'])->name('admin.users.assign');
