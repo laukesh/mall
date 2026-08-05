@@ -18,17 +18,27 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // If you want admins to be able to do everything, use a before hook.
-        // Returning true grants the ability; returning null falls through to normal checks.
+        // Grant all abilities to any super/admin role variants to ensure a "Super Admin" gets full access.
         Gate::before(function (?User $user, $ability) {
-            return $user && $user->hasRole('admin') ? true : null;
+            if (! $user) {
+                return null;
+            }
+
+            // Roles that should be treated as full super-admins.
+            $superRoles = ['admin', 'super-admin', 'superadmin', 'super'];
+
+            if ($user->hasAnyRole($superRoles)) {
+                return true;
+            }
+
+            return null;
         });
 
-        // Keep explicit gates for clarity and for non-admin checks elsewhere.
-        Gate::define('manage-users', fn (?User $user) => $user && $user->hasRole('admin'));
-        Gate::define('dashboard', fn (?User $user) => $user && $user->hasRole('admin'));
-        Gate::define('manage-roles', fn (?User $user) => $user && $user->hasRole('admin'));
-        Gate::define('manage-malls', fn (?User $user) => $user && $user->hasRole('admin'));
-        Gate::define('view-audits', fn (?User $user) => $user && $user->hasRole('admin'));
+        // Explicit gates (kept for clarity and non-admin checks)
+        Gate::define('manage-users', fn (?User $user) => $user && $user->hasAnyRole(['admin','super-admin','superadmin']));
+        Gate::define('dashboard', fn (?User $user) => $user && $user->hasAnyRole(['admin','super-admin','superadmin']));
+        Gate::define('manage-roles', fn (?User $user) => $user && $user->hasAnyRole(['admin','super-admin','superadmin']));
+        Gate::define('manage-malls', fn (?User $user) => $user && $user->hasAnyRole(['admin','super-admin','superadmin']));
+        Gate::define('view-audits', fn (?User $user) => $user && $user->hasAnyRole(['admin','super-admin','superadmin']));
     }
 }
