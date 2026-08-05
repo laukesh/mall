@@ -15,7 +15,7 @@ class MallController extends Controller
     public function __construct(MallRepositoryInterface $malls)
     {
         $this->malls = $malls;
-        $this->middleware(['auth','can:manage-users']);
+        $this->middleware(['auth', 'can:manage-malls'])->except(['index', 'show']);
     }
 
     public function index(Request $request)

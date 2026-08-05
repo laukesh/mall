@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MallController;
+use App\Http\Controllers\Admin\MallController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoleController;
@@ -39,8 +39,14 @@ Route::get('/users/statuses', [AuthController::class, 'statuses'])->name('users.
 Route::resource('malls', MallController::class);
 
 // Admin UI for user management
-Route::prefix('admin')->middleware(['auth','can:manage-users'])->group(function () {
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+
     Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    
+});
+Route::prefix('admin')->middleware(['auth','can:manage-users'])->group(function () {
+//Route::prefix('admin')->middleware(['auth'])->group(function () {
+    // Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('users', [UserManagementController::class, 'index'])->name('admin.users.index');
     Route::get('users/{id}', [UserManagementController::class, 'show'])->name('admin.users.show');
     Route::post('users/{id}/assign-role', [UserManagementController::class, 'assignRole'])->name('admin.users.assign');
