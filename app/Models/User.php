@@ -6,10 +6,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable, HasRoles;
+    use Notifiable, HasRoles, SoftDeletes;
 
     protected $fillable = [
         'name',
