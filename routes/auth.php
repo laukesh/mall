@@ -9,7 +9,7 @@ Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('regi
 Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name('forgot.form');
 
 // API endpoints
-Route::prefix('api/auth')->group(function () {
+Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
