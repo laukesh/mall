@@ -9,30 +9,26 @@ Route::get('/', function () {
 });
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login');
+
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
-// Rate-limit the forgot and login endpoints
+Route::post('/register', [AuthController::class, 'register'])->name('register');
+
 Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name('forgot.form');
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1')->name('password.email');
 
-// API endpoints
-Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:10,1');
-    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::middleware('auth:api')->group(function () {
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::get('me', [AuthController::class, 'me']);
-        Route::post('change-password', [AuthController::class, 'changePassword']);
-        Route::post('profile', [AuthController::class, 'updateProfile']);
+Route::get('/profile', [AuthController::class, 'profileForm'])->name('profile.form')->middleware('auth');
+Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update')->middleware('auth');
+Route::post('/change-password', [AuthController::class, 'changePassword'])->name('change.password')->middleware('auth');
 
-        // admin - additionally protect with role middleware in controller/policy
-        Route::post('users/{id}/assign-role', [AuthController::class, 'assignRole']);
-        Route::post('users/{id}/revoke-role', [AuthController::class, 'revokeRole']);
-        Route::post('users/{id}/activate', [AuthController::class, 'activate']);
-        Route::post('users/{id}/deactivate', [AuthController::class, 'deactivate']);
-        Route::get('users/statuses', [AuthController::class, 'statuses']);
-    });
-});
+// admin actions
+Route::post('/users/{id}/assign-role', [AuthController::class, 'assignRole'])->name('users.assign')->middleware('auth');
+Route::post('/users/{id}/revoke-role', [AuthController::class, 'revokeRole'])->name('users.revoke')->middleware('auth');
+Route::post('/users/{id}/activate', [AuthController::class, 'activate'])->name('users.activate')->middleware('auth');
+Route::post('/users/{id}/deactivate', [AuthController::class, 'deactivate'])->name('users.deactivate')->middleware('auth');
+Route::get('/users/statuses', [AuthController::class, 'statuses'])->name('users.statuses')->middleware('auth');
 
 // Mall resource (web)
 Route::resource('malls', MallController::class);

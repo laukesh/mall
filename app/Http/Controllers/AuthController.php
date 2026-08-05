@@ -2,327 +2,192 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\UserRepositoryInterface;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Hash;
+use App\Repositories\UserRepositoryInterface;
+use App\Models\User;
 use Illuminate\Support\Facades\Password;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
-class AuthController extends Controller implements HasMiddleware
+class AuthController extends Controller
 {
-    /**
-     * User Repository
-     */
-    protected UserRepositoryInterface $users;
+    protected $users;
 
-    /**
-     * Constructor
-     */
     public function __construct(UserRepositoryInterface $users)
     {
         $this->users = $users;
+        $this->middleware('guest')->except(['logout','profileForm','updateProfile','changePassword','assignRole','revokeRole','activate','deactivate','statuses']);
+        $this->middleware('auth')->only(['logout','profileForm','updateProfile','changePassword','assignRole','revokeRole','activate','deactivate','statuses']);
     }
 
-    /**
-     * Controller Middleware (Laravel 12)
-     */
-    public static function middleware(): array
-    {
-        return [
-            new Middleware('auth:api', except: [
-                'login',
-                'register',
-                'forgotPassword',
-                'showLoginForm',
-                'showRegisterForm',
-                'showForgotForm',
-            ]),
-        ];
-    }
-
-    /**
-     * Display Login Page
-     */
+    // Web views
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    /**
-     * Display Register Page
-     */
     public function showRegisterForm()
     {
         return view('auth.register');
     }
 
-    /**
-     * Display Forgot Password Page
-     */
     public function showForgotForm()
     {
         return view('auth.forgot-password');
     }
 
-    /**
-     * Register User
-     */
-    public function register(Request $request)
+    public function profileForm()
     {
-      //  dd($request->all());
-        $validated = $request->validate([
-            'name'                  => 'required|string|max:255',
-            'email'                 => 'required|email|unique:users,email',
-            'password'              => 'required|string|min:6|confirmed',
-        ]);
-
-        $user = $this->users->create([
-            'name'      => $validated['name'],
-            'email'     => $validated['email'],
-            'password'  => $validated['password'],
-            'is_active' => true,
-            'status'    => 'new',
-        ]);
-
-        $token = JWTAuth::fromUser($user);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Registration successful.',
-            'token'   => $token,
-            'user'    => $user,
-        ], 201);
+        return view('auth.profile');
     }
 
-    /**
-     * Login User
-     */
+    // Web: Register
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = $this->users->create(array_merge($data, ['is_active' => true, 'status' => 'new']));
+
+        // Log the user in using session guard
+        Auth::login($user);
+
+        return redirect()->intended('/')->with('success', 'Registration successful');
+    }
+
+    // Web: Login
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
-        if (! $token = auth('api')->attempt($credentials)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid email or password.',
-            ], 401);
+        if (! Auth::attempt($credentials, $request->filled('remember'))) {
+            return back()->withErrors(['email' => 'Invalid credentials'])->withInput($request->only('email'));
         }
 
-        $user = auth('api')->user();
-
+        $user = Auth::user();
         if (! $user->is_active) {
-            auth('api')->logout();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Your account has been deactivated.',
-            ], 403);
+            Auth::logout();
+            return back()->withErrors(['email' => 'Account deactivated']);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Login successful.',
-            'token'   => $token,
-            'user'    => $user,
-        ]);
+        $request->session()->regenerate();
+
+        return redirect()->intended('/')->with('success', 'Logged in');
     }
 
-    /**
-     * Logged In User
-     */
-    public function me()
+    public function logout(Request $request)
     {
-        return response()->json(auth('api')->user());
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/')->with('success', 'Logged out');
     }
 
-    /**
-     * Logout User
-     */
-    public function logout()
-    {
-        auth('api')->logout();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Logged out successfully.',
-        ]);
-    }
-
-    /**
-     * Forgot Password
-     */
     public function forgotPassword(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
-
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json([
-                'success' => true,
-                'message' => __($status),
-            ])
-            : response()->json([
-                'success' => false,
-                'message' => __($status),
-            ], 400);
+        $request->validate(['email' => 'required|email']);
+        $status = Password::sendResetLink($request->only('email'));
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('status', __($status));
+        }
+        return back()->withErrors(['email' => __($status)]);
     }
 
-    /**
-     * Change Password
-     */
     public function changePassword(Request $request)
     {
         $request->validate([
             'current_password' => 'required',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|confirmed|min:6',
         ]);
 
-        $user = auth('api')->user();
+        $user = Auth::user();
 
         if (! Hash::check($request->current_password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Current password is incorrect.',
-            ], 422);
+            return back()->withErrors(['current_password' => 'Current password does not match']);
         }
 
-        $this->users->update($user, [
-            'password' => $request->password,
-        ]);
+        $this->users->update($user, ['password' => $request->password]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Password updated successfully.',
-        ]);
+        return back()->with('success', 'Password updated');
     }
 
-    /**
-     * Update Profile
-     */
     public function updateProfile(Request $request)
     {
-        $user = auth('api')->user();
-
+        $user = Auth::user();
         $data = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
         ]);
-
         $this->users->update($user, $data);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Profile updated successfully.',
-            'user' => $user->fresh(),
-        ]);
+        return back()->with('success', 'Profile updated');
     }
 
-    /**
-     * Assign Role
-     */
-    public function assignRole(Request $request, int $id)
+    // Administrative actions - protected by gate 'manage-users'
+    public function assignRole(Request $request, $id)
     {
-        $request->validate([
-            'role' => 'required|string',
-        ]);
-
-        $user = $this->users->findById($id);
-
-        if (! $user) {
-            return response()->json(['message' => 'User not found.'], 404);
+        if (! Gate::allows('manage-users')) {
+            abort(403);
         }
 
+        $request->validate(['role' => 'required|string']);
+        $user = $this->users->findById($id);
+        if (! $user) return redirect()->back()->withErrors(['user' => 'Not found']);
         $user->assignRole($request->role);
-
-        return response()->json([
-            'success' => true,
-            'roles' => $user->getRoleNames(),
-        ]);
+        return redirect()->back()->with('success', 'Role assigned');
     }
 
-    /**
-     * Revoke Role
-     */
-    public function revokeRole(Request $request, int $id)
+    public function revokeRole(Request $request, $id)
     {
-        $request->validate([
-            'role' => 'required|string',
-        ]);
-
-        $user = $this->users->findById($id);
-
-        if (! $user) {
-            return response()->json(['message' => 'User not found.'], 404);
+        if (! Gate::allows('manage-users')) {
+            abort(403);
         }
 
+        $request->validate(['role' => 'required|string']);
+        $user = $this->users->findById($id);
+        if (! $user) return redirect()->back()->withErrors(['user' => 'Not found']);
         $user->removeRole($request->role);
-
-        return response()->json([
-            'success' => true,
-            'roles' => $user->getRoleNames(),
-        ]);
+        return redirect()->back()->with('success', 'Role revoked');
     }
 
-    /**
-     * Activate User
-     */
-    public function activate(int $id)
+    public function activate(Request $request, $id)
     {
-        $user = $this->users->findById($id);
-
-        if (! $user) {
-            return response()->json(['message' => 'User not found.'], 404);
+        if (! Gate::allows('manage-users')) {
+            abort(403);
         }
 
-        $this->users->update($user, [
-            'is_active' => true,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'User activated successfully.',
-        ]);
+        $user = $this->users->findById($id);
+        if (! $user) return redirect()->back()->withErrors(['user' => 'Not found']);
+        $this->users->update($user, ['is_active' => true, 'updated_by' => Auth::id()]);
+        return redirect()->back()->with('success', 'Activated');
     }
 
-    /**
-     * Deactivate User
-     */
-    public function deactivate(int $id)
+    public function deactivate(Request $request, $id)
     {
-        $user = $this->users->findById($id);
-
-        if (! $user) {
-            return response()->json(['message' => 'User not found.'], 404);
+        if (! Gate::allows('manage-users')) {
+            abort(403);
         }
 
-        $this->users->update($user, [
-            'is_active' => false,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'User deactivated successfully.',
-        ]);
+        $user = $this->users->findById($id);
+        if (! $user) return redirect()->back()->withErrors(['user' => 'Not found']);
+        $this->users->update($user, ['is_active' => false, 'updated_by' => Auth::id()]);
+        return redirect()->back()->with('success', 'Deactivated');
     }
 
-    /**
-     * Get Available Statuses
-     */
     public function statuses()
     {
-        return response()->json([
-            'success' => true,
-            'statuses' => $this->users->allStatuses(),
-        ]);
+        if (! Gate::allows('manage-users')) {
+            abort(403);
+        }
+
+        $statuses = $this->users->allStatuses();
+        return view('users.statuses', compact('statuses'));
     }
 }
