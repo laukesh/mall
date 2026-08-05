@@ -21,7 +21,8 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name('forgot.form');
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1')->name('password.email');
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// Allow both GET and POST for logout to support browser navigation and form submission
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/profile', [AuthController::class, 'profileForm'])->name('profile.form')->middleware('auth');
 Route::post('/profile', [AuthController::class, 'updateProfile'])->name('profile.update')->middleware('auth');
