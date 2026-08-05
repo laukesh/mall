@@ -19,7 +19,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // Grant all abilities to any super/admin role variants to ensure a "Super Admin" gets full access.
-        // This implementation is defensive: it checks role names, a user flag, and a configured ADMIN_EMAIL.
+        // This implementation is defensive: it checks role names, a user flag, a configured ADMIN_EMAIL,
+        // and also checks for explicit admin permissions (e.g. manage-users) assigned directly to the user.
         Gate::before(function (?User $user, $ability) {
             if (! $user) {
                 return null;
@@ -61,17 +62,15 @@ class AuthServiceProvider extends ServiceProvider
                 }
             }
 
-            // Check for a special permission name if used
-            if (method_exists($user, 'hasPermissionTo')) {
-                $permVariants = ['super-admin', 'superadmin', 'admin:all', 'admin.*'];
-                foreach ($permVariants as $p) {
-                    try {
-                        if ($user->hasPermissionTo($p)) {
-                            return true;
-                        }
-                    } catch (\Exception $e) {
-                        // permission table may not exist or other issues; ignore
+            // If the admin permissions were granted directly to the user (not via role), allow them as well
+            if (method_exists($user, 'hasAnyPermission')) {
+                $adminPermissions = ['manage-users','manage-malls','view-audits','manage-roles'];
+                try {
+                    if ($user->hasAnyPermission($adminPermissions)) {
+                        return true;
                     }
+                } catch (\Exception $e) {
+                    // ignore permission table errors
                 }
             }
 
@@ -79,11 +78,30 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // Explicit gates (kept for clarity and non-admin checks)
-        $superAndAdmin = fn (?User $user) => $user && (
-            (method_exists($user, 'hasAnyRole') && $user->hasAnyRole(['admin','super-admin','superadmin','super']))
-            || (isset($user->is_super_admin) && $user->is_super_admin)
-            || (env('ADMIN_EMAIL') && strtolower($user->email) === strtolower(env('ADMIN_EMAIL')))
-        );
+        $superAndAdmin = function (?User $user, $ability = null) {
+            if (! $user) return false;
+
+            // role or flag or admin email
+            if ((method_exists($user, 'hasAnyRole') && $user->hasAnyRole(['admin','super-admin','superadmin','super']))
+                || (isset($user->is_super_admin) && $user->is_super_admin)
+                || (env('ADMIN_EMAIL') && strtolower($user->email) === strtolower(env('ADMIN_EMAIL')))
+            ) {
+                return true;
+            }
+
+            // explicit permission check for the specific ability name
+            if (method_exists($user, 'hasPermissionTo') && $ability) {
+                try {
+                    if ($user->hasPermissionTo($ability)) {
+                        return true;
+                    }
+                } catch (\Exception $e) {
+                    // ignore
+                }
+            }
+
+            return false;
+        };
 
         Gate::define('manage-users', $superAndAdmin);
         Gate::define('dashboard', $superAndAdmin);
