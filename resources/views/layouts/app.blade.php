@@ -8,7 +8,7 @@
 <header>
     <nav>
         <a href="{{ url('/') }}">Home</a>
-        <a href="{{ route('malls.index') }}">Malls</a>
+        <a href="{{ route('admin.malls.index') }}">Malls</a>
         @auth
             @if(auth()->user()->hasRole('admin'))
                 <a href="{{ route('admin.dashboard') }}">Dashboard</a>
