@@ -16,27 +16,42 @@ use App\Http\Controllers\Admin\MallController;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/debug-role', function () {
 
+    $user = Auth::user();
+
+    dd([
+        'User'        => $user,
+        'Roles'       => $user?->getRoleNames(),
+        'Permissions' => $user?->getPermissionNames(),
+        'All Permissions' => $user?->getAllPermissions()->pluck('name'),
+    ]);
+
+})->middleware('auth');
 /*
 |--------------------------------------------------------------------------
 | Authentication
 |--------------------------------------------------------------------------
 */
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
-Route::post('/login', [AuthController::class, 'login'])
-    ->middleware('throttle:10,1')
-    ->name('login');
+Route::controller(AuthController::class)->group(function () {
 
-Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
-Route::post('/register', [AuthController::class, 'register'])->name('register');
+    Route::get('/login', 'showLoginForm')->name('login.form');
+    Route::post('/login', 'login')
+        ->middleware('throttle:10,1')
+        ->name('login');
 
-Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])->name('forgot.form');
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
-    ->middleware('throttle:5,1')
-    ->name('password.email');
+    Route::get('/register', 'showRegisterForm')->name('register.form');
+    Route::post('/register', 'register')->name('register');
 
-Route::match(['GET', 'POST'], '/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/forgot-password', 'showForgotForm')->name('forgot.form');
+    Route::post('/forgot-password', 'forgotPassword')
+        ->middleware('throttle:5,1')
+        ->name('password.email');
+    Route::post('/logout', [AuthController::class, 'logout'])
+        ->middleware('auth')
+        ->name('logout');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -52,24 +67,37 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/profile', [AuthController::class, 'profileForm'])
-        ->name('profile.form');
+    Route::prefix('profile')->name('profile.')->group(function () {
 
-    Route::post('/profile', [AuthController::class, 'updateProfile'])
-        ->name('profile.update');
+        Route::get('/', [AuthController::class, 'profileForm'])
+            ->middleware('permission:profile.view')
+            ->name('show');
 
-    Route::post('/change-password', [AuthController::class, 'changePassword'])
-        ->name('change.password');
+        Route::post('/update', [AuthController::class, 'updateProfile'])
+            ->middleware('permission:profile.update')
+            ->name('update');
+
+        Route::post('/change-password', [AuthController::class, 'changePassword'])
+            ->middleware('permission:profile.update')
+            ->name('change-password');
+    });
 
     /*
     |--------------------------------------------------------------------------
-    | Dashboard
+    | Administrator Panel
     |--------------------------------------------------------------------------
     */
 
     Route::prefix('admin')->name('admin.')->group(function () {
 
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard
+        |--------------------------------------------------------------------------
+        */
+
         Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->middleware('permission:dashboard.view')
             ->name('dashboard');
 
         /*
@@ -78,40 +106,73 @@ Route::middleware(['auth'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::middleware('can:manage-users')->group(function () {
+        Route::prefix('users')->name('users.')->group(function () {
 
-            Route::get('/users', [UserManagementController::class, 'index'])
-                ->name('users.index');
+            Route::get('/', [UserManagementController::class, 'index'])
+                ->middleware('permission:users.view')
+                ->name('index');
 
-            Route::get('/users/{id}', [UserManagementController::class, 'show'])
-                ->name('users.show');
+            Route::get('/create', [UserManagementController::class, 'create'])
+                ->middleware('permission:users.create')
+                ->name('create');
 
-            Route::post('/users/{id}/assign-role', [UserManagementController::class, 'assignRole'])
-                ->name('users.assign');
+            Route::post('/', [UserManagementController::class, 'store'])
+                ->middleware('permission:users.create')
+                ->name('store');
 
-            Route::post('/users/{id}/revoke-role', [UserManagementController::class, 'revokeRole'])
-                ->name('users.revoke');
+            Route::get('/{user}', [UserManagementController::class, 'show'])
+                ->middleware('permission:users.view')
+                ->name('show');
 
-            Route::post('/users/{id}/activate', [UserManagementController::class, 'activate'])
-                ->name('users.activate');
+            Route::get('/{user}/edit', [UserManagementController::class, 'edit'])
+                ->middleware('permission:users.edit')
+                ->name('edit');
 
-            Route::post('/users/{id}/deactivate', [UserManagementController::class, 'deactivate'])
-                ->name('users.deactivate');
+            Route::put('/{user}', [UserManagementController::class, 'update'])
+                ->middleware('permission:users.edit')
+                ->name('update');
 
-            Route::get('/users/{id}/audits', [UserManagementController::class, 'audits'])
-                ->middleware('can:view-audits')
-                ->name('users.audits');
+            Route::delete('/{user}', [UserManagementController::class, 'destroy'])
+                ->middleware('permission:users.delete')
+                ->name('destroy');
+
+            Route::post('/{user}/assign-role', [UserManagementController::class, 'assignRole'])
+                ->middleware('permission:users.edit')
+                ->name('assign-role');
+
+            Route::post('/{user}/revoke-role', [UserManagementController::class, 'revokeRole'])
+                ->middleware('permission:users.edit')
+                ->name('revoke-role');
+
+            Route::post('/{user}/activate', [UserManagementController::class, 'activate'])
+                ->middleware('permission:users.edit')
+                ->name('activate');
+
+            Route::post('/{user}/deactivate', [UserManagementController::class, 'deactivate'])
+                ->middleware('permission:users.edit')
+                ->name('deactivate');
+
+            Route::get('/{user}/audits', [UserManagementController::class, 'audits'])
+                ->middleware('permission:audit.view')
+                ->name('audits');
         });
 
         /*
         |--------------------------------------------------------------------------
-        | Roles & Permissions
+        | Role Management
         |--------------------------------------------------------------------------
         */
 
-        Route::middleware('can:manage-roles')->group(function () {
-            Route::resource('roles', RoleController::class);
-        });
+        Route::resource('roles', RoleController::class)
+            ->middleware([
+                'index'   => 'permission:roles.view',
+                'show'    => 'permission:roles.view',
+                'create'  => 'permission:roles.create',
+                'store'   => 'permission:roles.create',
+                'edit'    => 'permission:roles.edit',
+                'update'  => 'permission:roles.edit',
+                'destroy' => 'permission:roles.delete',
+            ]);
 
         /*
         |--------------------------------------------------------------------------
@@ -119,10 +180,15 @@ Route::middleware(['auth'])->group(function () {
         |--------------------------------------------------------------------------
         */
 
-        Route::middleware('can:manage-malls')->group(function () {
-            Route::resource('malls', MallController::class);
-        });
-
+        Route::resource('malls', MallController::class)
+            ->middleware([
+                'index'   => 'permission:malls.view',
+                'show'    => 'permission:malls.view',
+                'create'  => 'permission:malls.create',
+                'store'   => 'permission:malls.create',
+                'edit'    => 'permission:malls.edit',
+                'update'  => 'permission:malls.edit',
+                'destroy' => 'permission:malls.delete',
+            ]);
     });
-
 });

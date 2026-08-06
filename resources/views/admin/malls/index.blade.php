@@ -4,9 +4,9 @@
 
 @section('content')
     <h1>Malls</h1>
-    <a href="{{ route('malls.create') }}">Create Mall</a>
+    <a href="{{ route('admin.malls.create') }}">Create Mall</a>
 
-    <form method="GET" action="{{ route('malls.index') }}">
+    <form method="GET" action="{{ route('admin.malls.index') }}">
         <input type="text" name="search" placeholder="Search" value="{{ request('search') }}">
         <button type="submit">Search</button>
     </form>
@@ -29,12 +29,12 @@
             <tr>
                 <td>{{ $mall->id }}</td>
                 <td>{{ $mall->mall_code }}</td>
-                <td><a href="{{ route('malls.show', $mall->id) }}">{{ $mall->mall_name }}</a></td>
+                <td><a href="{{ route('admin.malls.show', $mall->id) }}">{{ $mall->mall_name }}</a></td>
                 <td>{{ $mall->city }}</td>
                 <td>{{ $mall->status }}</td>
                 <td>
-                    <a href="{{ route('malls.edit', $mall->id) }}">Edit</a>
-                    <form method="POST" action="{{ route('malls.destroy', $mall->id) }}" style="display:inline">
+                    <a href="{{ route('admin.malls.edit', $mall->id) }}">Edit</a>
+                    <form method="POST" action="{{ route('admin.malls.destroy', $mall->id) }}" style="display:inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" onclick="return confirm('Delete?')">Delete</button>

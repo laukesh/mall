@@ -17,7 +17,7 @@
     <p>Roles: {{ $user->roles->pluck('name')->join(', ') }}</p>
 
     <h2>Assign Role</h2>
-    <form method="POST" action="{{ route('admin.users.assign', $user->id) }}">
+    <form method="POST" action="{{ route('admin.users.assign-role', $user->id) }}">
         @csrf
         <select name="role">
             @foreach($roles as $role)
@@ -28,7 +28,7 @@
     </form>
 
     <h2>Revoke Role</h2>
-    <form method="POST" action="{{ route('admin.users.revoke', $user->id) }}">
+    <form method="POST" action="{{ route('admin.users.revoke-role', $user->id) }}">
         @csrf
         <select name="role">
             @foreach($user->roles as $role)

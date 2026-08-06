@@ -4,7 +4,7 @@
 
 @section('content')
     <h1>Create Mall</h1>
-    <form method="POST" action="{{ route('malls.store') }}">
+    <form method="POST" action="{{ route('admin.malls.store') }}">
         @csrf
         <label>Code <input name="mall_code" value="{{ old('mall_code') }}"></label><br>
         <label>Name <input name="mall_name" value="{{ old('mall_name') }}"></label><br>

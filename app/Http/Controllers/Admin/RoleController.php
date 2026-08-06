@@ -11,7 +11,7 @@ class RoleController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','can:manage-users']);
+        // $this->middleware(['auth','can:manage-users']);
     }
 
     public function index()

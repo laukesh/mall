@@ -83,12 +83,14 @@ class AuthController extends Controller
         return redirect()->intended('/')->with('success', 'Logged in');
     }
 
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/')->with('success', 'Logged out');
+   public function logout() {
+        auth()->logout();
+
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()->route('login.form')
+            ->with('success', 'Logged out successfully.');
     }
 
     public function forgotPassword(Request $request)

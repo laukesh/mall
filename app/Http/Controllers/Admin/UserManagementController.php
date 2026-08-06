@@ -17,7 +17,7 @@ class UserManagementController extends Controller
     public function __construct(UserRepositoryInterface $users)
     {
         $this->users = $users;
-        $this->middleware(['auth','can:manage-users']);
+      //  $this->middleware(['auth','can:manage-users']);
     }
 
     public function index(Request $request)

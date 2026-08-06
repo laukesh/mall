@@ -7,47 +7,49 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionsSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         $permissions = [
-            // dashboard
+
+            // Dashboard
             'dashboard.view',
 
-            // users
+            // Users
             'users.view',
             'users.create',
             'users.edit',
             'users.delete',
 
-            // roles
+            // Roles
             'roles.view',
             'roles.create',
             'roles.edit',
             'roles.delete',
 
-            // permissions
+            // Permissions
             'permissions.view',
             'permissions.create',
             'permissions.edit',
             'permissions.delete',
 
-            // malls
+            // Malls
             'malls.view',
             'malls.create',
             'malls.edit',
             'malls.delete',
 
-            // audit
+            // Audit
             'audit.view',
 
-            // profile
+            // Profile
             'profile.view',
             'profile.update',
         ];
 
-        foreach ($permissions as $perm) {
+        foreach ($permissions as $permission) {
+
             Permission::firstOrCreate([
-                'name' => $perm,
+                'name' => $permission,
                 'guard_name' => 'web',
             ]);
         }

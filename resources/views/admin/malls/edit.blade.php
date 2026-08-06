@@ -4,7 +4,7 @@
 
 @section('content')
     <h1>Edit Mall</h1>
-    <form method="POST" action="{{ route('malls.update', $mall->id) }}">
+    <form method="POST" action="{{ route('admin.malls.update', $mall->id) }}">
         @csrf
         @method('PUT')
         <label>Code <input name="mall_code" value="{{ old('mall_code', $mall->mall_code) }}"></label><br>

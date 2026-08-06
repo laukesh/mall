@@ -3,34 +3,92 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class RolesAdminSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // Create basic roles
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $userRole = Role::firstOrCreate(['name' => 'user']);
+        // Get all existing permissions
+        $permissions = Permission::pluck('name')->toArray();
 
-        // Create admin user (if not exists)
-        $email = env('ADMIN_EMAIL', 'admin@example.com');
-        $password = env('ADMIN_PASSWORD', 'ChangeMe123!');
+        $roles = [
+            'Super Admin' => $permissions,
 
-        $admin = User::firstOrCreate(
-            ['email' => $email],
-            [
-                'name' => 'Administrator',
-                'password' => Hash::make($password),
-                'is_active' => true,
-                'status' => 'active',
-            ]
-        );
+            'Administrator' => [
+                'dashboard.view',
+                'users.view',
+                'users.create',
+                'users.edit',
+                'users.delete',
+                'roles.view',
+                'roles.create',
+                'roles.edit',
+                'roles.delete',
+                'permissions.view',
+                'permissions.create',
+                'permissions.edit',
+                'permissions.delete',
+                'malls.view',
+                'malls.create',
+                'malls.edit',
+                'malls.delete',
+                'audit.view',
+            ],
 
-        if (! $admin->hasRole('admin')) {
-            $admin->assignRole('admin');
+            'Mall Manager' => [
+                'dashboard.view',
+                'malls.view',
+                'malls.create',
+                'malls.edit',
+                'malls.delete',
+            ],
+
+            'Manager' => [
+                'dashboard.view',
+            ],
+
+            'Employee' => [
+                'dashboard.view',
+                'profile.view',
+                'profile.update',
+            ],
+        ];
+
+        foreach ($roles as $roleName => $rolePermissions) {
+
+            $role = Role::firstOrCreate([
+                'name' => $roleName,
+                'guard_name' => 'web',
+            ]);
+
+            if ($roleName === 'Super Admin') {
+                $role->syncPermissions($permissions);
+            } else {
+                $role->syncPermissions($rolePermissions);
+            }
+        }
+
+        $adminEmail = env('ADMIN_EMAIL');
+        $adminPassword = env('ADMIN_PASSWORD', 'ChangeMe123!');
+
+        if ($adminEmail) {
+
+            $user = User::firstOrCreate(
+                ['email' => $adminEmail],
+                [
+                    'name' => 'Super Admin',
+                    'password' => Hash::make($adminPassword),
+                    'is_active' => true,
+                    'is_super_admin' => true,
+                    'status' => 'active',
+                ]
+            );
+
+            $user->assignRole('Super Admin');
         }
     }
 }

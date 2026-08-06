@@ -9,6 +9,6 @@
     <p>Address: {{ $mall->address_line1 }} {{ $mall->address_line2 }}</p>
     <p>City: {{ $mall->city }}</p>
     <p>Status: {{ $mall->status }}</p>
-    <a href="{{ route('malls.edit', $mall->id) }}">Edit</a>
-    <a href="{{ route('malls.index') }}">Back</a>
+    <a href="{{ route('admin.malls.edit', $mall->id) }}">Edit</a>
+    <a href="{{ route('admin.malls.index') }}">Back</a>
 @endsection
