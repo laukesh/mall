@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Api\StateController;
 use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\PincodeController;
+use App\Http\Controllers\Admin\BuildingController;
 
 // Public Routes
 Route::prefix('auth')->group(function () {
@@ -46,4 +47,9 @@ Route::prefix('locations')->group(function () {
 
     Route::get('pincodes', [PincodeController::class, 'index']);
     Route::get('pincodes/{id}', [PincodeController::class, 'show']);
+});
+
+// Admin web routes for buildings
+Route::prefix('admin')->middleware(['auth','can:manage-malls'])->name('admin.')->group(function () {
+    Route::resource('buildings', BuildingController::class);
 });
