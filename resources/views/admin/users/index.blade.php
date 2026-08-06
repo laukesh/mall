@@ -16,8 +16,10 @@
             @endforeach
         </ul>
     @endif
-
-    <table border="1">
+    <div class="mall-results-count">Showing {{ $users->total() }} Users</div>
+	<div class="mall-table-wrapper">
+		<div class="mall-table-scroll">
+    <table class="mall-table">
         <thead>
             <tr>
                 <th>ID</th>
@@ -45,4 +47,6 @@
     </table>
 
     {{ $users->links() }}
+</div>
+</div>
 @endsection
