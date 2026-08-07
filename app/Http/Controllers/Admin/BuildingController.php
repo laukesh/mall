@@ -13,7 +13,7 @@ class BuildingController extends Controller
 
     public function __construct(BuildingRepository $repo)
     {
-        $this->middleware(['auth','can:manage-malls']);
+       // $this->middleware(['auth','can:manage-malls']);
         $this->repo = $repo;
     }
 

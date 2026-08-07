@@ -191,20 +191,4 @@ Route::middleware(['auth'])->group(function () {
                 'destroy' => 'permission:malls.delete',
             ]);
     });
-     /*
-        |--------------------------------------------------------------------------
-        | Building Management
-        |--------------------------------------------------------------------------
-        */
-     Route::resource('buildings', BuildingController::class)
-            ->middleware([
-                'index'   => 'permission:buildings.view',
-                'show'    => 'permission:buildings.view',
-                'create'  => 'permission:buildings.create',
-                'store'   => 'permission:buildings.create',
-                'edit'    => 'permission:buildings.edit',
-                'update'  => 'permission:buildings.edit',
-                'destroy' => 'permission:buildings.delete',
-            ]);
-    
 });

@@ -58,29 +58,57 @@
 
                 @auth
 
-                    @can('malls.view')
-                        <a class="app-nav-link" href="{{ route('admin.malls.index') }}">Malls</a>
+                  @can('dashboard.view')
+                `     <a class="app-nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                            href="{{ route('admin.dashboard') }}">
+                            Dashboard
+                        </a>
                     @endcan
 
-                    @can('dashboard.view')
-                        <a class="app-nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                    @can('malls.view')
+                        <a class="app-nav-link {{ request()->routeIs('admin.malls.*') ? 'active' : '' }}"
+                            href="{{ route('admin.malls.index') }}">
+                            Malls
+                        </a>
+                    @endcan
+
+                    @can('buildings.view')
+                        <a class="app-nav-link {{ request()->routeIs('admin.buildings.*') ? 'active' : '' }}"
+                            href="{{ route('admin.buildings.index') }}">
+                            Buildings
+                        </a>
                     @endcan
 
                     @can('users.view')
-                        <a class="app-nav-link" href="{{ route('admin.users.index') }}">Manage Users</a>
+                        <a class="app-nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
+                            href="{{ route('admin.users.index') }}">
+                            Manage Users
+                        </a>
                     @endcan
 
                     @can('roles.view')
-                        <a class="app-nav-link" href="{{ route('admin.roles.index') }}">Roles & Permissions</a>
+                        <a class="app-nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}"
+                            href="{{ route('admin.roles.index') }}">
+                            Roles & Permissions
+                        </a>
                     @endcan
 
                     @can('audit.view')
-                        <a class="app-nav-link" href="{{ route('admin.users.audits', auth()->id()) }}">Audit Trail</a>
-                    @endcan
+                        <a class="app-nav-link {{ request()->routeIs('admin.users.audits') ? 'active' : '' }}"
+                            href="{{ route('admin.users.audits', auth()->id()) }}">
+                            Audit Trail
+                        </a>
+                    @endcan`
 
                    
 
-                
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" style="float: right;"
+                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border border-red-500 text-red-600 hover:bg-red-600 hover:text-white rounded-sm text-sm leading-normal">
+                        Logout
+                    </button>
+                </form>   
 
                 @else
 
@@ -88,8 +116,11 @@
                     <a class="app-nav-link" href="{{ route('register.form') }}">Register</a>
 
                 @endauth
+
 		</div>	
+        
 	</div>
+   
 </nav>
 
 <section class="sect-cover">

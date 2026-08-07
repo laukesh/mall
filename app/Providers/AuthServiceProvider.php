@@ -37,7 +37,7 @@ dd($user);
         */
 
         Gate::before(function (User $user, string $ability) {
-dd($user);
+//dd($user);
             if (
                 $user->is_super_admin ||
                 $user->hasRole('Super Admin')
@@ -74,6 +74,11 @@ dd($user);
         Gate::define('malls.create', fn(User $user) => $user->can('malls.create'));
         Gate::define('malls.edit', fn(User $user) => $user->can('malls.edit'));
         Gate::define('malls.delete', fn(User $user) => $user->can('malls.delete'));
+        
+        Gate::define('buildings.view', fn(User $user) => $user->can('buildings.view'));
+        Gate::define('buildings.create', fn(User $user) => $user->can('buildings.create'));
+        Gate::define('buildings.edit', fn(User $user) => $user->can('buildings.edit'));
+        Gate::define('buildings.delete', fn(User $user) => $user->can('buildings.delete'));
 
         Gate::define('audit.view', fn(User $user) => $user->can('audit.view'));
     }
