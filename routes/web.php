@@ -172,7 +172,7 @@ Route::middleware(['auth'])->group(function () {
                 'edit'    => 'permission:roles.edit',
                 'update'  => 'permission:roles.edit',
                 'destroy' => 'permission:roles.delete',
-            ]);
+         ]);
 
         /*
         |--------------------------------------------------------------------------
@@ -182,21 +182,21 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('malls', MallController::class)
             ->middleware([
-                'index'   => 'permission:malls.view',
-                'show'    => 'permission:malls.view',
-                'create'  => 'permission:malls.create',
-                'store'   => 'permission:malls.create',
-                'edit'    => 'permission:malls.edit',
-                'update'  => 'permission:malls.edit',
-                'destroy' => 'permission:malls.delete',
-            ]);
-    });
-     /*
+            'index'   => 'permission:malls.view',
+            'show'    => 'permission:malls.view',
+            'create'  => 'permission:malls.create',
+            'store'   => 'permission:malls.create',
+            'edit'    => 'permission:malls.edit',
+            'update'  => 'permission:malls.edit',
+            'destroy' => 'permission:malls.delete',
+        ]);
+  
+        /*
         |--------------------------------------------------------------------------
         | Building Management
         |--------------------------------------------------------------------------
         */
-     Route::resource('buildings', BuildingController::class)
+        Route::resource('buildings', BuildingController::class)
             ->middleware([
                 'index'   => 'permission:buildings.view',
                 'show'    => 'permission:buildings.view',
@@ -207,4 +207,5 @@ Route::middleware(['auth'])->group(function () {
                 'destroy' => 'permission:buildings.delete',
             ]);
     
-});
+        });
+  });
