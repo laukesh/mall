@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Building extends Model
 {
-    use HasFactory;
+    protected $table = 'buildings';
 
     protected $fillable = [
         'mall_id',
@@ -21,9 +21,8 @@ class Building extends Model
         'updated_by',
     ];
 
-    // relationships
-    public function mall()
+    public function mall(): BelongsTo
     {
-        return $this->belongsTo(Mall::class);
+        return $this->belongsTo(Mall::class, 'mall_id');
     }
 }

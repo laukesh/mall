@@ -1,11 +1,13 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\MallController;
+use App\Http\Controllers\Admin\BuildingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,18 +18,34 @@ use App\Http\Controllers\Admin\MallController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/debug-role', function () {
+Route::get('/debug-building', function () {
+    $user = auth()->user();
 
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+
+        'roles' => $user->getRoleNames(),
+
+        'building_view' => $user->can('buildings.view'),
+        'building_create' => $user->can('buildings.create'),
+        'building_edit' => $user->can('buildings.edit'),
+        'building_delete' => $user->can('buildings.delete'),
+
+        'is_super_admin' => $user->is_super_admin,
+    ];
+})->middleware('auth');
+Route::get('/debug-role', function () {
     $user = Auth::user();
 
     dd([
-        'User'        => $user,
-        'Roles'       => $user?->getRoleNames(),
-        'Permissions' => $user?->getPermissionNames(),
+        'User'            => $user,
+        'Roles'           => $user?->getRoleNames(),
+        'Permissions'     => $user?->getPermissionNames(),
         'All Permissions' => $user?->getAllPermissions()->pluck('name'),
     ]);
-
 })->middleware('auth');
+
 /*
 |--------------------------------------------------------------------------
 | Authentication
@@ -35,7 +53,6 @@ Route::get('/debug-role', function () {
 */
 
 Route::controller(AuthController::class)->group(function () {
-
     Route::get('/login', 'showLoginForm')->name('login.form');
     Route::post('/login', 'login')
         ->middleware('throttle:10,1')
@@ -48,6 +65,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/forgot-password', 'forgotPassword')
         ->middleware('throttle:5,1')
         ->name('password.email');
+
     Route::post('/logout', [AuthController::class, 'logout'])
         ->middleware('auth')
         ->name('logout');
@@ -68,7 +86,6 @@ Route::middleware(['auth'])->group(function () {
     */
 
     Route::prefix('profile')->name('profile.')->group(function () {
-
         Route::get('/', [AuthController::class, 'profileForm'])
             ->middleware('permission:profile.view')
             ->name('show');
@@ -107,7 +124,6 @@ Route::middleware(['auth'])->group(function () {
         */
 
         Route::prefix('users')->name('users.')->group(function () {
-
             Route::get('/', [UserManagementController::class, 'index'])
                 ->middleware('permission:users.view')
                 ->name('index');
@@ -172,7 +188,7 @@ Route::middleware(['auth'])->group(function () {
                 'edit'    => 'permission:roles.edit',
                 'update'  => 'permission:roles.edit',
                 'destroy' => 'permission:roles.delete',
-         ]);
+            ]);
 
         /*
         |--------------------------------------------------------------------------
@@ -182,20 +198,21 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('malls', MallController::class)
             ->middleware([
-            'index'   => 'permission:malls.view',
-            'show'    => 'permission:malls.view',
-            'create'  => 'permission:malls.create',
-            'store'   => 'permission:malls.create',
-            'edit'    => 'permission:malls.edit',
-            'update'  => 'permission:malls.edit',
-            'destroy' => 'permission:malls.delete',
-        ]);
-  
+                'index'   => 'permission:malls.view',
+                'show'    => 'permission:malls.view',
+                'create'  => 'permission:malls.create',
+                'store'   => 'permission:malls.create',
+                'edit'    => 'permission:malls.edit',
+                'update'  => 'permission:malls.edit',
+                'destroy' => 'permission:malls.delete',
+            ]);
+
         /*
         |--------------------------------------------------------------------------
         | Building Management
         |--------------------------------------------------------------------------
         */
+
         Route::resource('buildings', BuildingController::class)
             ->middleware([
                 'index'   => 'permission:buildings.view',
@@ -206,6 +223,5 @@ Route::middleware(['auth'])->group(function () {
                 'update'  => 'permission:buildings.edit',
                 'destroy' => 'permission:buildings.delete',
             ]);
-    
-        });
-  });
+    });
+});

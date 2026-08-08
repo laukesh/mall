@@ -78,6 +78,7 @@
                             Buildings
                         </a>
                     @endcan
+                    
 
                     @can('users.view')
                         <a class="app-nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"

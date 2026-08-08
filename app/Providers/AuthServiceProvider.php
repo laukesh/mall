@@ -25,23 +25,13 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * Register authentication / authorization services.
      */
-    public function boot(): void
+   public function boot(): void
     {
         $this->registerPolicies();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Super Admin
-        |--------------------------------------------------------------------------
-        |
-        | Super Admin has full access to all Gates and Policies.
-        |
-        */
-
         Gate::before(function (User $user, string $ability) {
-
             if (
-                (bool) $user->is_super_admin ||
+                $user->is_super_admin ||
                 $user->hasRole('Super Admin')
             ) {
                 return true;
