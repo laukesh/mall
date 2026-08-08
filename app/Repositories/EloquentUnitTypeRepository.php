@@ -2,18 +2,17 @@
 
 namespace App\Repositories;
 
-use App\Models\Building;
+use App\Models\UnitType;
 
-class EloquentBuildingRepository
-    implements BuildingRepositoryInterface
+class EloquentUnitTypeRepository
+    implements UnitTypeRepositoryInterface
 {
     /**
-     * Get buildings.
+     * Get all unit types.
      */
     public function all(array $filters = [])
     {
-        $query = Building::with([
-            'mall',
+        $query = UnitType::with([
             'creator',
             'updater',
         ]);
@@ -23,7 +22,6 @@ class EloquentBuildingRepository
         | Search
         |--------------------------------------------------------------------------
         */
-
         if (!empty($filters['search'])) {
 
             $search = $filters['search'];
@@ -31,17 +29,17 @@ class EloquentBuildingRepository
             $query->where(function ($q) use ($search) {
 
                 $q->where(
-                    'building_code',
-                    'like',
-                    "%{$search}%"
-                )
-                ->orWhere(
-                    'building_name',
+                    'type_name',
                     'like',
                     "%{$search}%"
                 )
                 ->orWhere(
                     'description',
+                    'like',
+                    "%{$search}%"
+                )
+                ->orWhere(
+                    'status',
                     'like',
                     "%{$search}%"
                 );
@@ -51,28 +49,10 @@ class EloquentBuildingRepository
 
         /*
         |--------------------------------------------------------------------------
-        | Mall Filter
-        |--------------------------------------------------------------------------
-        */
-
-        if (!empty($filters['mall_id'])) {
-
-            $query->where(
-                'mall_id',
-                $filters['mall_id']
-            );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
         | Status Filter
         |--------------------------------------------------------------------------
         */
-
-        if (
-            isset($filters['status']) &&
-            $filters['status'] !== ''
-        ) {
+        if (!empty($filters['status'])) {
 
             $query->where(
                 'status',
@@ -81,52 +61,49 @@ class EloquentBuildingRepository
         }
 
         return $query
-            ->orderBy('building_name')
+            ->orderBy('type_name')
             ->get();
     }
 
     /**
-     * Find building.
+     * Find unit type.
      */
     public function find($id)
     {
-        return Building::with([
-            'mall',
+        return UnitType::with([
             'creator',
             'updater',
-            'floors',
         ])->find($id);
     }
 
     /**
-     * Create building.
+     * Create unit type.
      */
     public function create(array $data)
     {
-        return Building::create($data);
+        return UnitType::create($data);
     }
 
     /**
-     * Update building.
+     * Update unit type.
      */
     public function update(
-        Building $building,
+        UnitType $unitType,
         array $data
     ) {
-        $building->update($data);
+        $unitType->update($data);
 
-        return $building->fresh([
-            'mall',
+        return $unitType->fresh([
             'creator',
             'updater',
         ]);
     }
 
     /**
-     * Delete building.
+     * Delete unit type.
      */
-    public function delete(Building $building)
+    public function delete(UnitType $unitType)
     {
-        return $building->delete();
+        return $unitType->delete();
     }
 }

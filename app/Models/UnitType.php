@@ -5,53 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Building extends Model
+class UnitType extends Model
 {
     use HasFactory;
 
-    protected $table = 'buildings';
+    protected $table = 'unit_types';
 
     protected $fillable = [
-        'mall_id',
-        'building_code',
-        'building_name',
+        'type_name',
         'description',
-        'total_floors',
-        'total_units',
         'status',
         'created_by',
         'updated_by',
     ];
-
-    protected $casts = [
-        'mall_id'       => 'integer',
-        'total_floors'  => 'integer',
-        'total_units'   => 'integer',
-        'status'        => 'integer',
-        'created_by'    => 'integer',
-        'updated_by'    => 'integer',
-    ];
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mall
-    |--------------------------------------------------------------------------
-    */
-
-    public function mall()
-    {
-        return $this->belongsTo(
-            Mall::class,
-            'mall_id'
-        );
-    }
 
     /*
     |--------------------------------------------------------------------------
     | Created By
     |--------------------------------------------------------------------------
     */
-
     public function creator()
     {
         return $this->belongsTo(
@@ -65,7 +37,6 @@ class Building extends Model
     | Updated By
     |--------------------------------------------------------------------------
     */
-
     public function updater()
     {
         return $this->belongsTo(
@@ -76,15 +47,18 @@ class Building extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | Floors
+    | Units
     |--------------------------------------------------------------------------
+    |
+    | If your units table contains unit_type_id,
+    | this relationship can be used.
+    |
     */
-
-    public function floors()
+    public function units()
     {
         return $this->hasMany(
-            Floor::class,
-            'building_id'
+            Unit::class,
+            'unit_type_id'
         );
     }
 }

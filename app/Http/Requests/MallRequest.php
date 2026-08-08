@@ -6,34 +6,135 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class MallRequest extends FormRequest
 {
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
-    public function rules()
+    public function rules(): array
     {
+        $mallId = $this->route('mall');
+
         return [
-            'mall_code' => 'required|string|max:50|unique:malls,mall_code,' . ($this->mall->id ?? 'NULL'),
-            'mall_name' => 'required|string|max:191',
-            'mall_type' => 'nullable|string|max:100',
-            'address_line1' => 'nullable|string|max:255',
-            'address_line2' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:100',
-            'state' => 'nullable|string|max:100',
-            'country' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:20',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'opening_date' => 'nullable|date',
-            'total_area' => 'nullable|numeric',
-            'leasable_area' => 'nullable|numeric',
-            'parking_capacity' => 'nullable|integer',
-            'contact_person' => 'nullable|string|max:191',
-            'contact_number' => 'nullable|string|max:50',
-            'email' => 'nullable|email|max:191',
-            'website' => 'nullable|url|max:191',
-            'status' => 'nullable|string|max:50',
+            'mall_code' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:malls,mall_code,' . $mallId,
+            ],
+
+            'mall_name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'mall_type' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'address_line1' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'address_line2' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'city' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'state' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'country' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'postal_code' => [
+                'nullable',
+                'string',
+                'max:20',
+            ],
+
+            'latitude' => [
+                'nullable',
+                'numeric',
+                'between:-90,90',
+            ],
+
+            'longitude' => [
+                'nullable',
+                'numeric',
+                'between:-180,180',
+            ],
+
+            'opening_date' => [
+                'nullable',
+                'date',
+            ],
+
+            'total_area' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'leasable_area' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'parking_capacity' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
+
+            'contact_person' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'contact_number' => [
+                'nullable',
+                'string',
+                'max:30',
+            ],
+
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+            ],
+
+            'website' => [
+                'nullable',
+                'url',
+                'max:255',
+            ],
+            'status' => [
+                'required',
+                'integer',
+                'in:0,1',
+            ],
+        
         ];
     }
 }

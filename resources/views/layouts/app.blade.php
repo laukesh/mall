@@ -74,11 +74,30 @@
 
                     @can('buildings.view')
                         <a class="app-nav-link {{ request()->routeIs('admin.buildings.*') ? 'active' : '' }}"
-                            href="{{ route('admin.buildings.index') }}">
+                          href="{{ route('admin.buildings.index') }}">
                             Buildings
                         </a>
                     @endcan
+                     @can('floors.view')
+                        <a class="app-nav-link {{ request()->routeIs('admin.floors.*') ? 'active' : '' }}"
+                            href="{{ route('admin.floors.index') }}">
+                            Floors
+                        </a>
+                    @endcan
+
+                     @can('zones.view')
+                        <a class="app-nav-link {{ request()->routeIs('admin.zones.*') ? 'active' : '' }}"
+                            href="{{ route('admin.zones.index') }}">
+                            Zones
+                        </a>
+                    @endcan
                     
+                     @can('unit_types.view')
+                        <a class="app-nav-link {{ request()->routeIs('admin.unit-types.*') ? 'active' : '' }}"
+                            href="{{ route('admin.unit-types.index') }}">
+                            Unit Types
+                        </a>
+                    @endcan
 
                     @can('users.view')
                         <a class="app-nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"

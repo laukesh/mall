@@ -8,6 +8,11 @@ use App\Repositories\BuildingRepositoryInterface;
 use App\Repositories\EloquentBuildingRepository;
 use App\Repositories\EloquentMallRepository;
 use App\Repositories\MallRepositoryInterface;
+use App\Repositories\FloorRepositoryInterface;
+use App\Repositories\EloquentFloorRepository;
+use App\Repositories\ZoneRepositoryInterface;
+use App\Repositories\EloquentZoneRepository;
+
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -36,6 +41,33 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             BuildingRepositoryInterface::class,
             EloquentBuildingRepository::class
+        );
+         /*
+        |--------------------------------------------------------------------------
+        | Building floor Repository
+        |--------------------------------------------------------------------------
+        */
+        $this->app->bind(
+            FloorRepositoryInterface::class,
+            EloquentFloorRepository::class
+        );
+           /*
+        |--------------------------------------------------------------------------
+        | Building zone Repository
+        |--------------------------------------------------------------------------
+        */
+        $this->app->bind(
+            ZoneRepositoryInterface::class,
+            EloquentZoneRepository::class
+        );
+             /*
+        |--------------------------------------------------------------------------
+        | Building unit type Repository
+        |--------------------------------------------------------------------------
+        */
+        $this->app->bind(
+            \App\Repositories\UnitTypeRepositoryInterface::class,
+            \App\Repositories\EloquentUnitTypeRepository::class
         );
     }
 

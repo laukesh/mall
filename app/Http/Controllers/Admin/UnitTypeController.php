@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\BuildingRequest;
-use App\Models\Mall;
-use App\Repositories\BuildingRepositoryInterface;
+use App\Http\Requests\UnitTypeRequest;
+use App\Repositories\UnitTypeRepositoryInterface;
 use Illuminate\Http\Request;
 
-class BuildingController extends Controller
+class UnitTypeController extends Controller
 {
-    protected BuildingRepositoryInterface $buildings;
+    protected UnitTypeRepositoryInterface $unitTypes;
 
     public function __construct(
-        BuildingRepositoryInterface $buildings
+        UnitTypeRepositoryInterface $unitTypes
     ) {
-        $this->buildings = $buildings;
+        $this->unitTypes = $unitTypes;
 
         $this->middleware('auth');
     }
@@ -25,24 +24,16 @@ class BuildingController extends Controller
     | Index
     |--------------------------------------------------------------------------
     */
-
     public function index(Request $request)
     {
-        $buildings = $this->buildings->all([
-            'search'  => $request->get('search'),
-            'mall_id' => $request->get('mall_id'),
-            'status'  => $request->get('status'),
+        $unitTypes = $this->unitTypes->all([
+            'search' => $request->get('search'),
+            'status' => $request->get('status'),
         ]);
 
-        $malls = Mall::orderBy('mall_name')
-            ->pluck('mall_name', 'id');
-
         return view(
-            'admin.buildings.index',
-            compact(
-                'buildings',
-                'malls'
-            )
+            'admin.unit_types.index',
+            compact('unitTypes')
         );
     }
 
@@ -51,15 +42,10 @@ class BuildingController extends Controller
     | Create
     |--------------------------------------------------------------------------
     */
-
     public function create()
     {
-        $malls = Mall::orderBy('mall_name')
-            ->pluck('mall_name', 'id');
-
         return view(
-            'admin.buildings.create',
-            compact('malls')
+            'admin.unit_types.create'
         );
     }
 
@@ -68,25 +54,23 @@ class BuildingController extends Controller
     | Store
     |--------------------------------------------------------------------------
     */
-
-    public function store(
-        BuildingRequest $request
-    ) {
+    public function store(UnitTypeRequest $request)
+    {
         $data = $request->validated();
 
         $data['created_by'] = auth()->id();
         $data['updated_by'] = auth()->id();
 
-        $building = $this->buildings->create($data);
+        $unitType = $this->unitTypes->create($data);
 
         return redirect()
             ->route(
-                'admin.buildings.show',
-                $building->id
+                'admin.unit-types.show',
+                $unitType->id
             )
             ->with(
                 'success',
-                'Building created successfully.'
+                'Unit type created successfully.'
             );
     }
 
@@ -95,21 +79,17 @@ class BuildingController extends Controller
     | Show
     |--------------------------------------------------------------------------
     */
-
     public function show($id)
     {
-        $building = $this->buildings->find($id);
+        $unitType = $this->unitTypes->find($id);
 
-        if (!$building) {
-            abort(
-                404,
-                'Building not found.'
-            );
+        if (!$unitType) {
+            abort(404, 'Unit type not found.');
         }
 
         return view(
-            'admin.buildings.show',
-            compact('building')
+            'admin.unit_types.show',
+            compact('unitType')
         );
     }
 
@@ -118,27 +98,17 @@ class BuildingController extends Controller
     | Edit
     |--------------------------------------------------------------------------
     */
-
     public function edit($id)
     {
-        $building = $this->buildings->find($id);
+        $unitType = $this->unitTypes->find($id);
 
-        if (!$building) {
-            abort(
-                404,
-                'Building not found.'
-            );
+        if (!$unitType) {
+            abort(404, 'Unit type not found.');
         }
 
-        $malls = Mall::orderBy('mall_name')
-            ->pluck('mall_name', 'id');
-
         return view(
-            'admin.buildings.edit',
-            compact(
-                'building',
-                'malls'
-            )
+            'admin.unit_types.edit',
+            compact('unitType')
         );
     }
 
@@ -147,37 +117,33 @@ class BuildingController extends Controller
     | Update
     |--------------------------------------------------------------------------
     */
-
     public function update(
-        BuildingRequest $request,
+        UnitTypeRequest $request,
         $id
     ) {
-        $building = $this->buildings->find($id);
+        $unitType = $this->unitTypes->find($id);
 
-        if (!$building) {
-            abort(
-                404,
-                'Building not found.'
-            );
+        if (!$unitType) {
+            abort(404, 'Unit type not found.');
         }
 
         $data = $request->validated();
 
         $data['updated_by'] = auth()->id();
 
-        $this->buildings->update(
-            $building,
+        $this->unitTypes->update(
+            $unitType,
             $data
         );
 
         return redirect()
             ->route(
-                'admin.buildings.show',
-                $building->id
+                'admin.unit-types.show',
+                $unitType->id
             )
             ->with(
                 'success',
-                'Building updated successfully.'
+                'Unit type updated successfully.'
             );
     }
 
@@ -186,27 +152,21 @@ class BuildingController extends Controller
     | Destroy
     |--------------------------------------------------------------------------
     */
-
     public function destroy($id)
     {
-        $building = $this->buildings->find($id);
+        $unitType = $this->unitTypes->find($id);
 
-        if (!$building) {
-            abort(
-                404,
-                'Building not found.'
-            );
+        if (!$unitType) {
+            abort(404, 'Unit type not found.');
         }
 
-        $this->buildings->delete($building);
+        $this->unitTypes->delete($unitType);
 
         return redirect()
-            ->route(
-                'admin.buildings.index'
-            )
+            ->route('admin.unit-types.index')
             ->with(
                 'success',
-                'Building deleted successfully.'
+                'Unit type deleted successfully.'
             );
     }
 }
