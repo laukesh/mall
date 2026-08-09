@@ -44,24 +44,32 @@ class AuthController extends Controller
     }
 
     // Web: Register
-    public function register(Request $request)
+   public function register(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $user = $this->users->create(array_merge($data, ['is_active' => true, 'status' => 'new']));
+        $data['password'] = Hash::make($data['password']);
 
-        // Log the user in using session guard
-        Auth::login($user);
+        $user = $this->users->create(array_merge($data, [
+            'is_active' => true,
+            'status' => 'new',
+            'is_super_admin' => false,
+        ]));
+          // Give every new user a basic role
+        $user->assignRole('User');
 
-        return redirect()->intended('/')->with('success', 'Registration successful');
+        auth()->login($user);
+
+        return redirect()->route('auth.dashboard')
+            ->with('success', 'Registration successful.');
     }
 
     // Web: Login
-    public function login(Request $request)
+    public function login11(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
@@ -80,7 +88,49 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/')->with('success', 'Logged in');
+        return redirect()->intended('/admin/dashboard/')->with('success', 'Logged in');
+    }
+    // Web: Login
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        if (!Auth::attempt($credentials, $request->filled('remember'))) {
+            return back()
+                ->withErrors([
+                    'email' => 'Invalid credentials'
+                ])
+                ->withInput($request->only('email'));
+        }
+
+        $user = Auth::user();
+
+        // Check active account
+        if (!$user->is_active) {
+            Auth::logout();
+
+            return back()->withErrors([
+                'email' => 'Account deactivated'
+            ]);
+        }
+
+        // Regenerate session
+        $request->session()->regenerate();
+
+        // Admin redirect
+        if ($user->is_active && $user->status == 'active') {
+            return redirect()
+                ->intended(route('admin.dashboard'))
+                ->with('success', 'Welcome Admin!');
+        }
+
+        // Normal user redirect
+        return redirect()
+            ->intended(route('auth.profile.show'))
+            ->with('success', 'Logged in successfully');
     }
 
    public function logout() {

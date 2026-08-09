@@ -123,43 +123,54 @@ Route::middleware('auth')->group(function () {
 | Authenticated Routes
 |--------------------------------------------------------------------------
 */
+/*
+|--------------------------------------------------------------------------
+| Profile
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('auth')
+    ->name('auth.')
+    ->group(function () {
+
+        Route::prefix('profile')
+            ->name('profile.')
+            ->group(function () {
+              Route::get('/dashboard', [
+                    AuthController::class,
+                    'profileForm'
+                ])
+                    ->middleware('permission:profile.view')
+                    ->name('show');
+                
+                Route::get('/', [
+                    AuthController::class,
+                    'profileForm'
+                ])
+                    ->middleware('permission:profile.view')
+                    ->name('show');
+
+               
+                Route::post('/update', [
+                    AuthController::class,
+                    'updateProfile'
+                ])
+                    ->middleware('permission:profile.update')
+                    ->name('update');
+
+               
+                Route::post('/change-password', [
+                    AuthController::class,
+                    'changePassword'
+                ])
+                    ->middleware('permission:profile.update')
+                    ->name('change-password');
+            });
+    });
 
 Route::middleware('auth')->group(function () {
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Profile
-    |--------------------------------------------------------------------------
-    */
-
-    Route::prefix('profile')
-        ->name('profile.')
-        ->group(function () {
-
-            Route::get('/', [
-                AuthController::class,
-                'profileForm'
-            ])
-                ->middleware('permission:profile.view')
-                ->name('show');
-
-
-            Route::post('/update', [
-                AuthController::class,
-                'updateProfile'
-            ])
-                ->middleware('permission:profile.update')
-                ->name('update');
-
-
-            Route::post('/change-password', [
-                AuthController::class,
-                'changePassword'
-            ])
-                ->middleware('permission:profile.update')
-                ->name('change-password');
-        });
 
 
     /*

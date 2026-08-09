@@ -19,7 +19,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Mall::class => MallPolicy::class,
-       /// Building::class => BuildingPolicy::class,
+       // Building::class => BuildingPolicy::class,
     ];
 
     /**
