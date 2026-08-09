@@ -31,7 +31,7 @@ class ProposalUnitController extends Controller
 
     public function create()
     {
-        $proposals = Proposal::pluck('title', 'id');
+        $proposals = '';//Proposal::pluck('proposal_id', 'id');
         $units = Unit::pluck('unit_no', 'id');
 
         return view('admin.proposal_units.create', compact('proposals', 'units'));

@@ -78,17 +78,17 @@ Route::middleware('auth')->group(function () {
 
             'roles' => $user->getRoleNames(),
 
-            'building_view' =>
-                $user->can('buildings.view'),
+            'proposal-units_view' =>
+                $user->can('proposal-units.view'),
 
-            'building_create' =>
-                $user->can('buildings.create'),
+            'proposal-units_create' =>
+                $user->can('proposal-units.create'),
 
-            'building_edit' =>
-                $user->can('buildings.edit'),
+            'proposal-units_edit' =>
+                $user->can('proposal-units.edit'),
 
-            'building_delete' =>
-                $user->can('buildings.delete'),
+            'proposal-units_delete' =>
+                $user->can('proposal-units.delete'),
 
             'is_super_admin' =>
                 (bool) $user->is_super_admin,
@@ -445,5 +445,17 @@ Route::middleware('auth')->group(function () {
                 'update' => 'permission:unit_statuses.edit',
                 'destroy' => 'permission:unit_statuses.delete',
             ]);
-     });
+   
+         //proposal Units  resource routes added by automated change
+          Route::resource('proposal_units', App\Http\Controllers\Admin\ProposalUnitController::class)
+            ->middleware([
+                'index' => 'permission:proposal_units.view',
+                'show' => 'permission:proposal_units.view',
+                'create' => 'permission:proposal_units.create',
+                'store' => 'permission:proposal_units.create',
+                'edit' => 'permission:proposal_units.edit',
+                'update' => 'permission:proposal_units.edit',
+                'destroy' => 'permission:proposal_units.delete',
+            ]);
+       });
 });

@@ -37,8 +37,8 @@
   </div>
 
   <div class="mt-3">
-    <a href="{{ route('proposal-units.index') }}" class="btn btn-secondary">Back</a>
-    <a href="{{ route('proposal-units.edit', $item->id) }}" class="btn btn-primary">Edit</a>
+    <a href="{{ route('admin.proposal_units.index') }}" class="btn btn-secondary">Back</a>
+    <a href="{{ route('admin.proposal_units.edit', $item->id) }}" class="btn btn-primary">Edit</a>
   </div>
 </x-form-card>
 @endsection

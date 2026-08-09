@@ -3,7 +3,7 @@
 @section('content')
 <x-form-card title="Proposal Units" subtitle="Manage proposal units">
   <div class="mb-3 d-flex justify-content-between">
-    <a href="{{ route('proposal-units.create') }}" class="btn btn-primary">Create Proposal Unit</a>
+    <a href="{{ route('admin.proposal_units.create') }}" class="btn btn-primary">Create Proposal Unit</a>
   </div>
 
   <div class="table-responsive">
@@ -29,9 +29,9 @@
           <td>{{ $item->proposed_cam_rate }}</td>
           <td>{{ $item->proposed_security_deposit }}</td>
           <td>
-            <a href="{{ route('proposal-units.show', $item->id) }}" class="btn btn-sm btn-info">View</a>
-            <a href="{{ route('proposal-units.edit', $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
-            <form action="{{ route('proposal-units.destroy', $item->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?')">
+            <a href="{{ route('admin.proposal_units.show', $item->id) }}" class="btn btn-sm btn-info">View</a>
+            <a href="{{ route('admin.proposal_units.edit', $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
+            <form action="{{ route('admin.proposal_units.destroy', $item->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?')">
               @csrf
               @method('DELETE')
               <button class="btn btn-sm btn-danger">Delete</button>
