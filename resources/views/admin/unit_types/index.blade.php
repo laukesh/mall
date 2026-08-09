@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Buildings')
+@section('title', 'Unit Types')
 
 @section('content')
 
@@ -9,22 +9,20 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h1 class="h3 mb-1">
-                Buildings
-            </h1>
+            <h1 class="h3 mb-1">Unit Types</h1>
 
             <p class="text-muted mb-0">
-                Manage mall buildings.
+                Manage mall unit types.
             </p>
         </div>
 
-        @can('buildings.create')
+        @can('unit_types.create')
 
             <a
-                href="{{ route('admin.buildings.create') }}"
+                href="{{ route('admin.unit-types.create') }}"
                 class="btn btn-primary"
             >
-                + Add Building
+                + Add Unit Type
             </a>
 
         @endcan
@@ -41,43 +39,25 @@
     @endif
 
 
-    @if($errors->any())
-
-        <div class="alert alert-danger">
-
-            <ul class="mb-0">
-
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-
-            </ul>
-
-        </div>
-
-    @endif
-
-
     {{-- Search --}}
-
     <div class="card mb-4">
 
         <div class="card-body">
 
             <form
                 method="GET"
-                action="{{ route('admin.buildings.index') }}"
+                action="{{ route('admin.unit-types.index') }}"
             >
 
                 <div class="row g-2">
 
-                    <div class="col-md-5">
+                    <div class="col-md-7">
 
                         <input
                             type="text"
                             name="search"
                             class="form-control"
-                            placeholder="Search building..."
+                            placeholder="Search unit type..."
                             value="{{ request('search') }}"
                         >
 
@@ -85,35 +65,6 @@
 
 
                     <div class="col-md-3">
-
-                        <select
-                            name="mall_id"
-                            class="form-select"
-                        >
-
-                            <option value="">
-                                All Malls
-                            </option>
-
-                            @foreach($malls as $id => $name)
-
-                                <option
-                                    value="{{ $id }}"
-                                    {{ request('mall_id') == $id
-                                        ? 'selected'
-                                        : '' }}
-                                >
-                                    {{ $name }}
-                                </option>
-
-                            @endforeach
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="col-md-2">
 
                         <select
                             name="status"
@@ -125,19 +76,15 @@
                             </option>
 
                             <option
-                                value="1"
-                                {{ request('status') === '1'
-                                    ? 'selected'
-                                    : '' }}
+                                value="active"
+                                {{ request('status') === 'active' ? 'selected' : '' }}
                             >
                                 Active
                             </option>
 
                             <option
-                                value="0"
-                                {{ request('status') === '0'
-                                    ? 'selected'
-                                    : '' }}
+                                value="inactive"
+                                {{ request('status') === 'inactive' ? 'selected' : '' }}
                             >
                                 Inactive
                             </option>
@@ -157,7 +104,7 @@
                         </button>
 
                         <a
-                            href="{{ route('admin.buildings.index') }}"
+                            href="{{ route('admin.unit-types.index') }}"
                             class="btn btn-secondary"
                         >
                             Clear
@@ -174,14 +121,13 @@
     </div>
 
 
-    {{-- Building Table --}}
-
+    {{-- Table --}}
     <div class="card">
 
         <div class="card-header">
 
             <h5 class="mb-0">
-                Building List
+                Unit Type List
             </h5>
 
         </div>
@@ -196,12 +142,11 @@
 
                         <tr>
                             <th>ID</th>
-                            <th>Mall</th>
-                            <th>Code</th>
-                            <th>Building Name</th>
-                            <th>Floors</th>
-                            <th>Units</th>
+                            <th>Type Name</th>
+                            <th>Description</th>
                             <th>Status</th>
+                            <th>Created By</th>
+                            <th>Updated By</th>
                             <th>Actions</th>
                         </tr>
 
@@ -209,48 +154,41 @@
 
                     <tbody>
 
-                    @forelse($buildings as $building)
+                    @forelse($unitTypes as $unitType)
 
                         <tr>
 
                             <td>
-                                {{ $building->id }}
-                            </td>
-
-                            <td>
-                                {{ $building->mall->mall_name ?? '-' }}
-                            </td>
-
-                            <td>
-                                {{ $building->building_code }}
+                                {{ $unitType->id }}
                             </td>
 
                             <td>
 
                                 <a
                                     href="{{ route(
-                                        'admin.buildings.show',
-                                        $building->id
+                                        'admin.unit-types.show',
+                                        $unitType->id
                                     ) }}"
                                 >
                                     <strong>
-                                        {{ $building->building_name }}
+                                        {{ $unitType->type_name }}
                                     </strong>
                                 </a>
 
                             </td>
 
                             <td>
-                                {{ $building->total_floors ?? 0 }}
+
+                                {{ \Illuminate\Support\Str::limit(
+                                    $unitType->description,
+                                    70
+                                ) ?: '-' }}
+
                             </td>
 
                             <td>
-                                {{ $building->total_units ?? 0 }}
-                            </td>
 
-                            <td>
-
-                                @if($building->status == 1)
+                                @if($unitType->status === 'active')
 
                                     <span class="badge bg-success">
                                         Active
@@ -259,7 +197,7 @@
                                 @else
 
                                     <span class="badge bg-secondary">
-                                        Inactive
+                                        {{ ucfirst($unitType->status) }}
                                     </span>
 
                                 @endif
@@ -267,11 +205,19 @@
                             </td>
 
                             <td>
+                                {{ $unitType->creator->name ?? '-' }}
+                            </td>
+
+                            <td>
+                                {{ $unitType->updater->name ?? '-' }}
+                            </td>
+
+                            <td>
 
                                 <a
                                     href="{{ route(
-                                        'admin.buildings.show',
-                                        $building->id
+                                        'admin.unit-types.show',
+                                        $unitType->id
                                     ) }}"
                                     class="btn btn-sm btn-info"
                                 >
@@ -279,12 +225,12 @@
                                 </a>
 
 
-                                @can('buildings.edit')
+                                @can('unit_types.edit')
 
                                     <a
                                         href="{{ route(
-                                            'admin.buildings.edit',
-                                            $building->id
+                                            'admin.unit-types.edit',
+                                            $unitType->id
                                         ) }}"
                                         class="btn btn-sm btn-primary"
                                     >
@@ -294,13 +240,13 @@
                                 @endcan
 
 
-                                @can('buildings.delete')
+                                @can('unit_types.delete')
 
                                     <form
                                         method="POST"
                                         action="{{ route(
-                                            'admin.buildings.destroy',
-                                            $building->id
+                                            'admin.unit-types.destroy',
+                                            $unitType->id
                                         ) }}"
                                         class="d-inline"
                                     >
@@ -311,9 +257,7 @@
                                         <button
                                             type="submit"
                                             class="btn btn-sm btn-danger"
-                                            onclick="return confirm(
-                                                'Are you sure you want to delete this building?'
-                                            )"
+                                            onclick="return confirm('Are you sure you want to delete this unit type?')"
                                         >
                                             Delete
                                         </button>
@@ -331,10 +275,10 @@
                         <tr>
 
                             <td
-                                colspan="8"
+                                colspan="7"
                                 class="text-center py-4"
                             >
-                                No buildings found.
+                                No unit types found.
                             </td>
 
                         </tr>

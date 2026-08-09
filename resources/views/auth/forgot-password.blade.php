@@ -69,12 +69,12 @@
             @endforeach
         </ul>
     @endif
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('auth.forgot-password') }}">
         @csrf
         <label>Email <input type="email" name="email" required></label><br>
         <button type="submit">Send Reset Link</button>
     </form>
     </div>
 </div>
-@endsection
+
 @endsection

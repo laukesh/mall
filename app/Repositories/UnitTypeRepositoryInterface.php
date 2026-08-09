@@ -2,9 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\Building;
+use App\Models\UnitType;
 
-interface BuildingRepositoryInterface
+interface UnitTypeRepositoryInterface
 {
     public function all(array $filters = []);
 
@@ -13,9 +13,9 @@ interface BuildingRepositoryInterface
     public function create(array $data);
 
     public function update(
-        Building $building,
+        UnitType $unitType,
         array $data
     );
 
-    public function delete(Building $building);
+    public function delete(UnitType $unitType);
 }
