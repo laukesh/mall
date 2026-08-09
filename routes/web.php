@@ -125,24 +125,17 @@ Route::middleware('auth')->group(function () {
 */
 /*
 |--------------------------------------------------------------------------
-| Profile
+| Authentication / Profile
 |--------------------------------------------------------------------------
 */
 
 Route::prefix('auth')
-    ->name('auth.')
     ->group(function () {
 
         Route::prefix('profile')
             ->name('profile.')
             ->group(function () {
-              Route::get('/dashboard', [
-                    AuthController::class,
-                    'profileForm'
-                ])
-                    ->middleware('permission:profile.view')
-                    ->name('show');
-                
+
                 Route::get('/', [
                     AuthController::class,
                     'profileForm'
@@ -150,7 +143,6 @@ Route::prefix('auth')
                     ->middleware('permission:profile.view')
                     ->name('show');
 
-               
                 Route::post('/update', [
                     AuthController::class,
                     'updateProfile'
@@ -158,7 +150,6 @@ Route::prefix('auth')
                     ->middleware('permission:profile.update')
                     ->name('update');
 
-               
                 Route::post('/change-password', [
                     AuthController::class,
                     'changePassword'
@@ -430,6 +421,17 @@ Route::middleware('auth')->group(function () {
                     'destroy' => 'permission:unit_types.delete',
                 ]);
 
-        });
-
+   
+        // Units resource routes added by automated change
+        Route::resource('units', App\Http\Controllers\Admin\UnitController::class)
+            ->middleware([
+                'index' => 'permission:units.view',
+                'show' => 'permission:units.view',
+                'create' => 'permission:units.create',
+                'store' => 'permission:units.create',
+                'edit' => 'permission:units.edit',
+                'update' => 'permission:units.edit',
+                'destroy' => 'permission:units.delete',
+            ]);
+     });
 });

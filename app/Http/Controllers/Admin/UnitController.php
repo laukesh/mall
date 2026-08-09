@@ -35,12 +35,12 @@ class UnitController extends Controller
 
     public function create()
     {
-        $malls = Mall::pluck('name', 'id');
-        $buildings = Building::pluck('name', 'id');
-        $floors = Floor::pluck('name', 'id');
-        $zones = Zone::pluck('name', 'id');
-        $unitTypes = UnitType::pluck('name', 'id');
-        $unitStatuses = UnitStatus::pluck('name', 'id');
+        $malls = Mall::pluck('mall_name', 'id');
+        $buildings = Building::pluck('building_name', 'id');
+        $floors = Floor::pluck('floor_name', 'id');
+        $zones = Zone::pluck('zone_name', 'id');
+        $unitTypes = UnitType::pluck('type_name', 'id');
+        $unitStatuses = UnitStatus::pluck('status_name', 'id');
 
         return view('admin.units.create', compact('malls', 'buildings', 'floors', 'zones', 'unitTypes', 'unitStatuses'));
     }
@@ -83,12 +83,12 @@ class UnitController extends Controller
     public function edit($id)
     {
         $unit = $this->repo->find($id);
-        $malls = Mall::pluck('name', 'id');
-        $buildings = Building::pluck('name', 'id');
-        $floors = Floor::pluck('name', 'id');
-        $zones = Zone::pluck('name', 'id');
-        $unitTypes = UnitType::pluck('name', 'id');
-        $unitStatuses = UnitStatus::pluck('name', 'id');
+        $malls = Mall::pluck('mall_name', 'id');
+        $buildings = Building::pluck('building_name', 'id');
+        $floors = Floor::pluck('floor_name', 'id');
+        $zones = Zone::pluck('zone_name', 'id');
+        $unitTypes = UnitType::pluck('type_name', 'id');
+        $unitStatuses = UnitStatus::pluck('status_name', 'id');
 
         return view('admin.units.edit', compact('unit', 'malls', 'buildings', 'floors', 'zones', 'unitTypes', 'unitStatuses'));
     }
