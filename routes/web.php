@@ -15,6 +15,17 @@ use App\Http\Controllers\Admin\ZoneController;
 use App\Http\Controllers\Admin\UnitTypeController;
 
 
+use App\Http\Controllers\Admin\Leasing\LeaseProposalController;
+use App\Http\Controllers\Admin\Leasing\LeaseAgreementController;
+use App\Http\Controllers\Admin\Leasing\LeaseTermController;
+use App\Http\Controllers\Admin\Leasing\LeaseDocumentController;
+use App\Http\Controllers\Admin\Leasing\LeaseRenewalController;
+use App\Http\Controllers\Admin\Leasing\LeaseEscalationController;
+use App\Http\Controllers\Admin\Leasing\LeaseHistoryController;
+use App\Http\Controllers\Admin\Leasing\LeaseTerminationController;
+use App\Http\Controllers\Admin\Leasing\LeaseDashboardController;
+use App\Http\Controllers\Admin\Tenant\TenantDashboardController;
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes
@@ -445,17 +456,289 @@ Route::middleware('auth')->group(function () {
                 'update' => 'permission:unit_statuses.edit',
                 'destroy' => 'permission:unit_statuses.delete',
             ]);
-   
-         //proposal Units  resource routes added by automated change
-          Route::resource('proposal_units', App\Http\Controllers\Admin\ProposalUnitController::class)
-            ->middleware([
-                'index' => 'permission:proposal_units.view',
-                'show' => 'permission:proposal_units.view',
-                'create' => 'permission:proposal_units.create',
-                'store' => 'permission:proposal_units.create',
-                'edit' => 'permission:proposal_units.edit',
-                'update' => 'permission:proposal_units.edit',
-                'destroy' => 'permission:proposal_units.delete',
-            ]);
-       });
+    });
 });
+
+/*Leasing*/
+
+
+    Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Leasing
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('leasing')
+            ->name('leasing.')
+            ->group(function () {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Lease Proposals
+                |--------------------------------------------------------------------------
+                */
+
+                Route::resource(
+                    'proposals',
+                    LeaseProposalController::class
+                );
+
+                Route::post(
+                    'proposals/{id}/submit',
+                    [
+                        LeaseProposalController::class,
+                        'submit'
+                    ]
+                )->name('proposals.submit');
+
+                Route::post(
+                    'proposals/{id}/approve',
+                    [
+                        LeaseProposalController::class,
+                        'approve'
+                    ]
+                )->name('proposals.approve');
+
+                Route::post(
+                    'proposals/{id}/reject',
+                    [
+                        LeaseProposalController::class,
+                        'reject'
+                    ]
+                )->name('proposals.reject');
+
+                Route::post(
+                    'agreements/{id}/activate',
+                    [
+                        LeaseAgreementController::class,
+                        'activate'
+                    ]
+                )->name('agreements.activate');
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Lease Agreements
+                |--------------------------------------------------------------------------
+                */
+
+                Route::resource(
+                    'agreements',
+                    LeaseAgreementController::class
+                );
+
+                Route::resource(
+                    'terms',
+                    LeaseTermController::class
+                );
+
+
+                Route::resource(
+                    'documents',
+                    LeaseDocumentController::class
+                );
+
+                Route::post(
+                    'documents/{document}/verify',
+                    [
+                        LeaseDocumentController::class,
+                        'verify'
+                    ]
+                )->name('documents.verify');
+
+                Route::post(
+                    'documents/{document}/reject',
+                    [
+                        LeaseDocumentController::class,
+                        'reject'
+                    ]
+                )->name('documents.reject');
+
+                Route::get(
+                    'agreements/{agreement}/renew',
+                    [
+                        LeaseAgreementController::class,
+                        'renew'
+                    ]
+                )->name('agreements.renew');
+
+                Route::post(
+                    'agreements/{agreement}/renew',
+                    [
+                        LeaseAgreementController::class,
+                        'processRenewal'
+                    ]
+                )->name('agreements.process-renewal');
+
+                /*Route::resource(
+                    'renewals',
+                    LeaseRenewalController::class
+                )->only([
+                    'index',
+                    'create',
+                    'store',
+                    'show',
+                ]);*/
+
+                Route::resource(
+                    'renewals',
+                    LeaseRenewalController::class
+                )->only([
+                    'index',
+                    'create',
+                    'store',
+                    'show',
+                    'edit',
+                    'update',
+                ]);
+
+                Route::post(
+                    'renewals/{renewal}/submit',
+                    [LeaseRenewalController::class, 'submit']
+                )->name('renewals.submit');
+
+
+                Route::post(
+                    'renewals/{renewal}/approve',
+                    [LeaseRenewalController::class, 'approve']
+                )->name('renewals.approve');
+
+
+                Route::post(
+                    'renewals/{renewal}/reject',
+                    [LeaseRenewalController::class, 'reject']
+                )->name('renewals.reject');
+
+
+                Route::post(
+                    'renewals/{renewal}/cancel',
+                    [LeaseRenewalController::class, 'cancel']
+                )->name('renewals.cancel');
+
+                Route::get(
+                    'renewals/{renewal}/convert',
+                    [LeaseRenewalController::class, 'convert']
+                )->name('renewals.convert');
+
+                Route::post(
+                    'renewals/{renewal}/convert',
+                    [LeaseRenewalController::class, 'convertStore']
+                )->name('renewals.convert.store');
+
+
+                Route::resource(
+                    'escalations',
+                    LeaseEscalationController::class
+                )->only([
+                    'index',
+                    'create',
+                    'store',
+                    'show',
+                ]);
+
+
+                Route::post(
+                    'escalations/{escalation}/approve',
+                    [
+                        LeaseEscalationController::class,
+                        'approve'
+                    ]
+                )->name('escalations.approve');
+
+
+                Route::post(
+                    'escalations/{escalation}/cancel',
+                    [
+                        LeaseEscalationController::class,
+                        'cancel'
+                    ]
+                )->name('escalations.cancel');
+
+                Route::get(
+                    'history',
+                    [
+                        LeaseHistoryController::class,
+                        'index'
+                    ]
+                )->name('history.index');
+
+
+                Route::resource(
+                    'terminations',
+                    LeaseTerminationController::class
+                );
+
+                Route::post(
+                    'terminations/{id}/submit',
+                    [
+                        LeaseTerminationController::class,
+                        'submit'
+                    ]
+                )->name('terminations.submit');
+
+                Route::post(
+                    'terminations/{id}/approve',
+                    [
+                        LeaseTerminationController::class,
+                        'approve'
+                    ]
+                )->name('terminations.approve');
+
+                Route::post(
+                    'terminations/{id}/cancel',
+                    [
+                        LeaseTerminationController::class,
+                        'cancel'
+                    ]
+                )->name('terminations.cancel');
+
+
+                Route::post(
+                    'terminations/{id}/complete-inspection',
+                    [LeaseTerminationController::class, 'completeInspection']
+                )->name('terminations.completeInspection');
+
+                Route::post(
+                    'terminations/{id}/complete-handover',
+                    [LeaseTerminationController::class, 'completeHandover']
+                )->name('terminations.completeHandover');
+
+                Route::post(
+                    'terminations/{id}/complete',
+                    [LeaseTerminationController::class, 'complete']
+                )->name('terminations.complete');
+
+                Route::get(
+                    'dashboard',
+                    [
+                        LeaseDashboardController::class,
+                        'index'
+                    ]
+                )->name('dashboard');
+
+
+            });
+
+
+            Route::prefix('tenants')
+            ->name('tenants.')
+            ->group(function () {
+
+                Route::get(
+                    'dashboard',
+                    [
+                        TenantDashboardController::class,
+                        'index'
+                    ]
+                )->name('dashboard');
+
+            });
+
+    });
+
+

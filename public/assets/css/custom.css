@@ -293,7 +293,7 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu > li.active > a
   margin-bottom: 8px;
 }
 
-.input-group-text, 
+/*.input-group-text, 
 select.form-control:not([size]):not([multiple]), 
 .form-control:not(.form-control-sm):not(.form-control-lg) {
   height: 49px;
@@ -305,7 +305,7 @@ select.form-control:not([size]):not([multiple]),
   border-radius: 10px;
   transition: all 0.2s ease-in-out;
   width: 100%;
-}
+}*/
 
 .form-control:focus {
   background-color: #fff;
