@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
+
+
 class Floor extends Model
 {
-
+    use HasFactory;
 
     protected $table = 'floors';
 
@@ -18,6 +21,9 @@ class Floor extends Model
         'floor_name',
         'total_units',
         'rentable_area',
+        'floor_code',
+        'floor_name',
+        'floor_number',
         'status',
         'created_by',
         'updated_by',
@@ -71,5 +77,23 @@ class Floor extends Model
             User::class,
             'updated_by'
         );
+    public function building()
+    {
+        return $this->belongsTo(Building::class);
+    }
+
+    public function zones()
+    {
+        return $this->hasMany(Zone::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

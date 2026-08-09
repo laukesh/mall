@@ -3,72 +3,146 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Repositories\MallRepositoryInterface;
-use App\Models\Mall;
 use App\Http\Requests\MallRequest;
+use App\Models\Mall;
+use App\Repositories\MallRepositoryInterface;
+use Illuminate\Http\Request;
 
 class MallController extends Controller
 {
-    protected $malls;
+    protected MallRepositoryInterface $malls;
 
     public function __construct(MallRepositoryInterface $malls)
     {
         $this->malls = $malls;
-       // $this->middleware(['auth', 'can:manage-malls'])->except(['index', 'show']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Authentication
+        |--------------------------------------------------------------------------
+        */
+        $this->middleware('auth');
     }
 
+    /**
+     * Display a listing of malls.
+     */
     public function index(Request $request)
     {
-        $malls = $this->malls->all(['search' => $request->get('search')]);
+        $malls = $this->malls->all([
+            'search' => $request->get('search'),
+        ]);
+
         return view('admin.malls.index', compact('malls'));
     }
 
+    /**
+     * Show create mall form.
+     */
     public function create()
     {
-        //$this->authorize('create', Mall::class);
         return view('admin.malls.create');
     }
 
+    /**
+     * Store a newly created mall.
+     */
     public function store(MallRequest $request)
     {
         $data = $request->validated();
-        $data['created_by'] = auth()->id() ?? null;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Audit fields
+        |--------------------------------------------------------------------------
+        */
+        $data['created_by'] = auth()->id();
+        $data['updated_by'] = auth()->id();
+
         $mall = $this->malls->create($data);
-        return redirect()->route('admin.malls.show', $mall->id)->with('success', 'Mall created');
+
+        return redirect()
+            ->route('admin.malls.show', $mall->id)
+            ->with('success', 'Mall created successfully.');
     }
 
+    /**
+     * Display the specified mall.
+     */
     public function show($id)
     {
         $mall = $this->malls->find($id);
-        if (! $mall) abort(404);
+
+        if (!$mall) {
+            abort(404, 'Mall not found.');
+        }
+
         return view('admin.malls.show', compact('mall'));
     }
 
+    /**
+     * Show edit mall form.
+     */
     public function edit($id)
     {
         $mall = $this->malls->find($id);
-        if (! $mall) abort(404);
-        //$this->authorize('update', $mall);
+
+        if (!$mall) {
+            abort(404, 'Mall not found.');
+        }
+
         return view('admin.malls.edit', compact('mall'));
     }
 
+    /**
+     * Update the specified mall.
+     */
     public function update(MallRequest $request, $id)
     {
         $mall = $this->malls->find($id);
-        if (! $mall) abort(404);
+
+        if (!$mall) {
+            abort(404, 'Mall not found.');
+        }
+
         $data = $request->validated();
-        $data['updated_by'] = auth()->id() ?? null;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Audit field
+        |--------------------------------------------------------------------------
+        */
+        $data['updated_by'] = auth()->id();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Do not allow created_by to be changed
+        |--------------------------------------------------------------------------
+        */
+        unset($data['created_by']);
+
         $this->malls->update($mall, $data);
-        return redirect()->route('admin.malls.show', $mall->id)->with('success', 'Mall updated');
+
+        return redirect()
+            ->route('admin.malls.show', $mall->id)
+            ->with('success', 'Mall updated successfully.');
     }
 
+    /**
+     * Remove the specified mall.
+     */
     public function destroy($id)
     {
         $mall = $this->malls->find($id);
-        if (! $mall) abort(404);
-    //    $this->authorize('delete', $mall);
+
+        if (!$mall) {
+            abort(404, 'Mall not found.');
+        }
+
         $this->malls->delete($mall);
-        return redirect()->route('admin.malls.index')->with('success', 'Mall removed');
+
+        return redirect()
+            ->route('admin.malls.index')
+            ->with('success', 'Mall deleted successfully.');
     }
 }

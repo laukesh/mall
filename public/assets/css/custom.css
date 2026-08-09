@@ -2100,6 +2100,18 @@ footer
 
 /* design fix end */
 
+.mall-tracker-regis .section-body
+{
+	height: 100%;	
+}
+
+.mall-tracker-regis .form-save-wrap
+{
+    width: 100%;
+	position: relative;
+    background-color: unset;
+}
+
 @media only screen and (min-width: 300px) and (max-width: 991px) 
 {
 	div 

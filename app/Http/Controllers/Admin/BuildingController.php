@@ -3,110 +3,210 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Building;
+use App\Http\Requests\BuildingRequest;
 use App\Models\Mall;
 use App\Repositories\BuildingRepositoryInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class BuildingController extends Controller
 {
-    protected $repo;
+    protected BuildingRepositoryInterface $buildings;
 
-    public function __construct(BuildingRepositoryInterface $repo)
-    {
+    public function __construct(
+        BuildingRepositoryInterface $buildings
+    ) {
+        $this->buildings = $buildings;
+
         $this->middleware('auth');
-        $this->repo = $repo;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Index
+    |--------------------------------------------------------------------------
+    */
 
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'status', 'mall_id']);
+        $buildings = $this->buildings->all([
+            'search'  => $request->get('search'),
+            'mall_id' => $request->get('mall_id'),
+            'status'  => $request->get('status'),
+        ]);
 
-        $buildings = $this->repo->all($filters);
+        $malls = Mall::orderBy('mall_name')
+            ->pluck('mall_name', 'id');
 
-        return view('admin.buildings.index', compact('buildings'));
+        return view(
+            'admin.buildings.index',
+            compact(
+                'buildings',
+                'malls'
+            )
+        );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create
+    |--------------------------------------------------------------------------
+    */
 
     public function create()
     {
-        $malls = Mall::pluck('name', 'id');
+        $malls = Mall::orderBy('mall_name')
+            ->pluck('mall_name', 'id');
 
-        return view('admin.buildings.create', compact('malls'));
+        return view(
+            'admin.buildings.create',
+            compact('malls')
+        );
     }
 
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'mall_id'       => 'required|exists:malls,id',
-            'building_code' => 'required|string|max:255|unique:buildings,building_code',
-            'building_name' => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'total_floors'  => 'nullable|integer',
-            'total_units'   => 'nullable|integer',
-            'status'        => 'nullable|string|max:50',
-        ]);
+    /*
+    |--------------------------------------------------------------------------
+    | Store
+    |--------------------------------------------------------------------------
+    */
 
-        $data['created_by'] = Auth::id();
+    public function store(
+        BuildingRequest $request
+    ) {
+        $data = $request->validated();
 
-        $this->repo->create($data);
+        $data['created_by'] = auth()->id();
+        $data['updated_by'] = auth()->id();
+
+        $building = $this->buildings->create($data);
 
         return redirect()
-            ->route('admin.buildings.index')
-            ->with('success', 'Building created.');
+            ->route(
+                'admin.buildings.show',
+                $building->id
+            )
+            ->with(
+                'success',
+                'Building created successfully.'
+            );
     }
 
-    public function show(int $id)
+    /*
+    |--------------------------------------------------------------------------
+    | Show
+    |--------------------------------------------------------------------------
+    */
+
+    public function show($id)
     {
-        $building = $this->repo->find($id);
+        $building = $this->buildings->find($id);
 
         if (!$building) {
-            abort(404);
+            abort(
+                404,
+                'Building not found.'
+            );
         }
 
-        return view('admin.buildings.show', compact('building'));
+        return view(
+            'admin.buildings.show',
+            compact('building')
+        );
     }
 
-    public function edit(int $id)
+    /*
+    |--------------------------------------------------------------------------
+    | Edit
+    |--------------------------------------------------------------------------
+    */
+
+    public function edit($id)
     {
-        $building = $this->repo->find($id);
+        $building = $this->buildings->find($id);
 
         if (!$building) {
-            abort(404);
+            abort(
+                404,
+                'Building not found.'
+            );
         }
 
-        $malls = Mall::pluck('name', 'id');
+        $malls = Mall::orderBy('mall_name')
+            ->pluck('mall_name', 'id');
 
-        return view('admin.buildings.edit', compact('building', 'malls'));
+        return view(
+            'admin.buildings.edit',
+            compact(
+                'building',
+                'malls'
+            )
+        );
     }
 
-    public function update(Request $request, Building $building)
-    {
-        $data = $request->validate([
-            'mall_id'       => 'required|exists:malls,id',
-            'building_code' => 'required|string|max:255|unique:buildings,building_code,' . $building->id,
-            'building_name' => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'total_floors'  => 'nullable|integer',
-            'total_units'   => 'nullable|integer',
-            'status'        => 'nullable|string|max:50',
-        ]);
+    /*
+    |--------------------------------------------------------------------------
+    | Update
+    |--------------------------------------------------------------------------
+    */
 
-        $data['updated_by'] = Auth::id();
+    public function update(
+        BuildingRequest $request,
+        $id
+    ) {
+        $building = $this->buildings->find($id);
 
-        $this->repo->update($building, $data);
+        if (!$building) {
+            abort(
+                404,
+                'Building not found.'
+            );
+        }
+
+        $data = $request->validated();
+
+        $data['updated_by'] = auth()->id();
+
+        $this->buildings->update(
+            $building,
+            $data
+        );
 
         return redirect()
-            ->route('admin.buildings.index')
-            ->with('success', 'Building updated.');
+            ->route(
+                'admin.buildings.show',
+                $building->id
+            )
+            ->with(
+                'success',
+                'Building updated successfully.'
+            );
     }
 
-    public function destroy(Building $building)
+    /*
+    |--------------------------------------------------------------------------
+    | Destroy
+    |--------------------------------------------------------------------------
+    */
+
+    public function destroy($id)
     {
-        $this->repo->delete($building);
+        $building = $this->buildings->find($id);
+
+        if (!$building) {
+            abort(
+                404,
+                'Building not found.'
+            );
+        }
+
+        $this->buildings->delete($building);
 
         return redirect()
-            ->route('admin.buildings.index')
-            ->with('success', 'Building deleted.');
+            ->route(
+                'admin.buildings.index'
+            )
+            ->with(
+                'success',
+                'Building deleted successfully.'
+            );
     }
 }

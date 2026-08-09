@@ -30,6 +30,7 @@ class ProposalUnit extends Model
         'proposed_rent' => 'decimal:2',
         'proposed_cam_rate' => 'decimal:2',
         'proposed_security_deposit' => 'decimal:2',
+        'updated_by'
     ];
 
     public function proposal()
@@ -46,6 +47,7 @@ class ProposalUnit extends Model
             LeaseProposal::class,
             'lease_proposal_id'
         );
+        return $this->belongsTo(Proposal::class);
     }
 
     public function unit()
@@ -72,4 +74,7 @@ class ProposalUnit extends Model
             'lease_proposal_id'
         );
     }*/
+}
+        return $this->belongsTo(Unit::class);
+    }
 }
