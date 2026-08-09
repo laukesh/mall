@@ -13,64 +13,80 @@ class Unit extends Model
     protected $table = 'units';
 
     protected $fillable = [
+        'mall_id',
+        'building_id',
+        'floor_id',
         'zone_id',
-        'unit_no',
-        'unit_name',
         'unit_type_id',
+        'unit_status_id',
+        'unit_no',
+        'shop_name',
+        'unit_name',
         'carpet_area',
         'builtup_area',
         'leasable_area',
         'frontage',
         'depth',
         'floor_level',
+        'monthly_rent',
         'base_rent',
         'cam_rate',
         'utility_rate',
         'security_deposit',
         'current_status',
+        'status',
         'remarks',
         'created_by',
         'updated_by',
     ];
 
+    /**
+     * Mall
+     */
+    public function mall()
+    {
+        return $this->belongsTo(
+            Mall::class,
+            'mall_id'
+        );
+    }
+
+    /**
+     * Building
+     */
+    public function building()
+    {
+        return $this->belongsTo(
+            Building::class,
+            'building_id'
+        );
+    }
+
+    /**
+     * Floor
+     */
+    public function floor()
+    {
+        return $this->belongsTo(
+            Floor::class,
+            'floor_id'
+        );
+    }
+
+    /**
+     * Zone
+     */
     public function zone()
     {
         return $this->belongsTo(
             Zone::class,
             'zone_id'
         );
-use Illuminate\Database\Eloquent\Model;
-
-class Unit extends Model
-{
-    protected $table = 'units';
-
-    protected $fillable = [
-        'mall_id', 'building_id', 'floor_id', 'zone_id', 'unit_type_id', 'unit_status_id',
-        'unit_no', 'shop_name', 'carpet_area', 'builtup_area', 'frontage',
-        'monthly_rent', 'security_deposit', 'remarks', 'status', 'created_by', 'updated_by'
-    ];
-
-    public function mall()
-    {
-        return $this->belongsTo(Mall::class);
     }
 
-    public function building()
-    {
-        return $this->belongsTo(Building::class);
-    }
-
-    public function floor()
-    {
-        return $this->belongsTo(Floor::class);
-    }
-
-    public function zone()
-    {
-        return $this->belongsTo(Zone::class);
-    }
-
+    /**
+     * Unit Type
+     */
     public function unitType()
     {
         return $this->belongsTo(
@@ -79,27 +95,25 @@ class Unit extends Model
         );
     }
 
+    /**
+     * Unit Status
+     */
+    public function unitStatus()
+    {
+        return $this->belongsTo(
+            UnitStatus::class,
+            'unit_status_id'
+        );
+    }
+
+    /**
+     * Proposal Units
+     */
     public function proposalUnits()
     {
         return $this->hasMany(
             ProposalUnit::class,
             'unit_id'
         );
-    }
-
-    public function floor()
-	{
-	    return $this->belongsTo(
-	        Floor::class,
-	        'floor_id'
-	    );
-	}
-}
-        return $this->belongsTo(UnitType::class, 'unit_type_id');
-    }
-
-    public function unitStatus()
-    {
-        return $this->belongsTo(UnitStatus::class, 'unit_status_id');
     }
 }

@@ -146,7 +146,10 @@ Route::prefix('auth')
         Route::prefix('profile')
             ->name('profile.')
             ->group(function () {
-
+                Route::get('/dashboard', [
+                    AuthController::class,
+                    'dashboard'
+                ])->name('show');
                 Route::get('/', [
                     AuthController::class,
                     'profileForm'

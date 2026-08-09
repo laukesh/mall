@@ -18,16 +18,13 @@ class EloquentFloorRepository implements FloorRepositoryInterface
         ]);
 
         if (!empty($filters['search'])) {
-
             $search = $filters['search'];
 
             $query->where(function ($q) use ($search) {
-
                 $q->where('floor_code', 'like', "%{$search}%")
                     ->orWhere('floor_name', 'like', "%{$search}%")
                     ->orWhere('floor_number', 'like', "%{$search}%")
                     ->orWhere('status', 'like', "%{$search}%");
-
             });
         }
 
