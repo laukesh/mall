@@ -24,8 +24,8 @@
   </div>
 
   <div class="mt-3">
-    <a href="{{ route('unit-statuses.index') }}" class="btn btn-secondary">Back</a>
-    <a href="{{ route('unit-statuses.edit', $status->id) }}" class="btn btn-primary">Edit</a>
+    <a href="{{ route('admin.unit-statuses.index') }}" class="btn btn-secondary">Back</a>
+    <a href="{{ route('admin.unit-statuses.edit', $status->id) }}" class="btn btn-primary">Edit</a>
   </div>
 </x-form-card>
 @endsection

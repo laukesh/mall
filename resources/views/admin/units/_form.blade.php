@@ -131,8 +131,8 @@
     <div class="form-group">
       <label for="status">Status</label>
       <select id="status" name="status" class="form-control">
-        <option value="active" {{ (old('status', $unit->status ?? '') == 'active') ? 'selected' : '' }}>Active</option>
-        <option value="inactive" {{ (old('status', $unit->status ?? '') == 'inactive') ? 'selected' : '' }}>Inactive</option>
+        <option value="1" {{ (old('status', $unit->status ?? '') == '1') ? 'selected' : '' }}>Active</option>
+        <option value="0" {{ (old('status', $unit->status ?? '') == '0') ? 'selected' : '' }}>Inactive</option>
       </select>
     </div>
   </div>

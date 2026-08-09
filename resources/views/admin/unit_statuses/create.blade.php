@@ -2,13 +2,13 @@
 
 @section('content')
 <x-form-card title="Create Unit Status" subtitle="Add a new unit status">
-  <form method="POST" action="{{ route('unit-statuses.store') }}">
+  <form method="POST" action="{{ route('admin.unit-statuses.store') }}">
     @csrf
 
     @include('admin.unit_statuses._form')
 
     <div class="form-action d-flex justify-content-end gap-2 mt-3">
-      <a href="{{ route('unit-statuses.index') }}" class="btn btn-outline-secondary">Cancel</a>
+      <a href="{{ route('admin.unit-statuses.index') }}" class="btn btn-outline-secondary">Cancel</a>
       <button type="submit" class="btn btn-primary">Create</button>
     </div>
   </form>

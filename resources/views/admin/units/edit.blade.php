@@ -6,7 +6,7 @@
     @csrf
     @method('PUT')
 
-    @include('admin.admin.units._form')
+    @include('admin.units._form')
 
     <div class="form-action d-flex justify-content-end gap-2 mt-3">
       <a href="{{ route('admin.units.index') }}" class="btn btn-outline-secondary">Cancel</a>
