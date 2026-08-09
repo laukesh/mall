@@ -98,6 +98,12 @@
                             Unit Types
                         </a>
                     @endcan
+                          @can('unit.view')
+                        <a class="app-nav-link {{ request()->routeIs('admin.units.*') ? 'active' : '' }}"
+                            href="{{ route('admin.units.index') }}">
+                            Units
+                        </a>
+                    @endcan
 
                     @can('users.view')
                         <a class="app-nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"

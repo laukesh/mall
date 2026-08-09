@@ -78,17 +78,17 @@ Route::middleware('auth')->group(function () {
 
             'roles' => $user->getRoleNames(),
 
-            'building_view' =>
-                $user->can('buildings.view'),
+            'proposal-units_view' =>
+                $user->can('proposal-units.view'),
 
-            'building_create' =>
-                $user->can('buildings.create'),
+            'proposal-units_create' =>
+                $user->can('proposal-units.create'),
 
-            'building_edit' =>
-                $user->can('buildings.edit'),
+            'proposal-units_edit' =>
+                $user->can('proposal-units.edit'),
 
-            'building_delete' =>
-                $user->can('buildings.delete'),
+            'proposal-units_delete' =>
+                $user->can('proposal-units.delete'),
 
             'is_super_admin' =>
                 (bool) $user->is_super_admin,
@@ -125,24 +125,17 @@ Route::middleware('auth')->group(function () {
 */
 /*
 |--------------------------------------------------------------------------
-| Profile
+| Authentication / Profile
 |--------------------------------------------------------------------------
 */
 
 Route::prefix('auth')
-    ->name('auth.')
     ->group(function () {
 
         Route::prefix('profile')
             ->name('profile.')
             ->group(function () {
-              Route::get('/dashboard', [
-                    AuthController::class,
-                    'profileForm'
-                ])
-                    ->middleware('permission:profile.view')
-                    ->name('show');
-                
+
                 Route::get('/', [
                     AuthController::class,
                     'profileForm'
@@ -150,7 +143,6 @@ Route::prefix('auth')
                     ->middleware('permission:profile.view')
                     ->name('show');
 
-               
                 Route::post('/update', [
                     AuthController::class,
                     'updateProfile'
@@ -158,7 +150,6 @@ Route::prefix('auth')
                     ->middleware('permission:profile.update')
                     ->name('update');
 
-               
                 Route::post('/change-password', [
                     AuthController::class,
                     'changePassword'
@@ -430,6 +421,41 @@ Route::middleware('auth')->group(function () {
                     'destroy' => 'permission:unit_types.delete',
                 ]);
 
-        });
+   
+        // Units resource routes added by automated change
+        Route::resource('units', App\Http\Controllers\Admin\UnitController::class)
+            ->middleware([
+                'index' => 'permission:units.view',
+                'show' => 'permission:units.view',
+                'create' => 'permission:units.create',
+                'store' => 'permission:units.create',
+                'edit' => 'permission:units.edit',
+                'update' => 'permission:units.edit',
+                'destroy' => 'permission:units.delete',
+            ]);
 
+             // Units status resource routes added by automated change
+        Route::resource('unit-statuses', App\Http\Controllers\Admin\UnitStatusController::class)
+            ->middleware([
+                'index' => 'permission:unit_statuses.view',
+                'show' => 'permission:unit_statuses.view',
+                'create' => 'permission:unit_statuses.create',
+                'store' => 'permission:unit_statuses.create',
+                'edit' => 'permission:unit_statuses.edit',
+                'update' => 'permission:unit_statuses.edit',
+                'destroy' => 'permission:unit_statuses.delete',
+            ]);
+   
+         //proposal Units  resource routes added by automated change
+          Route::resource('proposal_units', App\Http\Controllers\Admin\ProposalUnitController::class)
+            ->middleware([
+                'index' => 'permission:proposal_units.view',
+                'show' => 'permission:proposal_units.view',
+                'create' => 'permission:proposal_units.create',
+                'store' => 'permission:proposal_units.create',
+                'edit' => 'permission:proposal_units.edit',
+                'update' => 'permission:proposal_units.edit',
+                'destroy' => 'permission:proposal_units.delete',
+            ]);
+       });
 });
