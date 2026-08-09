@@ -433,5 +433,17 @@ Route::middleware('auth')->group(function () {
                 'update' => 'permission:units.edit',
                 'destroy' => 'permission:units.delete',
             ]);
+
+             // Units status resource routes added by automated change
+        Route::resource('unit-statuses', App\Http\Controllers\Admin\UnitStatusController::class)
+            ->middleware([
+                'index' => 'permission:unit_statuses.view',
+                'show' => 'permission:unit_statuses.view',
+                'create' => 'permission:unit_statuses.create',
+                'store' => 'permission:unit_statuses.create',
+                'edit' => 'permission:unit_statuses.edit',
+                'update' => 'permission:unit_statuses.edit',
+                'destroy' => 'permission:unit_statuses.delete',
+            ]);
      });
 });
