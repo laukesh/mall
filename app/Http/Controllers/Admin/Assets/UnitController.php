@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Assets;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -30,7 +30,7 @@ class UnitController extends Controller
     {
         $units = $this->repo->paginate(20);
 
-        return view('admin.units.index', compact('units'));
+        return view('admin.assets.units.index', compact('units'));
     }
 
     public function create()
@@ -42,7 +42,7 @@ class UnitController extends Controller
         $unitTypes = UnitType::pluck('type_name', 'id');
         $unitStatuses = UnitStatus::pluck('status_name', 'id');
 
-        return view('admin.units.create', compact('malls', 'buildings', 'floors', 'zones', 'unitTypes', 'unitStatuses'));
+        return view('admin.assets.units.create', compact('malls', 'buildings', 'floors', 'zones', 'unitTypes', 'unitStatuses'));
     }
 
     public function store(Request $request)
@@ -70,14 +70,14 @@ class UnitController extends Controller
 
         $this->repo->create($data);
 
-        return redirect()->route('units.index')->with('success', 'Unit created successfully.');
+        return redirect()->route('admin.assets.units.index')->with('success', 'Unit created successfully.');
     }
 
     public function show($id)
     {
         $unit = $this->repo->find($id);
 
-        return view('admin.units.show', compact('unit'));
+        return view('admin.assets.units.show', compact('unit'));
     }
 
     public function edit($id)
@@ -90,7 +90,7 @@ class UnitController extends Controller
         $unitTypes = UnitType::pluck('type_name', 'id');
         $unitStatuses = UnitStatus::pluck('status_name', 'id');
 
-        return view('admin.units.edit', compact('unit', 'malls', 'buildings', 'floors', 'zones', 'unitTypes', 'unitStatuses'));
+        return view('admin.assets.units.edit', compact('unit', 'malls', 'buildings', 'floors', 'zones', 'unitTypes', 'unitStatuses'));
     }
 
     public function update(Request $request, $id)
@@ -117,13 +117,13 @@ class UnitController extends Controller
 
         $this->repo->update($id, $data);
 
-        return redirect()->route('units.index')->with('success', 'Unit updated successfully.');
+        return redirect()->route('admin.assets.units.index')->with('success', 'Unit updated successfully.');
     }
 
     public function destroy($id)
     {
         $this->repo->delete($id);
 
-        return redirect()->route('units.index')->with('success', 'Unit deleted successfully.');
+        return redirect()->route('admin.assets.units.index')->with('success', 'Unit deleted successfully.');
     }
 }

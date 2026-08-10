@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Assets;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuildingRequest;
@@ -38,7 +38,7 @@ class BuildingController extends Controller
             ->pluck('mall_name', 'id');
 
         return view(
-            'admin.buildings.index',
+            'admin.assets.buildings.index',
             compact(
                 'buildings',
                 'malls'
@@ -58,7 +58,7 @@ class BuildingController extends Controller
             ->pluck('mall_name', 'id');
 
         return view(
-            'admin.buildings.create',
+            'admin.assets.buildings.create',
             compact('malls')
         );
     }
@@ -81,7 +81,7 @@ class BuildingController extends Controller
 
         return redirect()
             ->route(
-                'admin.buildings.show',
+                'admin.assets.buildings.show',
                 $building->id
             )
             ->with(
@@ -108,7 +108,7 @@ class BuildingController extends Controller
         }
 
         return view(
-            'admin.buildings.show',
+            'admin.assets.buildings.show',
             compact('building')
         );
     }
@@ -134,7 +134,7 @@ class BuildingController extends Controller
             ->pluck('mall_name', 'id');
 
         return view(
-            'admin.buildings.edit',
+            'admin.assets.buildings.edit',
             compact(
                 'building',
                 'malls'
@@ -172,7 +172,7 @@ class BuildingController extends Controller
 
         return redirect()
             ->route(
-                'admin.buildings.show',
+                'admin.assets.buildings.show',
                 $building->id
             )
             ->with(
@@ -202,7 +202,7 @@ class BuildingController extends Controller
 
         return redirect()
             ->route(
-                'admin.buildings.index'
+                'admin.assets.buildings.index'
             )
             ->with(
                 'success',

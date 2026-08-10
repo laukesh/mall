@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h1 class="h3 mb-1">Edit Floor</h1>
+            <h1 class="h3 mb-1"> <i class="fas fa-layer-group me-1"></i> Edit Floor</h1>
 
             <p class="text-muted mb-0">
                 Update floor information.
@@ -17,10 +17,10 @@
         </div>
 
         <a
-            href="{{ route('admin.floors.index') }}"
+            href="{{ route('admin.assets.floors.index') }}"
             class="btn btn-secondary"
         >
-            ← Back
+         <i class="fas fa-arrow-left me-1"></i> Back
         </a>
 
     </div>
@@ -49,7 +49,7 @@
 
         <div class="card-header">
             <h5 class="mb-0">
-                Floor Information
+                <i class="fas fa-info-circle me-1"></i> Floor Information
             </h5>
         </div>
 
@@ -57,7 +57,7 @@
 
             <form
                 method="POST"
-                action="{{ route('admin.floors.update', $floor->id) }}"
+                action="{{ route('admin.assets.floors.update', $floor->id) }}"
             >
 
                 @csrf
@@ -72,7 +72,7 @@
                             for="building_id"
                             class="form-label"
                         >
-                            Building
+                            <i class="fas fa-building me-1"></i> Building
                             <span class="text-danger">*</span>
                         </label>
 
@@ -106,7 +106,7 @@
                             for="floor_code"
                             class="form-label"
                         >
-                            Floor Code
+                            <i class="fas fa-hashtag me-1"></i> Floor Code
                         </label>
 
                         <input
@@ -128,7 +128,7 @@
                             for="floor_name"
                             class="form-label"
                         >
-                            Floor Name
+                            <i class="fas fa-tag me-1"></i> Floor Name
                         </label>
 
                         <input
@@ -150,7 +150,7 @@
                             for="floor_number"
                             class="form-label"
                         >
-                            Floor Number
+                            <i class="fas fa-sort-numeric-up me-1"></i> Floor Number
                         </label>
 
                         <input
@@ -173,7 +173,7 @@
                             for="status"
                             class="form-label"
                         >
-                            Status
+                            <i class="fas fa-toggle-on me-1"></i> Status
                         </label>
 
                         <select
@@ -185,14 +185,14 @@
 
                             <option
                                 value="1"
-                                {{ old('status', $floor->status) === '1' ? 'selected' : '' }}
+                                {{ old('status', $floor->status) === 1 ? 'selected' : '' }}
                             >
                                 Active
                             </option>
 
                             <option
                                 value="0"
-                                {{ old('status', $floor->status) === '0' ? 'selected' : '' }}
+                                {{ old('status', $floor->status) === 0 ? 'selected' : '' }}
                             >
                                 Inactive
                             </option>
@@ -207,17 +207,17 @@
                 <div class="d-flex justify-content-end gap-2 mt-3">
 
                     <a
-                        href="{{ route('admin.floors.show', $floor->id) }}"
+                        href="{{ route('admin.assets.floors.show', $floor->id) }}"
                         class="btn btn-secondary"
                     >
-                        Cancel
+                        <i class="fas fa-arrow-left me-1"></i> Back
                     </a>
 
                     <button
                         type="submit"
                         class="btn btn-primary"
                     >
-                        Update Floor
+                        <i class="fas fa-save me-1"></i> Update Floor
                     </button>
 
                 </div>

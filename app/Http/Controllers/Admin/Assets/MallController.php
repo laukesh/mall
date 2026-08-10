@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Assets;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MallRequest;
@@ -33,7 +33,7 @@ class MallController extends Controller
             'search' => $request->get('search'),
         ]);
 
-        return view('admin.malls.index', compact('malls'));
+        return view('admin.assets.malls.index', compact('malls'));
     }
 
     /**
@@ -41,7 +41,7 @@ class MallController extends Controller
      */
     public function create()
     {
-        return view('admin.malls.create');
+        return view('admin.assets.malls.create');
     }
 
     /**
@@ -77,7 +77,7 @@ class MallController extends Controller
             abort(404, 'Mall not found.');
         }
 
-        return view('admin.malls.show', compact('mall'));
+        return view('admin.assets.malls.show', compact('mall'));
     }
 
     /**
@@ -91,7 +91,7 @@ class MallController extends Controller
             abort(404, 'Mall not found.');
         }
 
-        return view('admin.malls.edit', compact('mall'));
+        return view('admin.assets.malls.edit', compact('mall'));
     }
 
     /**
@@ -124,7 +124,7 @@ class MallController extends Controller
         $this->malls->update($mall, $data);
 
         return redirect()
-            ->route('admin.malls.show', $mall->id)
+            ->route('admin.assets.malls.show', $mall->id)
             ->with('success', 'Mall updated successfully.');
     }
 
@@ -142,7 +142,7 @@ class MallController extends Controller
         $this->malls->delete($mall);
 
         return redirect()
-            ->route('admin.malls.index')
+            ->route('admin.assets.malls.index')
             ->with('success', 'Mall deleted successfully.');
     }
 }

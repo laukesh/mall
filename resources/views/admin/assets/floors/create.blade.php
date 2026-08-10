@@ -8,17 +8,17 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-1">Create Floor</h1>
+            <h1 class="h3 mb-1"><i class="fas fa-layer-group me-1"></i> Create Floor</h1>
             <p class="text-muted mb-0">
                 Add a new floor to a building.
             </p>
         </div>
 
         <a
-            href="{{ route('admin.floors.index') }}"
+            href="{{ route('admin.assets.floors.index') }}"
             class="btn btn-secondary"
         >
-            ← Back
+           <i class="fas fa-arrow-left me-1"></i> Back
         </a>
     </div>
 
@@ -37,14 +37,14 @@
     <div class="card">
 
         <div class="card-header">
-            <h5 class="mb-0">Floor Information</h5>
+            <h5 class="mb-0"><i class="fas fa-info-circle me-1"></i> Floor Information</h5>
         </div>
 
         <div class="card-body">
 
             <form
                 method="POST"
-                action="{{ route('admin.floors.store') }}"
+                action="{{ route('admin.assets.floors.store') }}"
             >
 
                 @csrf
@@ -58,7 +58,7 @@
                             for="building_id"
                             class="form-label"
                         >
-                            Building
+                            <i class="fas fa-building me-1"></i> Building
                             <span class="text-danger">*</span>
                         </label>
 
@@ -101,7 +101,7 @@
                             for="floor_code"
                             class="form-label"
                         >
-                            Floor Code
+                            <i class="fas fa-barcode me-1"></i> Floor Code
                             <span class="text-danger">*</span>
                         </label>
 
@@ -131,7 +131,7 @@
                             for="floor_name"
                             class="form-label"
                         >
-                            Floor Name
+                            <i class="fas fa-tag me-1"></i> Floor Name
                             <span class="text-danger">*</span>
                         </label>
 
@@ -161,7 +161,7 @@
                             for="floor_number"
                             class="form-label"
                         >
-                            Floor Number
+                           <i class="fas fa-sort-numeric-up me-1"></i> Floor Number
                             <span class="text-danger">*</span>
                         </label>
 
@@ -191,7 +191,7 @@
                             for="status"
                             class="form-label"
                         >
-                            Status
+                           <i class="fas fa-toggle-on me-1"></i> Status
                             <span class="text-danger">*</span>
                         </label>
 
@@ -226,17 +226,17 @@
                 <div class="d-flex justify-content-end gap-2 mt-3">
 
                     <a
-                        href="{{ route('admin.floors.index') }}"
+                        href="{{ route('admin.assets.floors.index') }}"
                         class="btn btn-secondary"
                     >
-                        Cancel
+                        <i class="fas fa-arrow-left me-1"></i> Back
                     </a>
 
                     <button
                         type="submit"
                         class="btn btn-primary"
                     >
-                        Create Floor
+                        <i class="fas fa-plus me-1"></i> Create Floor
                     </button>
 
                 </div>

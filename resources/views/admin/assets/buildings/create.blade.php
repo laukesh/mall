@@ -8,24 +8,27 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div>
-
-            <h1 class="h3 mb-1">
+       
+ <div>
+            <h4 class="h3 mb-1">
+                <i class="fas fa-building me-2"></i>
                 Create Building
-            </h1>
+            </h4>
 
-            <p class="text-muted">
-                Add a new building.
+            <p class="text-muted mb-0">
+                Add a new building to the system.
             </p>
-
         </div>
 
         <a
-            href="{{ route('admin.buildings.index') }}"
+            href="{{ route('admin.assets.buildings.index') }}"
             class="btn btn-secondary"
         >
-            ← Back
+            <i class="fas fa-arrow-left me-1"></i>
+            Back to buildings
         </a>
+
+    </div>
 
     </div>
 
@@ -51,7 +54,7 @@
 
         <div class="card-header">
             <h5 class="mb-0">
-                Building Information
+              <i class="fas fa-info-circle me-1"></i>  Building Information
             </h5>
         </div>
 
@@ -59,7 +62,7 @@
 
             <form
                 method="POST"
-                action="{{ route('admin.buildings.store') }}"
+                action="{{ route('admin.assets.buildings.store') }}"
             >
 
                 @csrf
@@ -74,7 +77,7 @@
                             for="mall_id"
                             class="form-label"
                         >
-                            Mall
+                            <i class="fas fa-building me-1"></i> Mall
                             <span class="text-danger">*</span>
                         </label>
 
@@ -86,7 +89,7 @@
                         >
 
                             <option value="">
-                                Select Mall
+                                <i class="fas fa-building me-1"></i> Select Mall
                             </option>
 
                             @foreach($malls as $id => $name)
@@ -123,7 +126,7 @@
                             for="building_code"
                             class="form-label"
                         >
-                            Building Code
+                            <i class="fas fa-barcode me-1"></i> Building Code
                             <span class="text-danger">*</span>
                         </label>
 
@@ -156,7 +159,7 @@
                             for="building_name"
                             class="form-label"
                         >
-                            Building Name
+                            <i class="fas fa-building me-1"></i> Building Name
                             <span class="text-danger">*</span>
                         </label>
 
@@ -189,7 +192,7 @@
                             for="status"
                             class="form-label"
                         >
-                            Status
+                            <i class="fas fa-tasks me-1"></i> Status
                             <span class="text-danger">*</span>
                         </label>
 
@@ -239,7 +242,7 @@
                             for="total_floors"
                             class="form-label"
                         >
-                            Total Floors
+                            <i class="fas fa-layer-group me-1"></i> Total Floors
                         </label>
 
                         <input
@@ -262,7 +265,7 @@
                             for="total_units"
                             class="form-label"
                         >
-                            Total Units
+                            <i class="fas fa-home me-1"></i> Total Units
                         </label>
 
                         <input
@@ -285,7 +288,7 @@
                             for="description"
                             class="form-label"
                         >
-                            Description
+                            <i class="fas fa-align-left me-1"></i> Description
                         </label>
 
                         <textarea
@@ -304,17 +307,17 @@
                 <div class="d-flex justify-content-end gap-2">
 
                     <a
-                        href="{{ route('admin.buildings.index') }}"
+                        href="{{ route('admin.assets.buildings.index') }}"
                         class="btn btn-secondary"
                     >
-                        Cancel
+                        <i class="fas fa-times me-1"></i> Cancel
                     </a>
 
                     <button
                         type="submit"
                         class="btn btn-primary"
                     >
-                        Create Building
+                        <i class="fas fa-save me-1"></i> Create Building
                     </button>
 
                 </div>

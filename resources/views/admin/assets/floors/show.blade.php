@@ -10,12 +10,12 @@
 
         <div>
 
-            <h1 class="h3 mb-1">
-                {{ $floor->floor_name }}
-            </h1>
+            <h4 class="h3 mb-1">
+            <i class="fas fa-tag me-1"></i> {{ $floor->floor_name }}
+            </h4>
 
             <p class="text-muted mb-0">
-                {{ $floor->floor_code }}
+            <i class="fas fa-barcode me-1"></i>    {{ $floor->floor_code }}
             </p>
 
         </div>
@@ -23,17 +23,17 @@
         <div>
 
             <a
-                href="{{ route('admin.floors.edit', $floor->id) }}"
+                href="{{ route('admin.assets.floors.edit', $floor->id) }}"
                 class="btn btn-primary"
             >
-                Edit
+                <i class="fas fa-edit me-1"></i> Edit
             </a>
 
             <a
-                href="{{ route('admin.floors.index') }}"
+                href="{{ route('admin.assets.floors.index') }}"
                 class="btn btn-secondary"
             >
-                ← Back
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
 
         </div>
@@ -45,7 +45,7 @@
 
         <div class="card-header">
             <h5 class="mb-0">
-                Floor Information
+                <i class="fas fa-info-circle me-1"></i> Floor Information
             </h5>
         </div>
 
@@ -54,12 +54,12 @@
             <div class="row">
 
                 <div class="col-md-4 mb-3">
-                    <strong>Floor ID</strong>
+                    <strong><i class="fas fa-id-card me-1"></i> Floor ID</strong>
                     <div>{{ $floor->id }}</div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <strong>Building</strong>
+                    <strong><i class="fas fa-building me-1"></i> Building</strong>
 
                     <div>
                         {{ $floor->building->building_name ?? '-' }}
@@ -67,26 +67,26 @@
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <strong>Floor Code</strong>
+                    <strong><i class="fas fa-barcode me-1"></i> Floor Code</strong>
                     <div>{{ $floor->floor_code }}</div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <strong>Floor Name</strong>
+                    <strong><i class="fas fa-tag me-1"></i> Floor Name</strong>
                     <div>{{ $floor->floor_name }}</div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <strong>Floor Number</strong>
+                    <strong><i class="fas fa-sort-numeric-up me-1"></i> Floor Number</strong>
                     <div>{{ $floor->floor_number }}</div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <strong>Status</strong>
+                    <strong><i class="fas fa-toggle-on me-1"></i> Status</strong>
 
                     <div>
 
-                        @if($floor->status === 'active')
+                        @if($floor->status === 1)
 
                             <span class="badge bg-success">
                                 Active
@@ -95,7 +95,7 @@
                         @else
 
                             <span class="badge bg-secondary">
-                                {{ ucfirst($floor->status) }}
+                               Inactive
                             </span>
 
                         @endif
@@ -116,7 +116,7 @@
 
         <div class="card-header">
             <h5 class="mb-0">
-                Audit Information
+                <i class="fas fa-history me-1"></i> Audit Information
             </h5>
         </div>
 
@@ -125,7 +125,7 @@
             <div class="row">
 
                 <div class="col-md-3">
-                    <strong>Created By</strong>
+                    <strong><i class="fas fa-user me-1"></i> Created By</strong>
 
                     <div>
                         {{ $floor->creator->name ?? $floor->created_by ?? '-' }}
@@ -133,7 +133,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <strong>Updated By</strong>
+                    <strong><i class="fas fa-user-edit me-1"></i> Updated By</strong>
 
                     <div>
                         {{ $floor->updater->name ?? $floor->updated_by ?? '-' }}
@@ -141,7 +141,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <strong>Created At</strong>
+                    <strong><i class="fas fa-clock me-1"></i> Created At</strong>
 
                     <div>
                         {{ $floor->created_at?->format('d M Y H:i') ?? '-' }}
@@ -149,7 +149,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <strong>Updated At</strong>
+                    <strong><i class="fas fa-clock me-1"></i> Updated At</strong>
 
                     <div>
                         {{ $floor->updated_at?->format('d M Y H:i') ?? '-' }}

@@ -10,12 +10,13 @@
 
         <div>
 
-            <h1 class="h3 mb-1">
+            <h4 class="h3 mb-1">
+                <i class="fas fa-building me-2"></i>
                 {{ $building->building_name }}
-            </h1>
+            </h4>
 
             <p class="text-muted mb-0">
-                Building #{{ $building->id }}
+              <i class="fas fa-hashtag me-1"></i>  Building #{{ $building->id }}
             </p>
 
         </div>
@@ -26,21 +27,21 @@
 
                 <a
                     href="{{ route(
-                        'admin.buildings.edit',
+                        'admin.assets.buildings.edit',
                         $building->id
                     ) }}"
                     class="btn btn-primary"
                 >
-                    Edit
+                    <i class="fas fa-edit me-1"></i> Edit
                 </a>
 
             @endcan
 
             <a
-                href="{{ route('admin.buildings.index') }}"
+                href="{{ route('admin.assets.buildings.index') }}"
                 class="btn btn-secondary"
             >
-                ← Back
+               <i class="fas fa-arrow-left me-1"></i> Back
             </a>
 
         </div>
@@ -64,7 +65,7 @@
         <div class="card-header">
 
             <h5 class="mb-0">
-                Building Information
+              <i class="fas fa-info-circle me-1"></i>  Building Information
             </h5>
 
         </div>
@@ -75,7 +76,7 @@
 
                 <div class="col-md-4 mb-3">
 
-                    <strong>Building ID</strong>
+                    <strong><i class="fas fa-hashtag me-1"></i> Building ID</strong>
 
                     <div>
                         {{ $building->id }}
@@ -86,7 +87,7 @@
 
                 <div class="col-md-4 mb-3">
 
-                    <strong>Mall</strong>
+                    <strong><i class="fas fa-building me-1"></i> Mall</strong>
 
                     <div>
 
@@ -94,7 +95,7 @@
 
                             <a
                                 href="{{ route(
-                                    'admin.malls.show',
+                                    'admin.assets.malls.show',
                                     $building->mall_id
                                 ) }}"
                             >
@@ -114,7 +115,7 @@
 
                 <div class="col-md-4 mb-3">
 
-                    <strong>Building Code</strong>
+                    <strong><i class="fas fa-code me-1"></i> Building Code</strong>
 
                     <div>
                         {{ $building->building_code }}
@@ -125,7 +126,7 @@
 
                 <div class="col-md-4 mb-3">
 
-                    <strong>Building Name</strong>
+                    <strong><i class="fas fa-building me-1"></i> Building Name</strong>
 
                     <div>
                         {{ $building->building_name }}
@@ -136,7 +137,7 @@
 
                 <div class="col-md-4 mb-3">
 
-                    <strong>Total Floors</strong>
+                    <strong><i class="fas fa-layer-group me-1"></i> Total Floors</strong>
 
                     <div>
                         {{ $building->total_floors ?? 0 }}
@@ -147,7 +148,7 @@
 
                 <div class="col-md-4 mb-3">
 
-                    <strong>Total Units</strong>
+                    <strong><i class="fas fa-home me-1"></i> Total Units</strong>
 
                     <div>
                         {{ $building->total_units ?? 0 }}
@@ -158,7 +159,7 @@
 
                 <div class="col-md-4 mb-3">
 
-                    <strong>Status</strong>
+                    <strong><i class="fas fa-check-circle me-1"></i> Status</strong>
 
                     <div>
 
@@ -183,7 +184,7 @@
 
                 <div class="col-md-12 mb-3">
 
-                    <strong>Description</strong>
+                    <strong><i class="fas fa-align-left me-1"></i> Description</strong>
 
                     <div>
                         {{ $building->description ?: '-' }}

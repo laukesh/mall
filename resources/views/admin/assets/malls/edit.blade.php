@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Create Mall')
+@section('title', 'Edit Mall')
 
 @section('content')
 
@@ -9,15 +9,27 @@
     {{-- Page Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-1">Create Mall</h1>
+            <h4 class="h3 mb-1"> <i class="fas fa-edit me-1"></i> Edit Mall</h4>
             <p class="text-muted mb-0">
-                Add a new mall to the system.
+                Update mall information and details.
             </p>
         </div>
 
-        <a href="{{ route('admin.malls.index') }}" class="btn btn-secondary">
-            ← Back to Malls
-        </a>
+        <div>
+            <a
+                href="{{ route('admin.assets.malls.show', $mall->id) }}"
+                class="btn btn-info"
+            >
+                <i class="fas fa-eye me-1"></i> View Mall
+            </a>
+
+            <a
+                href="{{ route('admin.assets.malls.index') }}"
+                class="btn btn-secondary"
+            >
+                <i class="fas fa-arrow-left me-1"></i> Back to Malls
+            </a>
+        </div>
     </div>
 
 
@@ -35,13 +47,14 @@
     @endif
 
 
-    {{-- Create Mall Form --}}
+    {{-- Edit Mall Form --}}
     <form
-        action="{{ route('admin.malls.store') }}"
+        action="{{ route('admin.assets.malls.update', $mall->id) }}"
         method="POST"
     >
 
         @csrf
+        @method('PUT')
 
         <div class="row">
 
@@ -50,7 +63,7 @@
                 <div class="card mb-4">
 
                     <div class="card-header">
-                        <h5 class="mb-0">Basic Information</h5>
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-1"></i> Basic Information</h5>
                     </div>
 
                     <div class="card-body">
@@ -60,7 +73,7 @@
                             {{-- Mall Code --}}
                             <div class="col-md-6 mb-3">
                                 <label for="mall_code" class="form-label">
-                                    Mall Code <span class="text-danger">*</span>
+                                    <i class="fas fa-barcode me-1"></i> Mall Code <span class="text-danger">*</span>
                                 </label>
 
                                 <input
@@ -68,7 +81,7 @@
                                     name="mall_code"
                                     id="mall_code"
                                     class="form-control @error('mall_code') is-invalid @enderror"
-                                    value="{{ old('mall_code') }}"
+                                    value="{{ old('mall_code', $mall->mall_code) }}"
                                     placeholder="Enter mall code"
                                     required
                                 >
@@ -84,7 +97,7 @@
                             {{-- Mall Name --}}
                             <div class="col-md-6 mb-3">
                                 <label for="mall_name" class="form-label">
-                                    Mall Name <span class="text-danger">*</span>
+                                    <i class="fas fa-store me-1"></i> Mall Name <span class="text-danger">*</span>
                                 </label>
 
                                 <input
@@ -92,7 +105,7 @@
                                     name="mall_name"
                                     id="mall_name"
                                     class="form-control @error('mall_name') is-invalid @enderror"
-                                    value="{{ old('mall_name') }}"
+                                    value="{{ old('mall_name', $mall->mall_name) }}"
                                     placeholder="Enter mall name"
                                     required
                                 >
@@ -108,7 +121,7 @@
                             {{-- Mall Type --}}
                             <div class="col-md-6 mb-3">
                                 <label for="mall_type" class="form-label">
-                                    Mall Type
+                                    <i class="fas fa-store me-1"></i>    Mall Type
                                 </label>
 
                                 <input
@@ -116,7 +129,7 @@
                                     name="mall_type"
                                     id="mall_type"
                                     class="form-control @error('mall_type') is-invalid @enderror"
-                                    value="{{ old('mall_type') }}"
+                                    value="{{ old('mall_type', $mall->mall_type) }}"
                                     placeholder="e.g. Shopping Mall"
                                 >
 
@@ -131,7 +144,7 @@
                             {{-- Opening Date --}}
                             <div class="col-md-6 mb-3">
                                 <label for="opening_date" class="form-label">
-                                    Opening Date
+                                    <i class="fas fa-calendar-alt me-1"></i>    Opening Date
                                 </label>
 
                                 <input
@@ -139,7 +152,7 @@
                                     name="opening_date"
                                     id="opening_date"
                                     class="form-control @error('opening_date') is-invalid @enderror"
-                                    value="{{ old('opening_date') }}"
+                                    value="{{ old('opening_date', optional($mall->opening_date)->format('Y-m-d')) }}"
                                 >
 
                                 @error('opening_date')
@@ -161,7 +174,7 @@
                 <div class="card mb-4">
 
                     <div class="card-header">
-                        <h5 class="mb-0">Address</h5>
+                        <h5 class="mb-0"><i class="fas fa-home me-1"></i> Address</h5>
                     </div>
 
                     <div class="card-body">
@@ -171,7 +184,7 @@
                             {{-- Address Line 1 --}}
                             <div class="col-md-6 mb-3">
                                 <label for="address_line1" class="form-label">
-                                    Address Line 1 <span class="text-danger">*</span>
+                                    <i class="fas fa-home me-1"></i>    Address Line 1 <span class="text-danger">*</span>
                                 </label>
 
                                 <input
@@ -179,7 +192,7 @@
                                     name="address_line1"
                                     id="address_line1"
                                     class="form-control @error('address_line1') is-invalid @enderror"
-                                    value="{{ old('address_line1') }}"
+                                    value="{{ old('address_line1', $mall->address_line1) }}"
                                     placeholder="Enter address"
                                     required
                                 >
@@ -195,7 +208,7 @@
                             {{-- Address Line 2 --}}
                             <div class="col-md-6 mb-3">
                                 <label for="address_line2" class="form-label">
-                                    Address Line 2
+                                    <i class="fas fa-home me-1"></i>    Address Line 2
                                 </label>
 
                                 <input
@@ -203,7 +216,7 @@
                                     name="address_line2"
                                     id="address_line2"
                                     class="form-control @error('address_line2') is-invalid @enderror"
-                                    value="{{ old('address_line2') }}"
+                                    value="{{ old('address_line2', $mall->address_line2) }}"
                                     placeholder="Apartment, building, street..."
                                 >
 
@@ -218,7 +231,7 @@
                             {{-- City --}}
                             <div class="col-md-4 mb-3">
                                 <label for="city" class="form-label">
-                                    City <span class="text-danger">*</span>
+                                    <i class="fas fa-city me-1"></i>    City <span class="text-danger">*</span>
                                 </label>
 
                                 <input
@@ -226,7 +239,7 @@
                                     name="city"
                                     id="city"
                                     class="form-control @error('city') is-invalid @enderror"
-                                    value="{{ old('city') }}"
+                                    value="{{ old('city', $mall->city) }}"
                                     placeholder="Enter city"
                                     required
                                 >
@@ -242,7 +255,7 @@
                             {{-- State --}}
                             <div class="col-md-4 mb-3">
                                 <label for="state" class="form-label">
-                                    State
+                                    <i class="fas fa-city me-1"></i>    State
                                 </label>
 
                                 <input
@@ -250,7 +263,7 @@
                                     name="state"
                                     id="state"
                                     class="form-control @error('state') is-invalid @enderror"
-                                    value="{{ old('state') }}"
+                                    value="{{ old('state', $mall->state) }}"
                                     placeholder="Enter state"
                                 >
 
@@ -265,7 +278,7 @@
                             {{-- Country --}}
                             <div class="col-md-4 mb-3">
                                 <label for="country" class="form-label">
-                                    Country <span class="text-danger">*</span>
+                                    <i class="fas fa-globe me-1"></i>    Country <span class="text-danger">*</span>
                                 </label>
 
                                 <input
@@ -273,7 +286,7 @@
                                     name="country"
                                     id="country"
                                     class="form-control @error('country') is-invalid @enderror"
-                                    value="{{ old('country', 'Somalia') }}"
+                                    value="{{ old('country', $mall->country) }}"
                                     placeholder="Enter country"
                                     required
                                 >
@@ -289,7 +302,7 @@
                             {{-- Postal Code --}}
                             <div class="col-md-4 mb-3">
                                 <label for="postal_code" class="form-label">
-                                    Postal Code
+                                 <i class="fas fa-mail-bulk me-1"></i>   Postal Code
                                 </label>
 
                                 <input
@@ -297,7 +310,7 @@
                                     name="postal_code"
                                     id="postal_code"
                                     class="form-control @error('postal_code') is-invalid @enderror"
-                                    value="{{ old('postal_code') }}"
+                                    value="{{ old('postal_code', $mall->postal_code) }}"
                                     placeholder="Enter postal code"
                                 >
 
@@ -320,7 +333,7 @@
                 <div class="card mb-4">
 
                     <div class="card-header">
-                        <h5 class="mb-0">Location</h5>
+                        <h5 class="mb-0"><i class="fas fa-map-marker-alt me-1"></i> Location</h5>
                     </div>
 
                     <div class="card-body">
@@ -330,7 +343,7 @@
                             {{-- Latitude --}}
                             <div class="col-md-6 mb-3">
                                 <label for="latitude" class="form-label">
-                                    Latitude
+                                    <i class="fas fa-map-marker-alt me-1"></i>    Latitude
                                 </label>
 
                                 <input
@@ -339,8 +352,8 @@
                                     name="latitude"
                                     id="latitude"
                                     class="form-control @error('latitude') is-invalid @enderror"
-                                    value="{{ old('latitude') }}"
-                                    placeholder="e.g. 2.0469"
+                                    value="{{ old('latitude', $mall->latitude) }}"
+                                    placeholder="Enter latitude"
                                 >
 
                                 @error('latitude')
@@ -354,7 +367,7 @@
                             {{-- Longitude --}}
                             <div class="col-md-6 mb-3">
                                 <label for="longitude" class="form-label">
-                                    Longitude
+                                    <i class="fas fa-map-marker-alt me-1"></i>    Longitude
                                 </label>
 
                                 <input
@@ -363,8 +376,8 @@
                                     name="longitude"
                                     id="longitude"
                                     class="form-control @error('longitude') is-invalid @enderror"
-                                    value="{{ old('longitude') }}"
-                                    placeholder="e.g. 45.3182"
+                                    value="{{ old('longitude', $mall->longitude) }}"
+                                    placeholder="Enter longitude"
                                 >
 
                                 @error('longitude')
@@ -386,7 +399,7 @@
                 <div class="card mb-4">
 
                     <div class="card-header">
-                        <h5 class="mb-0">Area & Capacity</h5>
+                        <h5 class="mb-0"><i class="fas fa-ruler-combined me-1"></i> Area & Capacity</h5>
                     </div>
 
                     <div class="card-body">
@@ -396,7 +409,7 @@
                             {{-- Total Area --}}
                             <div class="col-md-4 mb-3">
                                 <label for="total_area" class="form-label">
-                                    Total Area
+                                    <i class="fas fa-ruler-combined me-1"></i>    Total Area
                                 </label>
 
                                 <input
@@ -406,7 +419,7 @@
                                     name="total_area"
                                     id="total_area"
                                     class="form-control @error('total_area') is-invalid @enderror"
-                                    value="{{ old('total_area') }}"
+                                    value="{{ old('total_area', $mall->total_area) }}"
                                     placeholder="Total area"
                                 >
 
@@ -421,7 +434,7 @@
                             {{-- Leasable Area --}}
                             <div class="col-md-4 mb-3">
                                 <label for="leasable_area" class="form-label">
-                                    Leasable Area
+                                    <i class="fas fa-ruler-combined me-1"></i>    Leasable Area
                                 </label>
 
                                 <input
@@ -431,7 +444,7 @@
                                     name="leasable_area"
                                     id="leasable_area"
                                     class="form-control @error('leasable_area') is-invalid @enderror"
-                                    value="{{ old('leasable_area') }}"
+                                    value="{{ old('leasable_area', $mall->leasable_area) }}"
                                     placeholder="Leasable area"
                                 >
 
@@ -446,7 +459,7 @@
                             {{-- Parking Capacity --}}
                             <div class="col-md-4 mb-3">
                                 <label for="parking_capacity" class="form-label">
-                                    Parking Capacity
+                                    <i class="fas fa-parking me-1"></i>    Parking Capacity
                                 </label>
 
                                 <input
@@ -455,8 +468,8 @@
                                     name="parking_capacity"
                                     id="parking_capacity"
                                     class="form-control @error('parking_capacity') is-invalid @enderror"
-                                    value="{{ old('parking_capacity') }}"
-                                    placeholder="Number of vehicles"
+                                    value="{{ old('parking_capacity', $mall->parking_capacity) }}"
+                                    placeholder="Parking capacity"
                                 >
 
                                 @error('parking_capacity')
@@ -478,7 +491,7 @@
                 <div class="card mb-4">
 
                     <div class="card-header">
-                        <h5 class="mb-0">Contact Information</h5>
+                        <h5 class="mb-0"><i class="fas fa-address-book me-1"></i> Contact Information</h5>
                     </div>
 
                     <div class="card-body">
@@ -488,7 +501,7 @@
                             {{-- Contact Person --}}
                             <div class="col-md-6 mb-3">
                                 <label for="contact_person" class="form-label">
-                                    Contact Person
+                                    <i class="fas fa-user me-1"></i>    Contact Person
                                 </label>
 
                                 <input
@@ -496,8 +509,8 @@
                                     name="contact_person"
                                     id="contact_person"
                                     class="form-control @error('contact_person') is-invalid @enderror"
-                                    value="{{ old('contact_person') }}"
-                                    placeholder="Contact person name"
+                                    value="{{ old('contact_person', $mall->contact_person) }}"
+                                    placeholder="Contact person"
                                 >
 
                                 @error('contact_person')
@@ -511,7 +524,7 @@
                             {{-- Contact Number --}}
                             <div class="col-md-6 mb-3">
                                 <label for="contact_number" class="form-label">
-                                    Contact Number
+                                    <i class="fas fa-phone me-1"></i>    Contact Number
                                 </label>
 
                                 <input
@@ -519,7 +532,7 @@
                                     name="contact_number"
                                     id="contact_number"
                                     class="form-control @error('contact_number') is-invalid @enderror"
-                                    value="{{ old('contact_number') }}"
+                                    value="{{ old('contact_number', $mall->contact_number) }}"
                                     placeholder="Contact number"
                                 >
 
@@ -534,7 +547,7 @@
                             {{-- Email --}}
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">
-                                    Email
+                                  <i class="fas fa-envelope me-1"></i>   Email
                                 </label>
 
                                 <input
@@ -542,7 +555,7 @@
                                     name="email"
                                     id="email"
                                     class="form-control @error('email') is-invalid @enderror"
-                                    value="{{ old('email') }}"
+                                    value="{{ old('email', $mall->email) }}"
                                     placeholder="email@example.com"
                                 >
 
@@ -557,7 +570,7 @@
                             {{-- Website --}}
                             <div class="col-md-6 mb-3">
                                 <label for="website" class="form-label">
-                                    Website
+                                  <i class="fas fa-globe me-1"></i>    Website
                                 </label>
 
                                 <input
@@ -565,7 +578,7 @@
                                     name="website"
                                     id="website"
                                     class="form-control @error('website') is-invalid @enderror"
-                                    value="{{ old('website') }}"
+                                    value="{{ old('website', $mall->website) }}"
                                     placeholder="https://example.com"
                                 >
 
@@ -588,7 +601,7 @@
                 <div class="card mb-4">
 
                     <div class="card-header">
-                        <h5 class="mb-0">Status</h5>
+                        <h5 class="mb-0"><i class="fas fa-toggle-on me-1"></i> Status</h5>
                     </div>
 
                     <div class="card-body">
@@ -598,7 +611,7 @@
                             <div class="col-md-6">
 
                                 <label for="status" class="form-label">
-                                    Status <span class="text-danger">*</span>
+                                 <i class="fas fa-circle-check me-1"></i>    Status <span class="text-danger">*</span>
                                 </label>
 
                                 <select
@@ -611,16 +624,15 @@
 
                                     <option
                                         value="1"
-                                        {{ old('status', '1') === '1' ? 'selected' : '' }}
+                                        {{ old('status', $mall->status) === '1' ? 'selected' : '' }}
+                                        
                                     >
-                                      
-                                    
                                         Active
                                     </option>
 
                                     <option
                                         value="0"
-                                        {{ old('status', '0') === '0' ? 'selected' : '' }}
+                                        {{ old('status', $mall->status) === '0' ? 'selected' : '' }}
                                     >
                                         Inactive
                                     </option>
@@ -641,23 +653,72 @@
             </div>
 
 
+            {{-- Audit Information --}}
+            <div class="col-md-12">
+                <div class="card mb-4">
+
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-file-alt me-1"></i> Audit Information</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label"><i class="fas fa-id-card me-1"></i> Mall ID</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="{{ $mall->id }}"
+                                    readonly
+                                >
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label"><i class="fas fa-user me-1"></i> Created By</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="{{ $mall->created_by }}"
+                                    readonly
+                                >
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label"><i class="fas fa-user-edit me-1"></i> Updated By</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="{{ $mall->updated_by }}"
+                                    readonly
+                                >
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
             {{-- Form Actions --}}
             <div class="col-md-12 mb-4">
 
                 <div class="d-flex justify-content-end gap-2">
 
                     <a
-                        href="{{ route('admin.malls.index') }}"
+                        href="{{ route('admin.assets.malls.show', $mall->id) }}"
                         class="btn btn-secondary"
-                    >
+                    >    <i class="fas fa-times me-1"></i>
                         Cancel
                     </a>
 
                     <button
                         type="submit"
                         class="btn btn-primary"
-                    >
-                        Create Mall
+                    > <i class="fas fa-save me-1"></i>
+                        Update Mall
                     </button>
 
                 </div>

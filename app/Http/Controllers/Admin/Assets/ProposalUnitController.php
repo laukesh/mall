@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Assets;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -26,7 +26,7 @@ class ProposalUnitController extends Controller
     {
         $items = $this->repo->paginate(20);
 
-        return view('admin.proposal_units.index', compact('items'));
+        return view('admin.assets.proposal_units.index', compact('items'));
     }
 
     public function create()
@@ -34,7 +34,7 @@ class ProposalUnitController extends Controller
         $proposals = '';//Proposal::pluck('proposal_id', 'id');
         $units = Unit::pluck('unit_no', 'id');
 
-        return view('admin.proposal_units.create', compact('proposals', 'units'));
+        return view('admin.assets.proposal_units.create', compact('proposals', 'units'));
     }
 
     public function store(Request $request)
@@ -55,14 +55,14 @@ class ProposalUnitController extends Controller
 
         $this->repo->create($data);
 
-        return redirect()->route('proposal-units.index')->with('success', 'Proposal unit created.');
+        return redirect()->route('admin.assets.proposal_units.index')->with('success', 'Proposal unit created.');
     }
 
     public function show($id)
     {
         $item = $this->repo->find($id);
 
-        return view('admin.proposal_units.show', compact('item'));
+        return view('admin.assets.proposal_units.show', compact('item'));
     }
 
     public function edit($id)
@@ -71,7 +71,7 @@ class ProposalUnitController extends Controller
         $proposals = Proposal::pluck('title', 'id');
         $units = Unit::pluck('unit_no', 'id');
 
-        return view('admin.proposal_units.edit', compact('item', 'proposals', 'units'));
+        return view('admin.assets.proposal_units.edit', compact('item', 'proposals', 'units'));
     }
 
     public function update(Request $request, $id)
@@ -91,13 +91,13 @@ class ProposalUnitController extends Controller
 
         $this->repo->update($id, $data);
 
-        return redirect()->route('proposal-units.index')->with('success', 'Proposal unit updated.');
+        return redirect()->route('admin.assets.proposal_units.index')->with('success', 'Proposal unit updated.');
     }
 
     public function destroy($id)
     {
         $this->repo->delete($id);
 
-        return redirect()->route('proposal-units.index')->with('success', 'Proposal unit deleted.');
+        return redirect()->route('admin.assets.proposal_units.index')->with('success', 'Proposal unit deleted.');
     }
 }

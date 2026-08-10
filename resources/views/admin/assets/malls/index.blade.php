@@ -6,18 +6,24 @@
 
 <div class="container-fluid">
 
-    {{-- Page Header --}}
+   
     <div class="d-flex justify-content-between align-items-center mb-4">
+
         <div>
-            <h1 class="h3 mb-1">Malls</h1>
-            <p class="text-muted mb-0">
-                Manage all registered malls.
-            </p>
+            <h4 class="mb-1">Malls</h4>
+
+            <div class="text-muted">
+                Manage malls.
+            </div>
         </div>
 
-        <a href="{{ route('admin.malls.create') }}" class="btn btn-primary">
-            + Add Mall
+        <a href="{{ route('admin.assets.malls.create') }}" class="btn btn-primary">
+
+            <i class="fas fa-plus me-1"></i>
+            Add Mall
+
         </a>
+
     </div>
 
 
@@ -52,12 +58,13 @@
 
 
     {{-- Search --}}
-    <div class="card mb-4">
+  <div class="card mb-4">
+
         <div class="card-body">
 
             <form
                 method="GET"
-                action="{{ route('admin.malls.index') }}"
+                action="{{ route('admin.assets.malls.index') }}"
             >
                 <div class="row g-2">
 
@@ -87,7 +94,7 @@
 
                         @if(request('search'))
                             <a
-                                href="{{ route('admin.malls.index') }}"
+                                href="{{ route('admin.assets.malls.index') }}"
                                 class="btn btn-secondary"
                             >
                                 Clear
@@ -104,17 +111,28 @@
 
 
     {{-- Mall Table --}}
-    <div class="card">
+  <div class="card">
 
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-header">
 
-            <h5 class="mb-0">
-                Mall List
-            </h5>
+            <div class="d-flex justify-content-between align-items-center">
 
-            <span class="text-muted">
-                {{ $malls->count() }} mall(s)
-            </span>
+                <h5 class="mb-0">
+
+                    <i class="fas fa-file-contract me-1"></i>
+
+                   Malls List
+
+                </h5>
+
+
+                <span class="badge bg-primary">
+
+                    {{ $malls->total() }} Total
+
+                </span>
+
+            </div>
 
         </div>
 
@@ -123,12 +141,12 @@
 
             <div class="table-responsive">
 
-                <table class="table table-hover table-bordered mb-0">
+                <table class="table table-bordered table-hover align-middle mb-0">
 
                     <thead class="table-light">
 
                         <tr>
-                            <th width="70">ID</th>
+                            <th width="60">#</th>
                             <th>Code</th>
                             <th>Name</th>
                             <th>Type</th>
@@ -164,7 +182,7 @@
                                 {{-- Name --}}
                                 <td>
                                     <a
-                                        href="{{ route('admin.malls.show', $mall->id) }}"
+                                        href="{{ route('admin.assets.malls.show', $mall->id) }}"
                                         class="text-decoration-none"
                                     >
                                         {{ $mall->mall_name }}
@@ -197,28 +215,10 @@
 
 
                                 {{-- Status --}}
-                                <td>
-
-                                    @if($mall->status === 'active')
-
-                                        <span class="badge bg-success">
-                                            Active
-                                        </span>
-
-                                    @elseif($mall->status === 'inactive')
-
-                                        <span class="badge bg-secondary">
-                                            Inactive
-                                        </span>
-
-                                    @else
-
-                                        <span class="badge bg-warning text-dark">
-                                            {{ ucfirst($mall->status ?? 'Unknown') }}
-                                        </span>
-
-                                    @endif
-
+                               <td>
+                                    <span class="badge {{ $mall->status ? 'bg-success' : 'bg-secondary' }}">
+                                        {{ $mall->status ? 'Active' : 'Inactive' }}
+                                    </span>
                                 </td>
 
 
@@ -229,26 +229,26 @@
 
                                         {{-- View --}}
                                         <a
-                                            href="{{ route('admin.malls.show', $mall->id) }}"
+                                            href="{{ route('admin.assets.malls.show', $mall->id) }}"
                                             class="btn btn-sm btn-info"
                                         >
-                                            View
+                                            <i class="fas fa-eye"></i>
                                         </a>
 
 
                                         {{-- Edit --}}
                                         <a
-                                            href="{{ route('admin.malls.edit', $mall->id) }}"
+                                            href="{{ route('admin.assets.malls.edit', $mall->id) }}"
                                             class="btn btn-sm btn-primary"
                                         >
-                                            Edit
+                                            <i class="fas fa-edit"></i>
                                         </a>
 
 
                                         {{-- Delete --}}
                                         <form
                                             method="POST"
-                                            action="{{ route('admin.malls.destroy', $mall->id) }}"
+                                            action="{{ route('admin.assets.malls.destroy', $mall->id) }}"
                                             class="d-inline"
                                         >
 
@@ -260,7 +260,7 @@
                                                 class="btn btn-sm btn-danger"
                                                 onclick="return confirm('Are you sure you want to delete this mall?')"
                                             >
-                                                Delete
+                                                <i class="fas fa-trash"></i> 
                                             </button>
 
                                         </form>

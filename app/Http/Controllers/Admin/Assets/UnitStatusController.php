@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Assets;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -24,12 +24,12 @@ class UnitStatusController extends Controller
     {
         $statuses = $this->repo->paginate(25);
 
-        return view('admin.unit_statuses.index', compact('statuses'));
+        return view('admin.assets.unit_statuses.index', compact('statuses'));
     }
 
     public function create()
     {
-        return view('admin.unit_statuses.create');
+        return view('admin.assets.unit_statuses.create');
     }
 
     public function store(Request $request)
@@ -44,21 +44,21 @@ class UnitStatusController extends Controller
 
         $this->repo->create($data);
 
-        return redirect()->route('unit-statuses.index')->with('success', 'Unit status created.');
+        return redirect()->route('admin.assets.unit_statuses.index')->with('success', 'Unit status created.');
     }
 
     public function show($id)
     {
         $status = $this->repo->find($id);
 
-        return view('admin.unit_statuses.show', compact('status'));
+        return view('admin.assets.unit_statuses.show', compact('status'));
     }
 
     public function edit($id)
     {
         $status = $this->repo->find($id);
 
-        return view('admin.unit_statuses.edit', compact('status'));
+        return view('admin.assets.unit_statuses.edit', compact('status'));
     }
 
     public function update(Request $request, $id)
@@ -73,13 +73,13 @@ class UnitStatusController extends Controller
 
         $this->repo->update($id, $data);
 
-        return redirect()->route('unit-statuses.index')->with('success', 'Unit status updated.');
+        return redirect()->route('admin.assets.unit_statuses.index')->with('success', 'Unit status updated.');
     }
 
     public function destroy($id)
     {
         $this->repo->delete($id);
 
-        return redirect()->route('unit-statuses.index')->with('success', 'Unit status deleted.');
+        return redirect()->route('admin.assets.unit_statuses.index')->with('success', 'Unit status deleted.');
     }
 }

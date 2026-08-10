@@ -8,26 +8,29 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div>
-            <h1 class="h3 mb-1">
-                Buildings
-            </h1>
 
-            <p class="text-muted mb-0">
-                Manage mall buildings.
-            </p>
+
+        <div>
+            <h4 class="mb-1"> <i class="fas fa-building me-1"></i> Buildings</h4>
+
+            <div class="text-muted">
+                Manage malls.
+            </div>
         </div>
 
+      
         @can('buildings.create')
 
             <a
-                href="{{ route('admin.buildings.create') }}"
+                href="{{ route('admin.assets.buildings.create') }}"
                 class="btn btn-primary"
             >
-                + Add Building
+               <i class="fas fa-plus me-1"></i> Add Building
             </a>
 
         @endcan
+
+   
 
     </div>
 
@@ -66,7 +69,7 @@
 
             <form
                 method="GET"
-                action="{{ route('admin.buildings.index') }}"
+                action="{{ route('admin.assets.buildings.index') }}"
             >
 
                 <div class="row g-2">
@@ -157,7 +160,7 @@
                         </button>
 
                         <a
-                            href="{{ route('admin.buildings.index') }}"
+                            href="{{ route('admin.assets.buildings.index') }}"
                             class="btn btn-secondary"
                         >
                             Clear
@@ -181,7 +184,7 @@
         <div class="card-header">
 
             <h5 class="mb-0">
-                Building List
+              <i class="fas fa-building me-1"></i>  Building List
             </h5>
 
         </div>
@@ -195,7 +198,7 @@
                     <thead class="table-light">
 
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
                             <th>Mall</th>
                             <th>Code</th>
                             <th>Building Name</th>
@@ -229,7 +232,7 @@
 
                                 <a
                                     href="{{ route(
-                                        'admin.buildings.show',
+                                        'admin.assets.buildings.show',
                                         $building->id
                                     ) }}"
                                 >
@@ -270,12 +273,12 @@
 
                                 <a
                                     href="{{ route(
-                                        'admin.buildings.show',
+                                        'admin.assets.buildings.show',
                                         $building->id
                                     ) }}"
                                     class="btn btn-sm btn-info"
                                 >
-                                    View
+                                    <i class="fas fa-eye me-1"></i>
                                 </a>
 
 
@@ -283,12 +286,12 @@
 
                                     <a
                                         href="{{ route(
-                                            'admin.buildings.edit',
+                                            'admin.assets.buildings.edit',
                                             $building->id
                                         ) }}"
                                         class="btn btn-sm btn-primary"
                                     >
-                                        Edit
+                                        <i class="fas fa-edit me-1"></i>
                                     </a>
 
                                 @endcan
@@ -299,7 +302,7 @@
                                     <form
                                         method="POST"
                                         action="{{ route(
-                                            'admin.buildings.destroy',
+                                            'admin.assets.buildings.destroy',
                                             $building->id
                                         ) }}"
                                         class="d-inline"
@@ -315,7 +318,7 @@
                                                 'Are you sure you want to delete this building?'
                                             )"
                                         >
-                                            Delete
+                                            <i class="fas fa-trash-alt me-1"></i> 
                                         </button>
 
                                     </form>

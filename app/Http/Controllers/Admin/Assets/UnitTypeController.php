@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Assets;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UnitTypeRequest;
@@ -32,7 +32,7 @@ class UnitTypeController extends Controller
         ]);
 
         return view(
-            'admin.unit_types.index',
+            'admin.assets.unit_types.index',
             compact('unitTypes')
         );
     }
@@ -65,7 +65,7 @@ class UnitTypeController extends Controller
 
         return redirect()
             ->route(
-                'admin.unit-types.show',
+                'admin.assets.unit_types.show',
                 $unitType->id
             )
             ->with(
@@ -88,7 +88,7 @@ class UnitTypeController extends Controller
         }
 
         return view(
-            'admin.unit_types.show',
+            'admin.assets.unit_types.show',
             compact('unitType')
         );
     }
@@ -107,7 +107,7 @@ class UnitTypeController extends Controller
         }
 
         return view(
-            'admin.unit_types.edit',
+            'admin.assets.unit_types.edit',
             compact('unitType')
         );
     }
@@ -138,7 +138,7 @@ class UnitTypeController extends Controller
 
         return redirect()
             ->route(
-                'admin.unit-types.show',
+                'admin.assets.unit_types.show',
                 $unitType->id
             )
             ->with(
@@ -163,7 +163,7 @@ class UnitTypeController extends Controller
         $this->unitTypes->delete($unitType);
 
         return redirect()
-            ->route('admin.unit-types.index')
+            ->route('admin.assets.unit_types.index')
             ->with(
                 'success',
                 'Unit type deleted successfully.'

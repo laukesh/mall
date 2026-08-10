@@ -9,17 +9,17 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h1 class="h3 mb-1">Floors</h1>
+            <h1 class="h3 mb-1"> <i class="fas fa-layer-group me-1"></i> Floors</h1>
             <p class="text-muted mb-0">
                 Manage building floors.
             </p>
         </div>
 
         <a
-            href="{{ route('admin.floors.create') }}"
+            href="{{ route('admin.assets.floors.create') }}"
             class="btn btn-primary"
         >
-            + Add Floor
+            <i class="fas fa-plus me-1"></i> Add Floor
         </a>
 
     </div>
@@ -39,7 +39,7 @@
 
             <form
                 method="GET"
-                action="{{ route('admin.floors.index') }}"
+                action="{{ route('admin.assets.floors.index') }}"
             >
 
                 <div class="row g-2">
@@ -68,7 +68,7 @@
                         @if(request('search'))
 
                             <a
-                                href="{{ route('admin.floors.index') }}"
+                                href="{{ route('admin.assets.floors.index') }}"
                                 class="btn btn-secondary"
                             >
                                 Clear
@@ -92,7 +92,7 @@
 
         <div class="card-header">
             <h5 class="mb-0">
-                Floor List
+              <i class="fas fa-layer-group me-1"></i>  Floor List
             </h5>
         </div>
 
@@ -105,7 +105,7 @@
                     <thead class="table-light">
 
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
                             <th>Building</th>
                             <th>Code</th>
                             <th>Name</th>
@@ -138,7 +138,7 @@
 
                                 <td>
                                     <a
-                                        href="{{ route('admin.floors.show', $floor->id) }}"
+                                        href="{{ route('admin.assets.floors.show', $floor->id) }}"
                                     >
                                         {{ $floor->floor_name }}
                                     </a>
@@ -150,16 +150,16 @@
 
                                 <td>
 
-                                    @if($floor->status === 'active')
+                                    @if($floor->status === '1')
 
                                         <span class="badge bg-success">
-                                            Active
+                                            <i class="fas fa-check me-1"></i> Active
                                         </span>
 
                                     @else
 
                                         <span class="badge bg-secondary">
-                                            {{ ucfirst($floor->status) }}
+                                            <i class="fas fa-times me-1"></i> Inactive
                                         </span>
 
                                     @endif
@@ -169,21 +169,21 @@
                                 <td>
 
                                     <a
-                                        href="{{ route('admin.floors.show', $floor->id) }}"
+                                        href="{{ route('admin.assets.floors.show', $floor->id) }}"
                                         class="btn btn-sm btn-info"
                                     >
-                                        View
+                                        <i class="fas fa-eye me-1"></i> 
                                     </a>
 
                                     <a
-                                        href="{{ route('admin.floors.edit', $floor->id) }}"
+                                        href="{{ route('admin.assets.floors.edit', $floor->id) }}"
                                         class="btn btn-sm btn-primary"
                                     >
-                                        Edit
+                                        <i class="fas fa-edit me-1"></i> 
                                     </a>
 
                                     <form
-                                        action="{{ route('admin.floors.destroy', $floor->id) }}"
+                                        action="{{ route('admin.assets.floors.destroy', $floor->id) }}"
                                         method="POST"
                                         class="d-inline"
                                     >
@@ -196,7 +196,7 @@
                                             class="btn btn-sm btn-danger"
                                             onclick="return confirm('Are you sure you want to delete this floor?')"
                                         >
-                                            Delete
+                                            <i class="fas fa-trash me-1"></i>
                                         </button>
 
                                     </form>

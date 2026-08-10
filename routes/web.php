@@ -8,13 +8,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\MallController;
-use App\Http\Controllers\Admin\BuildingController;
-use App\Http\Controllers\Admin\FloorController;
-use App\Http\Controllers\Admin\ZoneController;
-use App\Http\Controllers\Admin\UnitTypeController;
-
-
+use App\Http\Controllers\Admin\Assets\MallController;
+use App\Http\Controllers\Admin\Assets\BuildingController;
+use App\Http\Controllers\Admin\Assets\FloorController;
+use App\Http\Controllers\Admin\Assets\ZoneController;
+use App\Http\Controllers\Admin\Assets\UnitTypeController;
 use App\Http\Controllers\Admin\Leasing\LeaseProposalController;
 use App\Http\Controllers\Admin\Leasing\LeaseAgreementController;
 use App\Http\Controllers\Admin\Leasing\LeaseTermController;
@@ -330,7 +328,9 @@ Route::middleware('auth')->group(function () {
                     'destroy' => 'permission:roles.delete',
                 ]);
 
-
+  Route::prefix('assets')
+    ->name('assets.')
+    ->group(function () {
             /*
             |--------------------------------------------------------------------------
             | Mall Management
@@ -437,7 +437,7 @@ Route::middleware('auth')->group(function () {
 
    
         // Units resource routes added by automated change
-        Route::resource('units', App\Http\Controllers\Admin\UnitController::class)
+        Route::resource('units', App\Http\Controllers\Admin\Assets\UnitController::class)
             ->middleware([
                 'index' => 'permission:units.view',
                 'show' => 'permission:units.view',
@@ -448,8 +448,8 @@ Route::middleware('auth')->group(function () {
                 'destroy' => 'permission:units.delete',
             ]);
 
-             // Units status resource routes added by automated change
-        Route::resource('unit-statuses', App\Http\Controllers\Admin\UnitStatusController::class)
+          // Units status resource routes added by automated change
+        Route::resource('unit-statuses', App\Http\Controllers\Admin\Assets\UnitStatusController::class)
             ->middleware([
                 'index' => 'permission:unit_statuses.view',
                 'show' => 'permission:unit_statuses.view',
@@ -459,6 +459,7 @@ Route::middleware('auth')->group(function () {
                 'update' => 'permission:unit_statuses.edit',
                 'destroy' => 'permission:unit_statuses.delete',
             ]);
+        });
     });
 });
 

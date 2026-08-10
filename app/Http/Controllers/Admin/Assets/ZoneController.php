@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Assets;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ZoneRequest;
@@ -31,7 +31,7 @@ class ZoneController extends Controller
         ]);
 
         return view(
-            'admin.zones.index',
+            'admin.assets.zones.index',
             compact('zones')
         );
     }
@@ -47,7 +47,7 @@ class ZoneController extends Controller
             ->get();
 
         return view(
-            'admin.zones.create',
+            'admin.assets.zones.create',
             compact('floors')
         );
     }
@@ -66,7 +66,7 @@ class ZoneController extends Controller
 
         return redirect()
             ->route(
-                'admin.zones.show',
+                'admin.assets.zones.show',
                 $zone->id
             )
             ->with(
@@ -87,7 +87,7 @@ class ZoneController extends Controller
         }
 
         return view(
-            'admin.zones.show',
+            'admin.assets.zones.show',
             compact('zone')
         );
     }
@@ -109,7 +109,7 @@ class ZoneController extends Controller
             ->get();
 
         return view(
-            'admin.zones.edit',
+            'admin.assets.zones.edit',
             compact(
                 'zone',
                 'floors'
@@ -143,7 +143,7 @@ class ZoneController extends Controller
 
         return redirect()
             ->route(
-                'admin.zones.show',
+                'admin.assets.zones.show',
                 $zone->id
             )
             ->with(
@@ -166,7 +166,7 @@ class ZoneController extends Controller
         $this->zones->delete($zone);
 
         return redirect()
-            ->route('admin.zones.index')
+            ->route('admin.assets.zones.index')
             ->with(
                 'success',
                 'Zone deleted successfully.'

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Assets;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FloorRequest;
@@ -31,7 +31,7 @@ class FloorController extends Controller
         ]);
 
         return view(
-            'admin.floors.index',
+            'admin.assets.floors.index',
             compact('floors')
         );
     }
@@ -49,7 +49,7 @@ class FloorController extends Controller
         );
 
         return view(
-            'admin.floors.create',
+            'admin.assets.floors.create',
             compact('buildings')
         );
     }
@@ -68,7 +68,7 @@ class FloorController extends Controller
 
         return redirect()
             ->route(
-                'admin.floors.show',
+                'admin.assets.floors.show',
                 $floor->id
             )
             ->with(
@@ -89,7 +89,7 @@ class FloorController extends Controller
         }
 
         return view(
-            'admin.floors.show',
+            'admin.assets.floors.show',
             compact('floor')
         );
     }
@@ -113,7 +113,7 @@ class FloorController extends Controller
         );
 
         return view(
-            'admin.floors.edit',
+            'admin.assets.floors.edit',
             compact(
                 'floor',
                 'buildings'
@@ -147,7 +147,7 @@ class FloorController extends Controller
 
         return redirect()
             ->route(
-                'admin.floors.show',
+                'admin.assets.floors.show',
                 $floor->id
             )
             ->with(
@@ -170,7 +170,7 @@ class FloorController extends Controller
         $this->floors->delete($floor);
 
         return redirect()
-            ->route('admin.floors.index')
+            ->route('admin.assets.floors.index')
             ->with(
                 'success',
                 'Floor deleted successfully.'

@@ -15,24 +15,24 @@
             </h1>
 
             <p class="text-muted mb-0">
-                Mall Code: {{ $mall->mall_code }}
+                <i class="fas fa-barcode me-1"></i> Mall Code: {{ $mall->mall_code }}
             </p>
         </div>
 
         <div class="d-flex gap-2">
 
             <a
-                href="{{ route('admin.malls.edit', $mall->id) }}"
+                href="{{ route('admin.assets.malls.edit', $mall->id) }}"
                 class="btn btn-primary"
             >
-                Edit Mall
+                <i class="fas fa-edit me-1"></i> Edit Mall
             </a>
 
             <a
-                href="{{ route('admin.malls.index') }}"
+                href="{{ route('admin.assets.malls.index') }}"
                 class="btn btn-secondary"
             >
-                ← Back to Malls
+                <i class="fas fa-arrow-left me-1"></i> Back to Malls
             </a>
 
         </div>
@@ -44,7 +44,7 @@
     <div class="card mb-4">
 
         <div class="card-header">
-            <h5 class="mb-0">Basic Information</h5>
+            <h5 class="mb-0"><i class="fas fa-info-circle me-1"></i> Basic Information</h5>
         </div>
 
         <div class="card-body">
@@ -52,27 +52,27 @@
             <div class="row">
 
                 <div class="col-md-4 mb-3">
-                    <label class="fw-bold">Mall ID</label>
+                    <label class="fw-bold"><i class="fas fa-id-card me-1"></i> Mall ID</label>
                     <div>{{ $mall->id }}</div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label class="fw-bold">Mall Code</label>
+                    <label class="fw-bold"><i class="fas fa-barcode me-1"></i> Mall Code</label>
                     <div>{{ $mall->mall_code }}</div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label class="fw-bold">Mall Name</label>
+                    <label class="fw-bold"><i class="fas fa-store me-1"></i> Mall Name</label>
                     <div>{{ $mall->mall_name }}</div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label class="fw-bold">Mall Type</label>
+                    <label class="fw-bold"><i class="fas fa-tag me-1"></i> Mall Type</label>
                     <div>{{ $mall->mall_type ?? '-' }}</div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label class="fw-bold">Opening Date</label>
+                    <label class="fw-bold"><i class="fas fa-calendar-alt me-1"></i> Opening Date</label>
                     <div>
                         {{ $mall->opening_date
                             ? \Carbon\Carbon::parse($mall->opening_date)->format('d M Y')
@@ -81,7 +81,7 @@
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label class="fw-bold">Status</label>
+                    <label class="fw-bold"><i class="fas fa-toggle-on me-1"></i> Status</label>
                     <div>
                         @if($mall->status === 'active')
                             <span class="badge bg-success">
@@ -110,7 +110,7 @@
     <div class="card mb-4">
 
         <div class="card-header">
-            <h5 class="mb-0">Address Information</h5>
+            <h5 class="mb-0"><i class="fas fa-home me-1"></i> Address Information</h5>
         </div>
 
         <div class="card-body">
@@ -119,7 +119,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">
-                        Address Line 1
+                        <i class="fas fa-home me-1"></i> Address Line 1
                     </label>
 
                     <div>
@@ -130,7 +130,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">
-                        Address Line 2
+                        <i class="fas fa-home me-1"></i> Address Line 2
                     </label>
 
                     <div>
@@ -141,7 +141,7 @@
 
                 <div class="col-md-4 mb-3">
                     <label class="fw-bold">
-                        City
+                        <i class="fas fa-city me-1"></i> City
                     </label>
 
                     <div>
@@ -152,7 +152,7 @@
 
                 <div class="col-md-4 mb-3">
                     <label class="fw-bold">
-                        State
+                        <i class="fas fa-map-signs me-1"></i> State
                     </label>
 
                     <div>
@@ -163,7 +163,7 @@
 
                 <div class="col-md-4 mb-3">
                     <label class="fw-bold">
-                        Country
+                        <i class="fas fa-globe me-1"></i> Country
                     </label>
 
                     <div>
@@ -174,7 +174,7 @@
 
                 <div class="col-md-4 mb-3">
                     <label class="fw-bold">
-                        Postal Code
+                     <i class="fas fa-mail-bulk me-1"></i>  Postal Code
                     </label>
 
                     <div>
@@ -193,7 +193,7 @@
     <div class="card mb-4">
 
         <div class="card-header">
-            <h5 class="mb-0">Location</h5>
+            <h5 class="mb-0"><i class="fas fa-map-marker-alt me-1"></i> Location</h5>
         </div>
 
         <div class="card-body">
@@ -202,7 +202,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">
-                        Latitude
+                        <i class="fas fa-map-marker-alt me-1"></i> Latitude
                     </label>
 
                     <div>
@@ -213,7 +213,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">
-                        Longitude
+                        <i class="fas fa-map-marker-alt me-1"></i> Longitude
                     </label>
 
                     <div>
@@ -232,7 +232,7 @@
     <div class="card mb-4">
 
         <div class="card-header">
-            <h5 class="mb-0">Area & Capacity</h5>
+            <h5 class="mb-0"><i class="fas fa-ruler-combined me-1"></i> Area & Capacity</h5>
         </div>
 
         <div class="card-body">
@@ -241,7 +241,7 @@
 
                 <div class="col-md-4 mb-3">
                     <label class="fw-bold">
-                        Total Area
+                        <i class="fas fa-ruler-combined me-1"></i> Total Area
                     </label>
 
                     <div>
@@ -252,7 +252,7 @@
 
                 <div class="col-md-4 mb-3">
                     <label class="fw-bold">
-                        Leasable Area
+                        <i class="fas fa-ruler-combined me-1"></i> Leasable Area
                     </label>
 
                     <div>
@@ -263,7 +263,7 @@
 
                 <div class="col-md-4 mb-3">
                     <label class="fw-bold">
-                        Parking Capacity
+                        <i class="fas fa-parking me-1"></i> Parking Capacity
                     </label>
 
                     <div>
@@ -282,7 +282,7 @@
     <div class="card mb-4">
 
         <div class="card-header">
-            <h5 class="mb-0">Contact Information</h5>
+            <h5 class="mb-0"><i class="fas fa-phone-alt me-1"></i> Contact Information</h5>
         </div>
 
         <div class="card-body">
@@ -291,7 +291,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">
-                        Contact Person
+                        <i class="fas fa-user me-1"></i> Contact Person
                     </label>
 
                     <div>
@@ -302,7 +302,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">
-                        Contact Number
+                        <i class="fas fa-phone-alt me-1"></i> Contact Number
                     </label>
 
                     <div>
@@ -313,7 +313,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">
-                        Email
+                        <i class="fas fa-envelope me-1"></i> Email
                     </label>
 
                     <div>
@@ -330,7 +330,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold">
-                        Website
+                        <i class="fas fa-globe me-1"></i> Website
                     </label>
 
                     <div>
@@ -359,7 +359,7 @@
     <div class="card mb-4">
 
         <div class="card-header">
-            <h5 class="mb-0">Audit Information</h5>
+            <h5 class="mb-0"><i class="fas fa-file-alt me-1"></i> Audit Information</h5>
         </div>
 
         <div class="card-body">
@@ -368,7 +368,7 @@
 
                 <div class="col-md-3 mb-3">
                     <label class="fw-bold">
-                        Created By
+                        <i class="fas fa-plus-circle me-1"></i> Created By
                     </label>
 
                     <div>
@@ -379,7 +379,7 @@
 
                 <div class="col-md-3 mb-3">
                     <label class="fw-bold">
-                        Updated By
+                        <i class="fas fa-edit me-1"></i> Updated By
                     </label>
 
                     <div>
@@ -390,7 +390,7 @@
 
                 <div class="col-md-3 mb-3">
                     <label class="fw-bold">
-                        Created At
+                        <i class="fas fa-plus-circle me-1"></i> Created At
                     </label>
 
                     <div>
@@ -403,7 +403,7 @@
 
                 <div class="col-md-3 mb-3">
                     <label class="fw-bold">
-                        Updated At
+                        <i class="fas fa-edit me-1"></i> Updated At
                     </label>
 
                     <div>
@@ -425,7 +425,7 @@
 
         <div class="alert alert-warning">
 
-            <strong>Deleted:</strong>
+            <strong ><i class="fas fa-trash-alt me-1"></i> Deleted:</strong>
 
             {{ $mall->deleted_at->format('d M Y H:i') }}
 
@@ -438,17 +438,17 @@
     <div class="d-flex justify-content-end gap-2 mb-4">
 
         <a
-            href="{{ route('admin.malls.index') }}"
+            href="{{ route('admin.assets.malls.index') }}"
             class="btn btn-secondary"
         >
-            Back to Malls
+            <i class="fas fa-arrow-left me-1"></i> Back to Malls
         </a>
 
         <a
-            href="{{ route('admin.malls.edit', $mall->id) }}"
+            href="{{ route('admin.assets.malls.edit', $mall->id) }}"
             class="btn btn-primary"
         >
-            Edit Mall
+         <i class="fas fa-edit me-1"></i> Edit Mall
         </a>
 
     </div>
