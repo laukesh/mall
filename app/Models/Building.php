@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Building extends Model
 {
+    use HasFactory;
+
     protected $table = 'buildings';
 
     protected $fillable = [
@@ -21,8 +23,68 @@ class Building extends Model
         'updated_by',
     ];
 
-    public function mall(): BelongsTo
+    protected $casts = [
+        'mall_id'       => 'integer',
+        'total_floors'  => 'integer',
+        'total_units'   => 'integer',
+        'status'        => 'integer',
+        'created_by'    => 'integer',
+        'updated_by'    => 'integer',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mall
+    |--------------------------------------------------------------------------
+    */
+
+    public function mall()
     {
-        return $this->belongsTo(Mall::class, 'mall_id');
+        return $this->belongsTo(
+            Mall::class,
+            'mall_id'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Created By
+    |--------------------------------------------------------------------------
+    */
+
+    public function creator()
+    {
+        return $this->belongsTo(
+            User::class,
+            'created_by'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Updated By
+    |--------------------------------------------------------------------------
+    */
+
+    public function updater()
+    {
+        return $this->belongsTo(
+            User::class,
+            'updated_by'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Floors
+    |--------------------------------------------------------------------------
+    */
+
+    public function floors()
+    {
+        return $this->hasMany(
+            Floor::class,
+            'building_id'
+        );
     }
 }

@@ -44,6 +44,26 @@ class PermissionsSeeder extends Seeder
             // Profile
             'profile.view',
             'profile.update',
+            // floors
+            'floors.view',
+            'floors.create',
+            'floors.edit',
+            'floors.delete',
+            // buildings
+            'buildings.view',
+            'buildings.create',
+            'buildings.edit',  
+            'buildings.delete',  
+             // Zone
+            'zones.view',
+            'zones.create',
+            'zones.edit',
+            'zones.delete',   
+            // Unit Types
+            'unit_types.view',
+            'unit_types.create',
+            'unit_types.edit',
+            'unit_types.delete',    
         ];
 
         foreach ($permissions as $permission) {
