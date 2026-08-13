@@ -16,6 +16,10 @@ class DocumentType extends Model
 
     public $timestamps = false;
 
+    protected $casts = [
+        'is_mandatory' => 'boolean',
+        'status' => 'boolean',
+    ];
 
     public function leaseDocuments()
     {

@@ -34,7 +34,7 @@ class TenantDashboardController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Agreement Statistics
+        | Lease Statistics
         |--------------------------------------------------------------------------
         */
 
@@ -50,10 +50,15 @@ class TenantDashboardController extends Controller
             'Expired'
         )->count();
 
+        $agreementTerminated = LeaseAgreement::where(
+            'agreement_status',
+            'Terminated'
+        )->count();
+
 
         /*
         |--------------------------------------------------------------------------
-        | Tenant Documents
+        | Document Statistics
         |--------------------------------------------------------------------------
         */
 
@@ -77,7 +82,7 @@ class TenantDashboardController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Agreements Expiring Within 90 Days
+        | Expiring Agreements
         |--------------------------------------------------------------------------
         */
 
@@ -114,15 +119,18 @@ class TenantDashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $recentHistory = TenantHistory::with('tenant')
-            ->orderByDesc('created_at')
+        $recentHistory = TenantHistory::with([
+            'tenant',
+            'performer'
+        ])
+            ->orderByDesc('activity_date')
             ->limit(10)
             ->get();
 
 
         /*
         |--------------------------------------------------------------------------
-        | Return Dashboard
+        | Dashboard
         |--------------------------------------------------------------------------
         */
 
@@ -130,26 +138,22 @@ class TenantDashboardController extends Controller
             'admin.tenants.dashboard.dashboard',
             compact(
 
-                // Tenants
                 'tenantTotal',
                 'tenantActive',
                 'tenantInactive',
 
-                // Agreements
                 'agreementTotal',
                 'agreementActive',
                 'agreementExpired',
+                'agreementTerminated',
 
-                // Documents
                 'documentTotal',
                 'documentPending',
                 'documentVerified',
                 'documentRejected',
 
-                // Expiry
                 'expiringAgreements',
 
-                // History
                 'recentHistory'
             )
         );

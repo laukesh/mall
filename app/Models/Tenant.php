@@ -100,4 +100,20 @@ class Tenant extends Model
             'tenant_id'
         );
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(
+            Invoice::class,
+            'tenant_id'
+        );
+    }
+
+    public function rentPayments()
+    {
+        return $this->hasMany(
+            RentPayment::class,
+            'tenant_id'
+        );
+    }
 }

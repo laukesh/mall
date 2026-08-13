@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Services\LeaseHistoryService;
+use Illuminate\Support\Facades\Auth;
+use App\Services\Revenue\DepositService;
+use Illuminate\Support\Facades\DB;
 
 class LeaseAgreementController extends Controller
 {
@@ -120,9 +123,7 @@ class LeaseAgreementController extends Controller
             ->get();
 
 
-        $tenants = Tenant::orderBy(
-            'company_name'
-        )->get();
+        $tenants = Tenant::orderBy('company_name')->get();
 
 
         return view(
@@ -143,7 +144,7 @@ class LeaseAgreementController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        /*$validated = $request->validate([
 
             'proposal_id' => [
                 'required',
@@ -242,7 +243,101 @@ class LeaseAgreementController extends Controller
                 'nullable',
                 'string'
             ],
+        ]);*/
+
+        $validated = $request->validate([
+
+            'proposal_id' => [
+                'required',
+                'exists:lease_proposals,id',
+            ],
+
+            'agreement_date' => [
+                'required',
+                'date',
+            ],
+
+            'lease_start_date' => [
+                'required',
+                'date',
+            ],
+
+            'lease_end_date' => [
+                'required',
+                'date',
+                'after:lease_start_date',
+            ],
+
+            'rent_start_date' => [
+                'nullable',
+                'date',
+            ],
+
+            'handover_date' => [
+                'nullable',
+                'date',
+            ],
+
+            'fitout_start_date' => [
+                'nullable',
+                'date',
+            ],
+
+            'fitout_end_date' => [
+                'nullable',
+                'date',
+                'after_or_equal:fitout_start_date',
+            ],
+
+            'rent_free_days' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
+
+            'utility_deposit' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'billing_frequency' => [
+                'nullable',
+                'in:Monthly,Quarterly,Half-Yearly,Yearly',
+            ],
+
+            'payment_due_day' => [
+                'nullable',
+                'integer',
+                'between:1,31',
+            ],
+
+            'remarks' => [
+                'nullable',
+                'string',
+            ],
         ]);
+
+        $proposal = LeaseProposal::with([ 'tenant', 'proposalUnits.unit',])
+                                ->findOrFail($validated['proposal_id']);
+
+        if ($proposal->proposal_status !== 'Approved') {
+
+            throw ValidationException::withMessages([
+                'proposal_id' =>
+                    'Only approved lease proposals can be converted into an agreement.'
+            ]);
+        }
+
+        $tenantId = $proposal->tenant_id;
+
+        $monthlyRent = (float) ($proposal->monthly_rent ?? 0);
+        $camAmount = (float) ($proposal->cam_amount ?? 0);
+        $securityDeposit = (float) ($proposal->security_deposit ?? 0);
+        $proposalRentFreeDays = (int) ($proposal->rent_free_days ?? 0);
+
+        $leaseStartDate = $validated['lease_start_date'];
+        $leaseEndDate = $validated['lease_end_date'];
 
 
         /*
@@ -259,8 +354,7 @@ class LeaseAgreementController extends Controller
             $validated['lease_end_date']
         );
 
-        $leasePeriodMonths =
-            $start->diffInMonths($end);
+        $leasePeriodMonths = $start->diffInMonths($end);
 
         if ($end->day >= $start->day) {
             $leasePeriodMonths++;
@@ -300,74 +394,68 @@ class LeaseAgreementController extends Controller
         */
 
         $agreement = LeaseAgreement::create([
-
             'uuid' => (string) Str::uuid(),
+            'agreement_no' => $agreementNo,
 
-            'agreement_no' =>
-                $agreementNo,
+            'proposal_id' => $proposal->id,
 
-            'proposal_id' =>
-                $validated['proposal_id'],
+            'tenant_id' => $tenantId,
 
-            'tenant_id' =>
-                $validated['tenant_id'],
+            'agreement_date' => $validated['agreement_date'],
 
-            'agreement_date' =>
-                $validated['agreement_date'],
+            'lease_start_date' => $validated['lease_start_date'],
 
-            'lease_start_date' =>
-                $validated['lease_start_date'],
+            'lease_end_date' => $validated['lease_end_date'],
 
-            'lease_end_date' =>
-                $validated['lease_end_date'],
+            'lease_period_months' =>$leasePeriodMonths,
 
-            'lease_period_months' =>
-                $leasePeriodMonths,
+            'rent_start_date' => $validated['rent_start_date'] ?? $validated['lease_start_date'],
 
-            'rent_start_date' =>
-                $validated['rent_start_date'] ?? null,
+            'handover_date' => $validated['handover_date'] ?? null,
 
-            'handover_date' =>
-                $validated['handover_date'] ?? null,
+            'fitout_start_date' => $validated['fitout_start_date'] ?? null,
 
-            'fitout_start_date' =>
-                $validated['fitout_start_date'] ?? null,
+            'fitout_end_date' => $validated['fitout_end_date'] ?? null,
 
-            'fitout_end_date' =>
-                $validated['fitout_end_date'] ?? null,
+            /*
+            |--------------------------------------------------------------------------
+            | Proposal commercial terms
+            |--------------------------------------------------------------------------
+            */
 
-            'rent_free_days' =>
-                $validated['rent_free_days'] ?? 0,
+            'rent_free_days' => $proposalRentFreeDays,
 
-            'security_deposit' =>
-                $validated['security_deposit'] ?? 0,
+            'security_deposit' => $securityDeposit,
 
-            'monthly_rent' =>
-                $validated['monthly_rent'] ?? 0,
+            'monthly_rent' => $monthlyRent,
 
-            'cam_amount' =>
-                $validated['cam_amount'] ?? 0,
+            'cam_amount' => $camAmount,
 
-            'utility_deposit' =>
-                $validated['utility_deposit'] ?? 0,
+            /*
+            |--------------------------------------------------------------------------
+            | Agreement-level billing settings
+            |--------------------------------------------------------------------------
+            */
 
-            'billing_frequency' =>
-                $validated['billing_frequency'] ?? 'Monthly',
+            'utility_deposit' => $validated['utility_deposit'] ?? 0,
 
-            'payment_due_day' =>
-                $validated['payment_due_day'] ?? 5,
+            'billing_frequency' => $validated['billing_frequency'] ?? 'Monthly',
 
-            'agreement_status' =>
-                $validated['agreement_status'],
+            'payment_due_day' => $validated['payment_due_day'] ?? 5,
 
-            'remarks' =>
-                $validated['remarks'] ?? null,
+            /*
+            |--------------------------------------------------------------------------
+            | Status
+            |--------------------------------------------------------------------------
+            */
 
-            'created_by' =>
-                auth()->id(),
+            'agreement_status' => 'Draft',
 
-            'updated_by' =>
-                auth()->id(),
+            'remarks' => $validated['remarks'] ?? null,
+
+            'created_by' => Auth::id(),
+
+            'updated_by' => Auth::id(),
         ]);
 
 
@@ -744,62 +832,101 @@ class LeaseAgreementController extends Controller
             );
     }
 
-    public function activate($id)
-	{
-	    $agreement = LeaseAgreement::findOrFail($id);
+    public function activate( $id,  DepositService $depositService ) {
+        $agreement = LeaseAgreement::findOrFail($id);
 
-	    if ($agreement->agreement_status !== 'Draft') {
-	        return redirect()
-	            ->back()
-	            ->with('error', 'Only draft agreements can be activated.');
-	    }
+        if ($agreement->agreement_status !== 'Draft') {
 
-	    $agreement->update([
-	        'agreement_status' => 'Active',
-	        'updated_by' => auth()->id(),
-	    ]);
+            return redirect()
+                ->back()
+                ->with(
+                    'error',
+                    'Only draft agreements can be activated.'
+                );
+        }
 
-        LeaseHistoryService::log(
 
-            $agreement->id,
+        DB::transaction(function () use (
+            $agreement,
+            $depositService
+        ) {
 
-            'Agreement',
+            /*
+            |--------------------------------------------------------------------------
+            | 1. Activate Agreement
+            |--------------------------------------------------------------------------
+            */
 
-            'Lease Agreement Activated',
+            $agreement->update([
+                'agreement_status' => 'Active',
+                'updated_by' => auth()->id(),
+            ]);
 
-            'Lease agreement was activated.',
 
-            [
-                'agreement_status' => 'Draft'
-            ],
+            /*
+            |--------------------------------------------------------------------------
+            | 2. Create Revenue Deposits
+            |--------------------------------------------------------------------------
+            */
 
-            [
-                'agreement_status' => 'Active'
-            ],
+            $depositService->createForAgreement(
+                $agreement
+            );
 
-            'LeaseAgreement',
 
-            $agreement->id
-        );
+            /*
+            |--------------------------------------------------------------------------
+            | 3. Lease History
+            |--------------------------------------------------------------------------
+            */
 
-	    // Mark proposal as converted
-	    if ($agreement->proposal) {
-	        $agreement->proposal->update([
-	            'proposal_status' => 'Converted',
-	            'updated_by' => auth()->id(),
-	        ]);
-	    }
+            LeaseHistoryService::log(
+                $agreement->id,
+                'Agreement',
+                'Lease Agreement Activated',
+                'Lease agreement was activated.',
+                [
+                    'agreement_status' =>
+                        'Draft'
+                ],
 
-	    return redirect()
-	        ->route(
-	            'admin.leasing.agreements.show',
-	            $agreement->id
-	        )
-	        ->with(
-	            'success',
-	            'Lease agreement activated successfully.'
-	        );
-	}
+                [
+                    'agreement_status' =>
+                        'Active'
+                ],
+                'LeaseAgreement',
+                $agreement->id
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | 4. Mark Proposal as Converted
+            |--------------------------------------------------------------------------
+            */
+
+            if ($agreement->proposal) {
+                $agreement->proposal->update([
+
+                    'proposal_status' => 'Converted',
+
+                    'updated_by' => auth()->id(),
+
+                ]);
+            }
+        });
+
+
+        return redirect()
+            ->route(
+                'admin.leasing.agreements.show',
+                $agreement->id
+            )
+            ->with(
+                'success',
+                'Lease agreement activated successfully and revenue deposits created.'
+            );
+    }
 
 	public function renew(LeaseAgreement $agreement)
 	{

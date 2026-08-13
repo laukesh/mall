@@ -162,4 +162,12 @@ class LeaseAgreement extends Model
             'lease_agreement_id'
         )->latest('id');
     }
+
+    public function rentSchedules()
+    {
+        return $this->hasMany(
+            RentSchedule::class,
+            'lease_agreement_id'
+        );
+    }
 }

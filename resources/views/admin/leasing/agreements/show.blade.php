@@ -102,6 +102,26 @@
 
                 @if($agreement->agreement_status === 'Active')
 
+                    <form
+                        action="{{ route('admin.revenue.rent-schedules.generate', $agreement->id) }}"
+                        method="POST"
+                        class="d-inline"
+                    >
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            <i class="bi bi-calendar-plus"></i>
+                            Generate Rent Schedule
+                        </button>
+                    </form>
+
+                @endif
+
+                @if($agreement->agreement_status === 'Active')
+
                     <a href="{{ route(
                         'admin.leasing.agreements.renew',
                         $agreement->id
