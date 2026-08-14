@@ -11,35 +11,90 @@ class Invoice extends Model
 
     protected $table = 'invoices';
 
-    protected $guarded = ['id'];
-
-    protected $dates = [
+    protected $fillable = [
+        'uuid',
+        'invoice_no',
+        'lease_agreement_id',
+        'tenant_id',
+        'invoice_type',
         'invoice_date',
         'billing_period_from',
         'billing_period_to',
         'due_date',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+        'subtotal',
+        'discount_amount',
+        'taxable_amount',
+        'tax_amount',
+        'total_amount',
+        'paid_amount',
+        'balance_amount',
+        'invoice_status',
+        'remarks',
+        'generated_by',
+        'created_by',
+        'updated_by',
     ];
 
-    public function items()
-    {
-        return $this->hasMany(InvoiceItem::class, 'invoice_id');
-    }
+    protected $casts = [
+        'invoice_date' => 'date',
+        'billing_period_from' => 'date',
+        'billing_period_to' => 'date',
+        'due_date' => 'date',
+
+        'subtotal' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'taxable_amount' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+        'paid_amount' => 'decimal:2',
+        'balance_amount' => 'decimal:2',
+    ];
 
     public function leaseAgreement()
     {
-        return $this->belongsTo(LeaseAgreement::class, 'lease_agreement_id');
+        return $this->belongsTo(
+            LeaseAgreement::class,
+            'lease_agreement_id'
+        );
     }
 
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id');
+        return $this->belongsTo(
+            Tenant::class,
+            'tenant_id'
+        );
     }
 
-    public function generatedByUser()
+    public function items()
     {
-        return $this->belongsTo(User::class, 'generated_by');
+        return $this->hasMany(
+            InvoiceItem::class,
+            'invoice_id'
+        );
+    }
+
+    public function generator()
+    {
+        return $this->belongsTo(
+            User::class,
+            'generated_by'
+        );
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(
+            User::class,
+            'created_by'
+        );
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(
+            User::class,
+            'updated_by'
+        );
     }
 }

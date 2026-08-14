@@ -19,7 +19,7 @@
         @can('unit_types.create')
 
             <a
-                href="{{ route('admin.unit-types.create') }}"
+                href="{{ route('admin.assets.unit-types.create') }}"
                 class="btn btn-primary"
             >
                 + Add Unit Type
@@ -46,7 +46,7 @@
 
             <form
                 method="GET"
-                action="{{ route('admin.unit-types.index') }}"
+                action="{{ route('admin.assets.unit-types.index') }}"
             >
 
                 <div class="row g-2">
@@ -76,15 +76,15 @@
                             </option>
 
                             <option
-                                value="active"
-                                {{ request('status') === 'active' ? 'selected' : '' }}
+                                value="1"
+                                {{ request('status') === '1' ? 'selected' : '' }}
                             >
                                 Active
                             </option>
 
                             <option
-                                value="inactive"
-                                {{ request('status') === 'inactive' ? 'selected' : '' }}
+                                value="0"
+                                {{ request('status') === '0' ? 'selected' : '' }}
                             >
                                 Inactive
                             </option>
@@ -104,7 +104,7 @@
                         </button>
 
                         <a
-                            href="{{ route('admin.unit-types.index') }}"
+                            href="{{ route('admin.assets.unit-types.index') }}"
                             class="btn btn-secondary"
                         >
                             Clear
@@ -166,7 +166,7 @@
 
                                 <a
                                     href="{{ route(
-                                        'admin.unit-types.show',
+                                        'admin.assets.unit-types.show',
                                         $unitType->id
                                     ) }}"
                                 >
@@ -188,7 +188,7 @@
 
                             <td>
 
-                                @if($unitType->status === 'active')
+                                @if($unitType->status === '1')
 
                                     <span class="badge bg-success">
                                         Active
@@ -197,7 +197,7 @@
                                 @else
 
                                     <span class="badge bg-secondary">
-                                        {{ ucfirst($unitType->status) }}
+                                      Inactive
                                     </span>
 
                                 @endif
@@ -216,7 +216,7 @@
 
                                 <a
                                     href="{{ route(
-                                        'admin.unit-types.show',
+                                        'admin.assets.unit-types.show',
                                         $unitType->id
                                     ) }}"
                                     class="btn btn-sm btn-info"
@@ -229,7 +229,7 @@
 
                                     <a
                                         href="{{ route(
-                                            'admin.unit-types.edit',
+                                            'admin.assets.unit-types.edit',
                                             $unitType->id
                                         ) }}"
                                         class="btn btn-sm btn-primary"
@@ -245,7 +245,7 @@
                                     <form
                                         method="POST"
                                         action="{{ route(
-                                            'admin.unit-types.destroy',
+                                            'admin.assets.unit-types.destroy',
                                             $unitType->id
                                         ) }}"
                                         class="d-inline"

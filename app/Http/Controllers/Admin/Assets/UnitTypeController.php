@@ -45,7 +45,7 @@ class UnitTypeController extends Controller
     public function create()
     {
         return view(
-            'admin.unit_types.create'
+            'admin.assets.unit_types.create'
         );
     }
 

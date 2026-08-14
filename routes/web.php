@@ -746,3 +746,36 @@ Route::middleware('auth')->group(function () {
     });
 
 
+/*Revenue*/
+
+
+    Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
+                Route::prefix('revenue')
+            ->name('revenue.')
+            ->group(function () {   
+                Route::get(
+                    'dashboard',
+                    [
+                        App\Http\Controllers\Admin\Revenue\RevenueDashboardController::class,
+                        'index'
+                    ]
+                )->name('dashboard');
+
+                Route::resource('invoices', App\Http\Controllers\Admin\Revenue\InvoiceController::class);
+
+                Route::resource('payments', App\Http\Controllers\Admin\Revenue\PaymentController::class);
+
+                Route::resource('receipts', App\Http\Controllers\Admin\Revenue\DepositReceiptController::class);
+
+                Route::resource('credit-notes', App\Http\Controllers\Admin\Revenue\DepositController::class);
+
+                Route::resource('debit-notes', App\Http\Controllers\Admin\Revenue\CamChargeController::class);
+                Route::resource('deposit_receipts', App\Http\Controllers\Admin\Revenue\DepositReceiptController::class);
+
+            });
+
+
+    });

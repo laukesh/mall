@@ -3,7 +3,7 @@
 @section('content')
 <x-form-card title="Units" subtitle="Manage units"> 
   <div class="mb-3 d-flex justify-content-between">
-    <a href="{{ route('admin.units.create') }}" class="btn btn-primary">Create Unit</a>
+    <a href="{{ route('admin.assets.units.create') }}" class="btn btn-primary">Create Unit</a>
   </div>
 
   <div class="table-responsive">
@@ -31,9 +31,9 @@
           <td>{{ optional($unit->floor)->floor_name }}</td>
           <td>{{ optional($unit->unitStatus)->status_name ?? $unit->status }}</td>
           <td>
-            <a href="{{ route('admin.units.show', $unit->id) }}" class="btn btn-sm btn-info">View</a>
-            <a href="{{ route('admin.units.edit', $unit->id) }}" class="btn btn-sm btn-warning">Edit</a>
-            <form action="{{ route('admin.units.destroy', $unit->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?')">
+            <a href="{{ route('admin.assets.units.show', $unit->id) }}" class="btn btn-sm btn-info">View</a>
+            <a href="{{ route('admin.assets.units.edit', $unit->id) }}" class="btn btn-sm btn-warning">Edit</a>
+            <form action="{{ route('admin.assets.units.destroy', $unit->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?')">
               @csrf
               @method('DELETE')
               <button class="btn btn-sm btn-danger">Delete</button>

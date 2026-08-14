@@ -25,7 +25,7 @@
             @can('zones.edit')
 
                 <a
-                    href="{{ route('admin.zones.edit', $zone->id) }}"
+                    href="{{ route('admin.assets.zones.edit', $zone->id) }}"
                     class="btn btn-primary"
                 >
                     Edit
@@ -34,7 +34,7 @@
             @endcan
 
             <a
-                href="{{ route('admin.zones.index') }}"
+                href="{{ route('admin.assets.zones.index') }}"
                 class="btn btn-secondary"
             >
                 ← Back

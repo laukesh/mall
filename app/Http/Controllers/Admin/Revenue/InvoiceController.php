@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Revenue;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Repositories\InvoiceRepository;
+use App\Repositories\InvoiceRepositoryInterface as InvoiceRepository;
 use App\Models\Invoice;
 
 class InvoiceController extends Controller

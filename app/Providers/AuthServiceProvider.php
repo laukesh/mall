@@ -21,7 +21,7 @@ class AuthServiceProvider extends ServiceProvider
         Mall::class => MallPolicy::class,
        // Building::class => BuildingPolicy::class,
     ];
-
+  
     /**
      * Register authentication / authorization services.
      */

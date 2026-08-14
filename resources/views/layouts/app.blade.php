@@ -46,8 +46,7 @@
     <div class="app-flex-spacer"></div>
         <span class="app-date-tag">
             Welcome,
-            <strong>{{ auth()->user()->name }}</strong>
-            ({{ auth()->user()->getRoleNames()->implode(', ') }})
+            <strong>{{ auth()->user()->name ?? 'Guest' }}</strong>
         </span>
     <span class="app-date-tag" id="datechip"></span>
   </div>	
@@ -294,32 +293,26 @@
                     <ul class="dropdown-menu level-2">
 
                         <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
+                            <a href="{{ route('admin.revenue.dashboard') }}" class="dropdown-link">
                                 Revenue Dashboard
                             </a>
                         </li>
 
                         <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
-                                Rent Collection
-                            </a>
-                        </li>
-
-                        <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
+                            <a href="{{ route('admin.revenue.invoices.index') }}" class="dropdown-link">
                                 Invoices
                             </a>
                         </li>
 
                         <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
+                            <a href="{{ route('admin.revenue.payments.index') }}" class="dropdown-link">
                                 Payments
                             </a>
                         </li>
 
                         <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
-                                Revenue Reports
+                            <a href="{{ route('admin.revenue.receipts.index') }}" class="dropdown-link">
+                                Receipts
                             </a>
                         </li>
 

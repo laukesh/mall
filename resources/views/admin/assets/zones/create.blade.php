@@ -17,7 +17,7 @@
         </div>
 
         <a
-            href="{{ route('admin.zones.index') }}"
+            href="{{ route('admin.assets.zones.index') }}"
             class="btn btn-secondary"
         >
             ← Back
@@ -57,7 +57,7 @@
 
             <form
                 method="POST"
-                action="{{ route('admin.zones.store') }}"
+                action="{{ route('admin.assets.zones.store') }}"
             >
 
                 @csrf
@@ -224,7 +224,7 @@
                 <div class="d-flex justify-content-end gap-2">
 
                     <a
-                        href="{{ route('admin.zones.index') }}"
+                        href="{{ route('admin.assets.zones.index') }}"
                         class="btn btn-secondary"
                     >
                         Cancel
