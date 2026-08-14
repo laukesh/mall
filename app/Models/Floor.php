@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+
+
 
 class Floor extends Model
 {
@@ -13,6 +17,10 @@ class Floor extends Model
 
     protected $fillable = [
         'building_id',
+        'floor_no',
+        'floor_name',
+        'total_units',
+        'rentable_area',
         'floor_code',
         'floor_name',
         'floor_number',
@@ -21,6 +29,54 @@ class Floor extends Model
         'updated_by',
     ];
 
+    protected $casts = [
+        'floor_no' => 'integer',
+        'total_units' => 'integer',
+        'rentable_area' => 'decimal:2',
+    ];
+
+    /**
+     * Building
+     */
+    public function building()
+    {
+        return $this->belongsTo(
+            Building::class,
+            'building_id'
+        );
+    }
+
+    /**
+     * Units
+     */
+    public function units()
+    {
+        return $this->hasMany(
+            Unit::class,
+            'floor_id'
+        );
+    }
+
+    /**
+     * Created By
+     */
+    public function createdBy()
+    {
+        return $this->belongsTo(
+            User::class,
+            'created_by'
+        );
+    }
+
+    /**
+     * Updated By
+     */
+    public function updatedBy()
+    {
+        return $this->belongsTo(
+            User::class,
+            'updated_by'
+        );
     public function building()
     {
         return $this->belongsTo(Building::class);
