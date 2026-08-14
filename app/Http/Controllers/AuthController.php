@@ -42,7 +42,10 @@ class AuthController extends Controller
     {
         return view('auth.profile');
     }
-
+    public function dashboard()
+    {
+        return view('auth.dashboard');
+    }
     // Web: Register
    public function register(Request $request)
     {
@@ -64,7 +67,7 @@ class AuthController extends Controller
 
         auth()->login($user);
 
-        return redirect()->route('auth.dashboard')
+        return redirect()->route('auth.profile.dashboard')
             ->with('success', 'Registration successful.');
     }
 
@@ -88,7 +91,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/admin/dashboard/')->with('success', 'Logged in');
+        return redirect()->intended('admin/dashboard/')->with('success', 'Logged in');
     }
     // Web: Login
     public function login(Request $request)
@@ -129,7 +132,7 @@ class AuthController extends Controller
 
         // Normal user redirect
         return redirect()
-            ->intended(route('auth.profile.show'))
+            ->intended('/')
             ->with('success', 'Logged in successfully');
     }
 

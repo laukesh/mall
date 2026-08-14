@@ -12,7 +12,10 @@ use App\Repositories\FloorRepositoryInterface;
 use App\Repositories\EloquentFloorRepository;
 use App\Repositories\ZoneRepositoryInterface;
 use App\Repositories\EloquentZoneRepository;
-
+use App\Repositories\InvoiceRepositoryInterface;
+use App\Repositories\EloquentInvoiceRepository;
+use App\Repositories\InvoiceItemRepositoryInterface;
+use App\Repositories\EloquentInvoiceItemRepository;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -68,6 +71,15 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Repositories\UnitTypeRepositoryInterface::class,
             \App\Repositories\EloquentUnitTypeRepository::class
+        );
+           $this->app->bind(
+            InvoiceRepositoryInterface::class,
+            EloquentInvoiceRepository::class
+        );
+
+        $this->app->bind(
+            InvoiceItemRepositoryInterface::class,
+            EloquentInvoiceItemRepository::class
         );
     }
 

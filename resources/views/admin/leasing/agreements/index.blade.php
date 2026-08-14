@@ -521,7 +521,7 @@
                                            class="btn btn-sm btn-primary"
                                            title="Edit">
 
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fas fa-pen"></i>
 
                                         </a>
 

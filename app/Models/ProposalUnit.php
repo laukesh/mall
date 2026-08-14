@@ -30,9 +30,13 @@ class ProposalUnit extends Model
         'proposed_rent' => 'decimal:2',
         'proposed_cam_rate' => 'decimal:2',
         'proposed_security_deposit' => 'decimal:2',
-        'updated_by'
+        'rent_free_days' => 'integer',
+        'fitout_period_days' => 'integer',
     ];
 
+    /**
+     * Proposal relationship
+     */
     public function proposal()
     {
         return $this->belongsTo(
@@ -41,40 +45,25 @@ class ProposalUnit extends Model
         );
     }
 
+    /**
+     * Lease Proposal relationship
+     */
     public function leaseProposal()
     {
         return $this->belongsTo(
             LeaseProposal::class,
             'lease_proposal_id'
         );
-        return $this->belongsTo(Proposal::class);
     }
 
+    /**
+     * Unit relationship
+     */
     public function unit()
     {
         return $this->belongsTo(
             Unit::class,
             'unit_id'
         );
-    }
-
-    public function units()
-    {
-        return $this->hasMany(
-            ProposalUnit::class,
-            'lease_proposal_id',
-            'id'
-        );
-    }
-
-    /*public function proposal()
-    {
-        return $this->belongsTo(
-            LeaseProposal::class,
-            'lease_proposal_id'
-        );
-    }*/
-}
-        return $this->belongsTo(Unit::class);
     }
 }
