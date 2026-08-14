@@ -4,18 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Floor extends Model
 {
-
+    use HasFactory;
 
     protected $table = 'floors';
 
     protected $fillable = [
         'building_id',
-        'floor_no',
+        'floor_code',
         'floor_name',
+        'floor_number',
+        'floor_no',
         'total_units',
         'rentable_area',
         'status',
@@ -24,9 +25,12 @@ class Floor extends Model
     ];
 
     protected $casts = [
-        'floor_no' => 'integer',
-        'total_units' => 'integer',
+        'floor_number'  => 'integer',
+        'floor_no'      => 'integer',
+        'total_units'   => 'integer',
         'rentable_area' => 'decimal:2',
+        'created_by'    => 'integer',
+        'updated_by'    => 'integer',
     ];
 
     /**
@@ -37,6 +41,17 @@ class Floor extends Model
         return $this->belongsTo(
             Building::class,
             'building_id'
+        );
+    }
+
+    /**
+     * Zones
+     */
+    public function zones()
+    {
+        return $this->hasMany(
+            Zone::class,
+            'floor_id'
         );
     }
 
@@ -52,9 +67,9 @@ class Floor extends Model
     }
 
     /**
-     * Created By
+     * Created by user
      */
-    public function createdBy()
+    public function creator()
     {
         return $this->belongsTo(
             User::class,
@@ -63,9 +78,9 @@ class Floor extends Model
     }
 
     /**
-     * Updated By
+     * Updated by user
      */
-    public function updatedBy()
+    public function updater()
     {
         return $this->belongsTo(
             User::class,

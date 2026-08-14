@@ -2,13 +2,20 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
+
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\MallController;
-use App\Http\Controllers\Admin\BuildingController;
+use App\Http\Controllers\Admin\Assets\MallController;
+use App\Http\Controllers\Admin\Assets\BuildingController;
+use App\Http\Controllers\Admin\Assets\FloorController;
+use App\Http\Controllers\Admin\Assets\ZoneController;
+use App\Http\Controllers\Admin\Assets\UnitTypeController;
 
+
+use App\Http\Controllers\Admin\Leasing\LeasingController;
 use App\Http\Controllers\Admin\Leasing\LeaseProposalController;
 use App\Http\Controllers\Admin\Leasing\LeaseAgreementController;
 use App\Http\Controllers\Admin\Leasing\LeaseTermController;
@@ -18,6 +25,8 @@ use App\Http\Controllers\Admin\Leasing\LeaseEscalationController;
 use App\Http\Controllers\Admin\Leasing\LeaseHistoryController;
 use App\Http\Controllers\Admin\Leasing\LeaseTerminationController;
 use App\Http\Controllers\Admin\Leasing\LeaseDashboardController;
+
+
 use App\Http\Controllers\Admin\Tenant\TenantDashboardController;
 use App\Http\Controllers\Admin\Tenant\TenantController;
 use App\Http\Controllers\Admin\Tenant\TenantContactController;
@@ -27,6 +36,7 @@ use App\Http\Controllers\Admin\Tenant\TenantDocumentController;
 use App\Http\Controllers\Admin\Tenant\TenantEmergencyContactController;
 use App\Http\Controllers\Admin\Tenant\TenantNoteController;
 use App\Http\Controllers\Admin\Tenant\TenantHistoryController;
+
 use App\Http\Controllers\Admin\Revenue\TaxConfigurationController;
 use App\Http\Controllers\Admin\Revenue\DepositController;
 use App\Http\Controllers\Admin\Revenue\DepositReceiptController;
@@ -63,33 +73,7 @@ use App\Http\Controllers\Admin\Fitout\FitoutDashboardController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/debug-building', function () {
-    $user = auth()->user();
 
-    return [
-        'id' => $user->id,
-        'name' => $user->name,
-
-        'roles' => $user->getRoleNames(),
-
-        'building_view' => $user->can('buildings.view'),
-        'building_create' => $user->can('buildings.create'),
-        'building_edit' => $user->can('buildings.edit'),
-        'building_delete' => $user->can('buildings.delete'),
-
-        'is_super_admin' => $user->is_super_admin,
-    ];
-})->middleware('auth');
-Route::get('/debug-role', function () {
-    $user = Auth::user();
-
-    dd([
-        'User'            => $user,
-        'Roles'           => $user?->getRoleNames(),
-        'Permissions'     => $user?->getPermissionNames(),
-        'All Permissions' => $user?->getAllPermissions()->pluck('name'),
-    ]);
-})->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
@@ -98,15 +82,23 @@ Route::get('/debug-role', function () {
 */
 
 Route::controller(AuthController::class)->group(function () {
-    Route::get('/login', 'showLoginForm')->name('login.form');
+
+    Route::get('/login', 'showLoginForm')
+        ->name('login.form');
+
     Route::post('/login', 'login')
         ->middleware('throttle:10,1')
         ->name('login');
 
-    Route::get('/register', 'showRegisterForm')->name('register.form');
-    Route::post('/register', 'register')->name('register');
+    Route::get('/register', 'showRegisterForm')
+        ->name('register.form');
 
-    Route::get('/forgot-password', 'showForgotForm')->name('forgot.form');
+    Route::post('/register', 'register')
+        ->name('register');
+
+    Route::get('/forgot-password', 'showForgotForm')
+        ->name('forgot.form');
+
     Route::post('/forgot-password', 'forgotPassword')
         ->middleware('throttle:5,1')
         ->name('password.email');
@@ -116,158 +108,398 @@ Route::controller(AuthController::class)->group(function () {
         ->name('logout');
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| Debug Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/debug-building', function () {
+
+        $user = auth()->user();
+
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+
+            'roles' => $user->getRoleNames(),
+
+            'proposal-units_view' =>
+                $user->can('proposal-units.view'),
+
+            'proposal-units_create' =>
+                $user->can('proposal-units.create'),
+
+            'proposal-units_edit' =>
+                $user->can('proposal-units.edit'),
+
+            'proposal-units_delete' =>
+                $user->can('proposal-units.delete'),
+
+            'is_super_admin' =>
+                (bool) $user->is_super_admin,
+        ];
+    });
+
+
+    Route::get('/debug-role', function () {
+
+        $user = Auth::user();
+
+        dd([
+            'User' => $user,
+
+            'Roles' =>
+                $user->getRoleNames(),
+
+            'Permissions' =>
+                $user->getPermissionNames(),
+
+            'All Permissions' =>
+                $user->getAllPermissions()
+                    ->pluck('name'),
+        ]);
+    });
+
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes
 |--------------------------------------------------------------------------
 */
+/*
+|--------------------------------------------------------------------------
+| Authentication / Profile
+|--------------------------------------------------------------------------
+*/
 
-Route::middleware(['auth'])->group(function () {
+Route::prefix('auth')
+    ->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Profile
-    |--------------------------------------------------------------------------
-    */
+        Route::prefix('profile')
+            ->name('profile.')
+            ->group(function () {
+                Route::get('/dashboard', [
+                    AuthController::class,
+                    'dashboard'
+                ])->name('show');
+                Route::get('/', [
+                    AuthController::class,
+                    'profileForm'
+                ])
+                    ->middleware('permission:profile.view')
+                    ->name('show');
 
-    Route::prefix('profile')->name('profile.')->group(function () {
-        Route::get('/', [AuthController::class, 'profileForm'])
-            ->middleware('permission:profile.view')
-            ->name('show');
+                Route::post('/update', [
+                    AuthController::class,
+                    'updateProfile'
+                ])
+                    ->middleware('permission:profile.update')
+                    ->name('update');
 
-        Route::post('/update', [AuthController::class, 'updateProfile'])
-            ->middleware('permission:profile.update')
-            ->name('update');
-
-        Route::post('/change-password', [AuthController::class, 'changePassword'])
-            ->middleware('permission:profile.update')
-            ->name('change-password');
+                Route::post('/change-password', [
+                    AuthController::class,
+                    'changePassword'
+                ])
+                    ->middleware('permission:profile.update')
+                    ->name('change-password');
+            });
     });
 
+Route::middleware('auth')->group(function () {
+
+
+
+
     /*
     |--------------------------------------------------------------------------
-    | Administrator Panel
+    | ADMIN PANEL
     |--------------------------------------------------------------------------
     */
 
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')
+        ->name('admin.')
+        ->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Dashboard
-        |--------------------------------------------------------------------------
-        */
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])
-            ->middleware('permission:dashboard.view')
-            ->name('dashboard');
+            /*
+            |--------------------------------------------------------------------------
+            | Dashboard
+            |--------------------------------------------------------------------------
+            */
 
-        /*
-        |--------------------------------------------------------------------------
-        | User Management
-        |--------------------------------------------------------------------------
-        */
+            Route::get('/dashboard', [
+                DashboardController::class,
+                'index'
+            ])
+                ->middleware('permission:dashboard.view')
+                ->name('dashboard');
 
-        Route::prefix('users')->name('users.')->group(function () {
-            Route::get('/', [UserManagementController::class, 'index'])
-                ->middleware('permission:users.view')
-                ->name('index');
 
-            Route::get('/create', [UserManagementController::class, 'create'])
-                ->middleware('permission:users.create')
-                ->name('create');
+            /*
+            |--------------------------------------------------------------------------
+            | User Management
+            |--------------------------------------------------------------------------
+            */
 
-            Route::post('/', [UserManagementController::class, 'store'])
-                ->middleware('permission:users.create')
-                ->name('store');
+            Route::prefix('users')
+                ->name('users.')
+                ->group(function () {
 
-            Route::get('/{user}', [UserManagementController::class, 'show'])
-                ->middleware('permission:users.view')
-                ->name('show');
+                    Route::get('/', [
+                        UserManagementController::class,
+                        'index'
+                    ])
+                        ->middleware('permission:users.view')
+                        ->name('index');
 
-            Route::get('/{user}/edit', [UserManagementController::class, 'edit'])
-                ->middleware('permission:users.edit')
-                ->name('edit');
 
-            Route::put('/{user}', [UserManagementController::class, 'update'])
-                ->middleware('permission:users.edit')
-                ->name('update');
+                    Route::get('/create', [
+                        UserManagementController::class,
+                        'create'
+                    ])
+                        ->middleware('permission:users.create')
+                        ->name('create');
 
-            Route::delete('/{user}', [UserManagementController::class, 'destroy'])
-                ->middleware('permission:users.delete')
-                ->name('destroy');
 
-            Route::post('/{user}/assign-role', [UserManagementController::class, 'assignRole'])
-                ->middleware('permission:users.edit')
-                ->name('assign-role');
+                    Route::post('/', [
+                        UserManagementController::class,
+                        'store'
+                    ])
+                        ->middleware('permission:users.create')
+                        ->name('store');
 
-            Route::post('/{user}/revoke-role', [UserManagementController::class, 'revokeRole'])
-                ->middleware('permission:users.edit')
-                ->name('revoke-role');
 
-            Route::post('/{user}/activate', [UserManagementController::class, 'activate'])
-                ->middleware('permission:users.edit')
-                ->name('activate');
+                    Route::get('/{user}', [
+                        UserManagementController::class,
+                        'show'
+                    ])
+                        ->middleware('permission:users.view')
+                        ->name('show');
 
-            Route::post('/{user}/deactivate', [UserManagementController::class, 'deactivate'])
-                ->middleware('permission:users.edit')
-                ->name('deactivate');
 
-            Route::get('/{user}/audits', [UserManagementController::class, 'audits'])
-                ->middleware('permission:audit.view')
-                ->name('audits');
+                    Route::get('/{user}/edit', [
+                        UserManagementController::class,
+                        'edit'
+                    ])
+                        ->middleware('permission:users.edit')
+                        ->name('edit');
+
+
+                    Route::put('/{user}', [
+                        UserManagementController::class,
+                        'update'
+                    ])
+                        ->middleware('permission:users.edit')
+                        ->name('update');
+
+
+                    Route::delete('/{user}', [
+                        UserManagementController::class,
+                        'destroy'
+                    ])
+                        ->middleware('permission:users.delete')
+                        ->name('destroy');
+
+
+                    Route::post('/{user}/assign-role', [
+                        UserManagementController::class,
+                        'assignRole'
+                    ])
+                        ->middleware('permission:users.edit')
+                        ->name('assign-role');
+
+
+                    Route::post('/{user}/revoke-role', [
+                        UserManagementController::class,
+                        'revokeRole'
+                    ])
+                        ->middleware('permission:users.edit')
+                        ->name('revoke-role');
+
+
+                    Route::post('/{user}/activate', [
+                        UserManagementController::class,
+                        'activate'
+                    ])
+                        ->middleware('permission:users.edit')
+                        ->name('activate');
+
+
+                    Route::post('/{user}/deactivate', [
+                        UserManagementController::class,
+                        'deactivate'
+                    ])
+                        ->middleware('permission:users.edit')
+                        ->name('deactivate');
+
+
+                    Route::get('/{user}/audits', [
+                        UserManagementController::class,
+                        'audits'
+                    ])
+                        ->middleware('permission:audit.view')
+                        ->name('audits');
+                });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Role Management
+            |--------------------------------------------------------------------------
+            */
+
+            Route::resource(
+                'roles',
+                RoleController::class
+            )
+                ->middleware([
+                    'index'   => 'permission:roles.view',
+                    'show'    => 'permission:roles.view',
+                    'create'  => 'permission:roles.create',
+                    'store'   => 'permission:roles.create',
+                    'edit'    => 'permission:roles.edit',
+                    'update'  => 'permission:roles.edit',
+                    'destroy' => 'permission:roles.delete',
+                ]);
+
+  Route::prefix('assets')
+    ->name('assets.')
+    ->group(function () {
+            /*
+            |--------------------------------------------------------------------------
+            | Mall Management
+            |--------------------------------------------------------------------------
+            */
+
+            Route::resource(
+                'malls',
+                MallController::class
+            )
+                ->middleware([
+                    'index'   => 'permission:malls.view',
+                    'show'    => 'permission:malls.view',
+                    'create'  => 'permission:malls.create',
+                    'store'   => 'permission:malls.create',
+                    'edit'    => 'permission:malls.edit',
+                    'update'  => 'permission:malls.edit',
+                    'destroy' => 'permission:malls.delete',
+                ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Building Management
+            |--------------------------------------------------------------------------
+            */
+
+            Route::resource(
+                'buildings',
+                BuildingController::class
+            )
+                ->middleware([
+                    'index'   => 'permission:buildings.view',
+                    'show'    => 'permission:buildings.view',
+                    'create'  => 'permission:buildings.create',
+                    'store'   => 'permission:buildings.create',
+                    'edit'    => 'permission:buildings.edit',
+                    'update'  => 'permission:buildings.edit',
+                    'destroy' => 'permission:buildings.delete',
+                ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Floor Management
+            |--------------------------------------------------------------------------
+            */
+
+            Route::resource(
+                'floors',
+                FloorController::class
+            )
+                ->middleware([
+                    'index'   => 'permission:floors.view',
+                    'show'    => 'permission:floors.view',
+                    'create'  => 'permission:floors.create',
+                    'store'   => 'permission:floors.create',
+                    'edit'    => 'permission:floors.edit',
+                    'update'  => 'permission:floors.edit',
+                    'destroy' => 'permission:floors.delete',
+                ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Zone Management
+            |--------------------------------------------------------------------------
+            */
+
+            Route::resource(
+                'zones',
+                ZoneController::class
+            )
+                ->middleware([
+                    'index'   => 'permission:zones.view',
+                    'show'    => 'permission:zones.view',
+                    'create'  => 'permission:zones.create',
+                    'store'   => 'permission:zones.create',
+                    'edit'    => 'permission:zones.edit',
+                    'update'  => 'permission:zones.edit',
+                    'destroy' => 'permission:zones.delete',
+                ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Unit Type Management
+            |--------------------------------------------------------------------------
+            */
+
+            Route::resource(
+                'unit-types',
+                UnitTypeController::class
+            )
+                ->middleware([
+                    'index'   => 'permission:unit_types.view',
+                    'show'    => 'permission:unit_types.view',
+                    'create'  => 'permission:unit_types.create',
+                    'store'   => 'permission:unit_types.create',
+                    'edit'    => 'permission:unit_types.edit',
+                    'update'  => 'permission:unit_types.edit',
+                    'destroy' => 'permission:unit_types.delete',
+                ]);
+
+   
+        // Units resource routes added by automated change
+        Route::resource('units', App\Http\Controllers\Admin\Assets\UnitController::class)
+            ->middleware([
+                'index' => 'permission:units.view',
+                'show' => 'permission:units.view',
+                'create' => 'permission:units.create',
+                'store' => 'permission:units.create',
+                'edit' => 'permission:units.edit',
+                'update' => 'permission:units.edit',
+                'destroy' => 'permission:units.delete',
+            ]);
+
+          // Units status resource routes added by automated change
+        Route::resource('unit-statuses', App\Http\Controllers\Admin\Assets\UnitStatusController::class)
+            ->middleware([
+                'index' => 'permission:unit_statuses.view',
+                'show' => 'permission:unit_statuses.view',
+                'create' => 'permission:unit_statuses.create',
+                'store' => 'permission:unit_statuses.create',
+                'edit' => 'permission:unit_statuses.edit',
+                'update' => 'permission:unit_statuses.edit',
+                'destroy' => 'permission:unit_statuses.delete',
+            ]);
         });
-
-        /*
-        |--------------------------------------------------------------------------
-        | Role Management
-        |--------------------------------------------------------------------------
-        */
-
-        Route::resource('roles', RoleController::class)
-            ->middleware([
-                'index'   => 'permission:roles.view',
-                'show'    => 'permission:roles.view',
-                'create'  => 'permission:roles.create',
-                'store'   => 'permission:roles.create',
-                'edit'    => 'permission:roles.edit',
-                'update'  => 'permission:roles.edit',
-                'destroy' => 'permission:roles.delete',
-            ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Mall Management
-        |--------------------------------------------------------------------------
-        */
-
-        Route::resource('malls', MallController::class)
-            ->middleware([
-                'index'   => 'permission:malls.view',
-                'show'    => 'permission:malls.view',
-                'create'  => 'permission:malls.create',
-                'store'   => 'permission:malls.create',
-                'edit'    => 'permission:malls.edit',
-                'update'  => 'permission:malls.edit',
-                'destroy' => 'permission:malls.delete',
-            ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Building Management
-        |--------------------------------------------------------------------------
-        */
-
-        Route::resource('buildings', BuildingController::class)
-            ->middleware([
-                'index'   => 'permission:buildings.view',
-                'show'    => 'permission:buildings.view',
-                'create'  => 'permission:buildings.create',
-                'store'   => 'permission:buildings.create',
-                'edit'    => 'permission:buildings.edit',
-                'update'  => 'permission:buildings.edit',
-                'destroy' => 'permission:buildings.delete',
-            ]);
     });
 });
 
@@ -288,6 +520,16 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('leasing')
             ->name('leasing.')
             ->group(function () {
+
+                Route::get('/', [
+                    LeasingController::class,
+                    'index'
+                ])->name('index');
+
+                Route::get('/{agreement}', [
+                    LeasingController::class,
+                    'show'
+                ])->name('show');
 
                 /*
                 |--------------------------------------------------------------------------

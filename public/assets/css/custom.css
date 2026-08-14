@@ -293,7 +293,7 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu > li.active > a
   margin-bottom: 8px;
 }
 
-/*.input-group-text, 
+.input-group-text, 
 select.form-control:not([size]):not([multiple]), 
 .form-control:not(.form-control-sm):not(.form-control-lg) {
   height: 49px;
@@ -301,11 +301,11 @@ select.form-control:not([size]):not([multiple]),
   font-size: 13px;
   background-color: var(--bg-input);
   color: var(--text-dark);
-  border: 1.5px solid var(--border-color);
+  /*border: 1.5px solid var(--border-color);*/
   border-radius: 10px;
   transition: all 0.2s ease-in-out;
   width: 100%;
-}*/
+}
 
 .form-control:focus {
   background-color: #fff;
@@ -2030,7 +2030,7 @@ nav.app-navigation
 
 .app-nav-wrapper 
 {
-	gap: 4px;
+	gap: 0px;
 	display: flex;
 }
 
@@ -2042,7 +2042,7 @@ nav.app-navigation
 	transition: 0.15s;
 	text-decoration: none;
 	display: inline-block;
-	padding: 13px 16px 12px;
+	padding: 12px 12px 12px;
 	border-bottom: 2.5px solid transparent;
 }
 
@@ -2059,6 +2059,89 @@ nav.app-navigation
 }
 
 /* secondary nav design start */
+
+/* 3level dropdown menu design start */
+
+
+.app-nav-wrapper 
+{
+	gap: 0px;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	list-style: none;
+	line-height: 25px !important;
+}
+
+.app-nav-item 
+{
+	position: relative;
+}
+
+.dropdown-menu 
+{
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	min-width: 210px;
+	background: #39160a;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 0 0 8px 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+	list-style: none;
+	padding: 6px 0;
+	margin: 0;
+	z-index: 1000;
+}
+
+.dropdown-menu.level-3 
+{
+	top: 0;
+	left: 100%;
+	border-radius: 8px;
+	margin-left: 2px;
+}
+
+.app-nav-item.has-dropdown:hover > .dropdown-menu.level-2 
+{
+	display: block;
+}
+
+.dropdown-item.has-dropdown:hover > .dropdown-menu.level-3 
+{
+	display: block;
+}
+
+.dropdown-item 
+{
+	position: relative;
+}
+
+.dropdown-link 
+{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 16px;
+	color: #d9bcab;
+	font-size: 13.5px;
+	font-weight: 500;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background 0.15s, color 0.15s;
+}
+
+.dropdown-link:hover,
+.dropdown-item:hover > .dropdown-link 
+{
+	color: #ffffff;
+	background: #4e2112;
+	text-decoration: none;
+}	
+
+/* 3level dropdown menu design end */
+
 
 /* design fix start */
 
@@ -2098,7 +2181,87 @@ footer
     padding: 0 22px 40px;
 }
 
+.app-nav-wrapper .dropdown-link:hover, .dropdown-item:hover > .dropdown-link 
+{
+	background-color: unset;
+}
+
+.dropdown-item:focus, .dropdown-item:hover 
+{
+    color: #16181b;
+    text-decoration: none;
+    background-color: unset;
+}
+
 /* design fix end */
+
+/* profile design start */
+
+.profile-avatar-wrapper 
+{
+	gap: 20px;
+	display: flex;
+	align-items: center;
+	padding-bottom: 20px;
+	margin-bottom: 25px;
+	border-bottom: 1px solid #e7ddd4;
+}
+
+.profile-avatar-box 
+{
+	color: #fff;
+	width: 80px;
+	height: 80px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 32px;
+	font-weight: 700;
+	border-radius: 50%;
+	background: #39160a;
+	border: 3px solid #f5a300;
+}
+.profile-meta h3 
+{
+	color: #2A1810;
+	font-size: 20px;
+	font-weight: 700;
+	margin: 0 0 4px 0;
+}
+.profile-meta span 
+{
+	gap: 5px;
+	font-size: 13px;
+	color: #8C7B6E;
+	display: inline-flex;
+	align-items: center;
+}
+
+.badge-role 
+{
+	color: #d84d08;
+	padding: 3px 10px;
+	border-radius: 20px;
+	font-weight: 600;
+	font-size: 12px;
+	background: rgba(216, 77, 8, 0.1);
+}
+
+/* profile design end */
+
+
+
+.mall-tracker-regis .section-body
+{
+	height: 100%;	
+}
+
+.mall-tracker-regis .form-save-wrap
+{
+    width: 100%;
+	position: relative;
+    background-color: unset;
+}
 
 @media only screen and (min-width: 300px) and (max-width: 991px) 
 {

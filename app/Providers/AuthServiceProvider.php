@@ -7,7 +7,7 @@ use App\Models\Building;
 use App\Models\User;
 
 use App\Policies\MallPolicy;
-use App\Policies\BuildingPolicy;
+//use App\Policies\BuildingPolicy;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -19,7 +19,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Mall::class => MallPolicy::class,
-        Building::class => BuildingPolicy::class,
+       // Building::class => BuildingPolicy::class,
     ];
 
     /**

@@ -4,41 +4,129 @@ namespace App\Repositories;
 
 use App\Models\Building;
 
-class EloquentBuildingRepository implements BuildingRepositoryInterface
+class EloquentBuildingRepository
+    implements BuildingRepositoryInterface
 {
+    /**
+     * Get buildings.
+     */
     public function all(array $filters = [])
     {
-        $query = Building::query();
+        $query = Building::with([
+            'mall',
+            'creator',
+            'updater',
+        ]);
 
-        if (! empty($filters['search'])) {
-            $s = '%'.$filters['search'].'%';
-            $query->where('building_name', 'like', $s)
-                  ->orWhere('building_code', 'like', $s)
-                  ->orWhere('city', 'like', $s);
+        /*
+        |--------------------------------------------------------------------------
+        | Search
+        |--------------------------------------------------------------------------
+        */
+
+        if (!empty($filters['search'])) {
+
+            $search = $filters['search'];
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where(
+                    'building_code',
+                    'like',
+                    "%{$search}%"
+                )
+                ->orWhere(
+                    'building_name',
+                    'like',
+                    "%{$search}%"
+                )
+                ->orWhere(
+                    'description',
+                    'like',
+                    "%{$search}%"
+                );
+
+            });
         }
 
-        return $query->orderBy('id', 'desc')->paginate(20);
+        /*
+        |--------------------------------------------------------------------------
+        | Mall Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if (!empty($filters['mall_id'])) {
+
+            $query->where(
+                'mall_id',
+                $filters['mall_id']
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Status Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            isset($filters['status']) &&
+            $filters['status'] !== ''
+        ) {
+
+            $query->where(
+                'status',
+                $filters['status']
+            );
+        }
+
+        return $query
+            ->orderBy('building_name')
+            ->get();
     }
 
-    public function find(int $id): ?Building
+    /**
+     * Find building.
+     */
+    public function find($id)
     {
-        return Building::find($id);
+        return Building::with([
+            'mall',
+            'creator',
+            'updater',
+            'floors',
+        ])->find($id);
     }
 
-    public function create(array $data): Building
+    /**
+     * Create building.
+     */
+    public function create(array $data)
     {
         return Building::create($data);
     }
 
-    public function update(Building $building, array $data): Building
-    {
-        $building->fill($data);
-        $building->save();
-        return $building;
+    /**
+     * Update building.
+     */
+    public function update(
+        Building $building,
+        array $data
+    ) {
+        $building->update($data);
+
+        return $building->fresh([
+            'mall',
+            'creator',
+            'updater',
+        ]);
     }
 
-    public function delete(Building $building): bool
+    /**
+     * Delete building.
+     */
+    public function delete(Building $building)
     {
-        return (bool) $building->delete();
+        return $building->delete();
     }
 }

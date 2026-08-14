@@ -40,8 +40,15 @@ class Mall extends Model
         'opening_date' => 'date',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
-        'total_area' => 'float',
-        'leasable_area' => 'float',
+        'total_area' => 'decimal:2',
+        'leasable_area' => 'decimal:2',
         'parking_capacity' => 'integer',
     ];
+    public function buildings()
+        {
+            return $this->hasMany(
+                Building::class,
+                'mall_id'
+            );
+        }
 }

@@ -932,3 +932,4 @@ private function generateReceiptNumber(): string
     }
 
 }
+

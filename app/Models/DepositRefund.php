@@ -4,14 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class DepositRefund extends Model
 {
     use SoftDeletes;
 
     protected $table = 'deposit_refunds';
-
     protected $fillable = [
         'uuid',
         'deposit_id',
@@ -81,3 +79,4 @@ class DepositRefund extends Model
         });
     }
 }
+

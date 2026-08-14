@@ -93,6 +93,295 @@
 
     @endif
 
+    {{-- =========================================================
+     TENANT FILTERS
+    ========================================================= --}}
+
+    <div class="card border-0 shadow-sm mb-3">
+
+        <div class="card-header bg-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h6 class="mb-0 fw-semibold">
+
+                        <i class="fas fa-filter text-primary me-2"></i>
+
+                        Filters
+
+                    </h6>
+
+                    <small class="text-muted">
+
+                        Search and filter tenant records
+
+                    </small>
+
+                </div>
+
+
+                {{-- Reset --}}
+
+                @if(
+                    request('search') ||
+                    request('status') ||
+                    request('login_status') ||
+                    request('business_category_id')
+                )
+
+                    <a
+                        href="{{ route('admin.tenants.index') }}"
+                        class="btn btn-sm btn-outline-secondary"
+                    >
+
+                        <i class="fas fa-times me-1"></i>
+
+                        Clear Filters
+
+                    </a>
+
+                @endif
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form
+                method="GET"
+                action="{{ route('admin.tenants.index') }}"
+            >
+
+                <div class="row g-3">
+
+
+                    {{-- SEARCH --}}
+
+                    <div class="col-lg-5">
+
+                        <label class="form-label small fw-semibold">
+
+                            Search Tenant
+
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text bg-white" style="width: auto;">
+
+                                <i class="fas fa-search text-muted"></i>
+
+                            </span>
+
+                            <input
+                                type="text"
+                                name="search"
+                                class="form-control"
+                                value="{{ request('search') }}"
+                                placeholder="Company, code, GST, PAN, phone or email"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- TENANT STATUS --}}
+
+                    <div class="col-lg-2">
+
+                        <label class="form-label small fw-semibold">
+
+                            Tenant Status
+
+                        </label>
+
+                        <select
+                            name="status"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                All
+                            </option>
+
+                            <option
+                                value="Active"
+                                {{ request('status') === 'Active'
+                                    ? 'selected'
+                                    : '' }}
+                            >
+                                Active
+                            </option>
+
+                            <option
+                                value="Inactive"
+                                {{ request('status') === 'Inactive'
+                                    ? 'selected'
+                                    : '' }}
+                            >
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    {{-- LOGIN STATUS --}}
+
+                    <div class="col-lg-2">
+
+                        <label class="form-label small fw-semibold">
+
+                            Login Status
+
+                        </label>
+
+                        <select
+                            name="login_status"
+                            class="form-select"
+                        >
+
+                            <option value="">
+                                All
+                            </option>
+
+                            <option
+                                value="active"
+                                {{ request('login_status') === 'active'
+                                    ? 'selected'
+                                    : '' }}
+                            >
+                                Login Active
+                            </option>
+
+                            <option
+                                value="inactive"
+                                {{ request('login_status') === 'inactive'
+                                    ? 'selected'
+                                    : '' }}
+                            >
+                                Login Inactive
+                            </option>
+
+                            <option
+                                value="none"
+                                {{ request('login_status') === 'none'
+                                    ? 'selected'
+                                    : '' }}
+                            >
+                                No Login
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    {{-- BUTTONS --}}
+
+                    <div class="col-12">
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+
+                                <i class="fas fa-search me-1"></i>
+
+                                Apply Filters
+
+                            </button>
+
+
+                            <a
+                                href="{{ route(
+                                    'admin.tenants.index'
+                                ) }}"
+                                class="btn btn-outline-secondary"
+                            >
+
+                                <i class="fas fa-redo me-1"></i>
+
+                                Reset
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+            @if(
+                request('search') ||
+                request('status') ||
+                request('login_status')
+            )
+
+                <div class="mb-3">
+
+                    <small class="text-muted me-2">
+                        Active filters:
+                    </small>
+
+
+                    @if(request('search'))
+
+                        <span class="badge bg-light text-dark border me-1">
+
+                            Search: {{ request('search') }}
+
+                        </span>
+
+                    @endif
+
+
+                    @if(request('status'))
+
+                        <span class="badge bg-light text-dark border me-1">
+
+                            Status: {{ request('status') }}
+
+                        </span>
+
+                    @endif
+
+
+                    @if(request('login_status'))
+
+                        <span class="badge bg-light text-dark border me-1">
+
+                            Login:
+                            {{ ucfirst(
+                                str_replace(
+                                    '_',
+                                    ' ',
+                                    request('login_status')
+                                )
+                            ) }}
+
+                        </span>
+
+                    @endif
+
+                </div>
+
+            @endif
+
+        </div>
+
+    </div>
+
 
     {{-- =========================================================
          TENANT TABLE
