@@ -40,7 +40,6 @@ class Invoice extends Model
         'billing_period_from' => 'date',
         'billing_period_to' => 'date',
         'due_date' => 'date',
-
         'subtotal' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'taxable_amount' => 'decimal:2',
@@ -50,7 +49,7 @@ class Invoice extends Model
         'balance_amount' => 'decimal:2',
     ];
 
-    public function leaseAgreement()
+    public function generator()
     {
         return $this->belongsTo(
             LeaseAgreement::class,
@@ -58,7 +57,7 @@ class Invoice extends Model
         );
     }
 
-    public function tenant()
+    public function creator()
     {
         return $this->belongsTo(
             Tenant::class,
@@ -74,27 +73,19 @@ class Invoice extends Model
         );
     }
 
-    public function generator()
+    public function payments()
     {
-        return $this->belongsTo(
-            User::class,
-            'generated_by'
+        return $this->hasMany(
+            RentPayment::class,
+            'invoice_id'
         );
     }
 
-    public function creator()
+    public function rentSchedule()
     {
-        return $this->belongsTo(
-            User::class,
-            'created_by'
-        );
-    }
-
-    public function updater()
-    {
-        return $this->belongsTo(
-            User::class,
-            'updated_by'
+        return $this->hasOne(
+            RentSchedule::class,
+            'invoice_id'
         );
     }
 }

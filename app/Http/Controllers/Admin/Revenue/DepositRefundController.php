@@ -3,117 +3,848 @@
 namespace App\Http\Controllers\Admin\Revenue;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Repositories\DepositRefundRepository;
+use App\Models\Deposit;
 use App\Models\DepositRefund;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DepositRefundController extends Controller
 {
-    protected $repo;
-
-    public function __construct(DepositRefundRepository $repo)
+    /**
+     * Display refund records.
+     */
+    public function index()
     {
-        $this->repo = $repo;
+        $refunds = DepositRefund::with([
+            'deposit.leaseAgreement'
+        ])
+            ->orderByDesc('id')
+            ->get();
 
-        $this->middleware('can:viewAny,App\\Models\\DepositRefund')->only(['index', 'show']);
-        $this->middleware('can:create,App\\Models\\DepositRefund')->only(['create', 'store']);
-        $this->middleware('can:update,App\\Models\\DepositRefund')->only(['edit', 'update']);
-        $this->middleware('can:delete,App\\Models\\DepositRefund')->only(['destroy']);
+        $deposits = Deposit::with('leaseAgreement')
+            ->where('payment_status', 'Paid')
+            ->where('refundable_amount', '>', 0)
+            ->orderByDesc('id')
+            ->get();
+
+        return view(
+            'admin.revenue.deposit_refunds.index',
+            compact(
+                'refunds',
+                'deposits'
+            )
+        );
     }
 
-    public function index(Request $request)
-    {
-        $perPage = $request->get('per_page', 15);
-        $filters = $request->only(['deposit_id']);
-        $refunds = $this->repo->paginate($perPage, $filters);
 
-        return view('admin.revenue.deposit_refunds.index', compact('refunds'));
-    }
-
-    public function create()
-    {
-        return view('admin.revenue.deposit_refunds.create');
-    }
-
+    /**
+     * Create refund.
+     */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'uuid' => 'nullable|string',
-            'deposit_id' => 'nullable|integer',
-            'refund_no' => 'nullable|string',
-            'refund_date' => 'nullable|date',
-            'original_deposit' => 'nullable|numeric',
-            'outstanding_rent' => 'nullable|numeric',
-            'cam_deduction' => 'nullable|numeric',
-            'utility_deduction' => 'nullable|numeric',
-            'damage_deduction' => 'nullable|numeric',
-            'penalty_deduction' => 'nullable|numeric',
-            'other_deduction' => 'nullable|numeric',
-            'total_deduction' => 'nullable|numeric',
-            'refund_amount' => 'nullable|numeric',
-            'payment_mode' => 'nullable|string',
-            'bank_name' => 'nullable|string',
-            'transaction_reference' => 'nullable|string',
-            'refund_status' => 'nullable|string',
-            'approved_by' => 'nullable|integer',
-            'approved_at' => 'nullable|date',
-            'remarks' => 'nullable|string',
+        $validated = $request->validate([
+
+            'deposit_id' => [
+                'required',
+                'exists:deposits,id',
+            ],
+
+            'refund_date' => [
+                'required',
+                'date',
+            ],
+
+            'outstanding_rent' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'cam_deduction' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'utility_deduction' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'damage_deduction' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'penalty_deduction' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'other_deduction' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'payment_mode' => [
+                'nullable',
+                'in:Cash,Cheque,NEFT,RTGS,IMPS,UPI',
+            ],
+
+            'bank_name' => [
+                'nullable',
+                'string',
+                'max:150',
+            ],
+
+            'transaction_reference' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'remarks' => [
+                'nullable',
+                'string',
+            ],
         ]);
 
-        $data['created_by'] = auth()->id();
 
-        $this->repo->create($data);
+        DB::transaction(function () use (
+            $validated
+        ) {
 
-        return redirect()->route('admin.revenue.deposit_refunds.index')->with('success', 'Deposit refund created.');
+            /*
+            |--------------------------------------------------------------------------
+            | Lock Deposit
+            |--------------------------------------------------------------------------
+            */
+
+            $deposit = Deposit::where(
+                'id',
+                $validated['deposit_id']
+            )
+                ->lockForUpdate()
+                ->firstOrFail();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Deposit Must Be Fully Paid
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $deposit->payment_status !== 'Paid'
+            ) {
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'deposit_id' =>
+                        'Refund can only be created after the deposit has been fully received.'
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Original Deposit
+            |--------------------------------------------------------------------------
+            */
+
+            $originalDeposit =
+                (float) $deposit->deposit_amount;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Deductions
+            |--------------------------------------------------------------------------
+            */
+
+            $outstandingRent =
+                (float) (
+                    $validated['outstanding_rent']
+                    ?? 0
+                );
+
+            $camDeduction =
+                (float) (
+                    $validated['cam_deduction']
+                    ?? 0
+                );
+
+            $utilityDeduction =
+                (float) (
+                    $validated['utility_deduction']
+                    ?? 0
+                );
+
+            $damageDeduction =
+                (float) (
+                    $validated['damage_deduction']
+                    ?? 0
+                );
+
+            $penaltyDeduction =
+                (float) (
+                    $validated['penalty_deduction']
+                    ?? 0
+                );
+
+            $otherDeduction =
+                (float) (
+                    $validated['other_deduction']
+                    ?? 0
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Total Deduction
+            |--------------------------------------------------------------------------
+            */
+
+            $totalDeduction =
+                $outstandingRent
+                + $camDeduction
+                + $utilityDeduction
+                + $damageDeduction
+                + $penaltyDeduction
+                + $otherDeduction;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Deduction Cannot Exceed Deposit
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $totalDeduction > $originalDeposit
+            ) {
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'outstanding_rent' =>
+                        'Total deductions cannot exceed the original deposit amount of ₹'
+                        . number_format(
+                            $originalDeposit,
+                            2
+                        )
+                        . '.'
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Refund Amount
+            |--------------------------------------------------------------------------
+            */
+
+            $refundAmount =
+                $originalDeposit
+                - $totalDeduction;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Check Already Processed Refunds
+            |--------------------------------------------------------------------------
+            */
+
+            $processedRefundAmount =
+                DepositRefund::where(
+                    'deposit_id',
+                    $deposit->id
+                )
+                ->where(
+                    'refund_status',
+                    'Processed'
+                )
+                ->sum('refund_amount');
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Remaining Refundable Amount
+            |--------------------------------------------------------------------------
+            */
+
+            $remainingRefundable =
+                max(
+                    0,
+                    (float) $deposit->refundable_amount
+                    - (float) $processedRefundAmount
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Prevent Excess Refund
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $refundAmount > $remainingRefundable
+            ) {
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'deposit_id' =>
+                        'Refund amount of ₹'
+                        . number_format(
+                            $refundAmount,
+                            2
+                        )
+                        . ' exceeds the remaining refundable amount of ₹'
+                        . number_format(
+                            $remainingRefundable,
+                            2
+                        )
+                        . '.'
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Generate Refund Number
+            |--------------------------------------------------------------------------
+            */
+
+            $refundNo =
+                $this->generateRefundNumber();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create Refund
+            |--------------------------------------------------------------------------
+            */
+
+            DepositRefund::create([
+
+                'uuid' =>
+                    (string) Str::uuid(),
+
+                'deposit_id' =>
+                    $deposit->id,
+
+                'refund_no' =>
+                    $refundNo,
+
+                'refund_date' =>
+                    $validated['refund_date'],
+
+                'original_deposit' =>
+                    $originalDeposit,
+
+                'outstanding_rent' =>
+                    $outstandingRent,
+
+                'cam_deduction' =>
+                    $camDeduction,
+
+                'utility_deduction' =>
+                    $utilityDeduction,
+
+                'damage_deduction' =>
+                    $damageDeduction,
+
+                'penalty_deduction' =>
+                    $penaltyDeduction,
+
+                'other_deduction' =>
+                    $otherDeduction,
+
+                'total_deduction' =>
+                    $totalDeduction,
+
+                'refund_amount' =>
+                    $refundAmount,
+
+                'payment_mode' =>
+                    $validated['payment_mode']
+                    ?? null,
+
+                'bank_name' =>
+                    $validated['bank_name']
+                    ?? null,
+
+                'transaction_reference' =>
+                    $validated['transaction_reference']
+                    ?? null,
+
+                'refund_status' =>
+                    'Pending',
+
+                'remarks' =>
+                    $validated['remarks']
+                    ?? null,
+
+                'created_by' =>
+                    Auth::id(),
+
+                'updated_by' =>
+                    Auth::id(),
+            ]);
+        });
+
+
+        return redirect()
+            ->route(
+                'admin.revenue.deposit-refunds.index'
+            )
+            ->with(
+                'success',
+                'Deposit refund created successfully and is pending approval.'
+            );
     }
 
-    public function show($id)
+
+    /**
+     * Approve refund.
+     */
+    public function approve($id)
     {
-        $refund = $this->repo->find($id);
-        return view('admin.revenue.deposit_refunds.show', compact('refund'));
+        DB::transaction(function () use ($id) {
+
+            $refund =
+                DepositRefund::where(
+                    'id',
+                    $id
+                )
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Only Pending Refund Can Be Approved
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $refund->refund_status !== 'Pending'
+            ) {
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'refund' =>
+                        'Only pending refunds can be approved.'
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Lock Deposit
+            |--------------------------------------------------------------------------
+            */
+
+            $deposit =
+                Deposit::where(
+                    'id',
+                    $refund->deposit_id
+                )
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Recheck Refundable Amount
+            |--------------------------------------------------------------------------
+            |
+            | This is important because another refund could have
+            | been processed after this refund was created.
+            |
+            */
+
+            $processedRefundAmount =
+                DepositRefund::where(
+                    'deposit_id',
+                    $deposit->id
+                )
+                ->where(
+                    'refund_status',
+                    'Processed'
+                )
+                ->sum('refund_amount');
+
+
+            $remainingRefundable =
+                max(
+                    0,
+                    (float) $deposit->refundable_amount
+                    - (float) $processedRefundAmount
+                );
+
+
+            if (
+                (float) $refund->refund_amount
+                > $remainingRefundable
+            ) {
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'refund' =>
+                        'This refund exceeds the currently available refundable amount.'
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Approve
+            |--------------------------------------------------------------------------
+            */
+
+            $refund->update([
+
+                'refund_status' =>
+                    'Approved',
+
+                'approved_by' =>
+                    Auth::id(),
+
+                'approved_at' =>
+                    now(),
+
+                'updated_by' =>
+                    Auth::id(),
+            ]);
+        });
+
+
+        return redirect()
+            ->route(
+                'admin.revenue.deposit-refunds.index'
+            )
+            ->with(
+                'success',
+                'Refund approved successfully.'
+            );
     }
 
-    public function edit($id)
-    {
-        $refund = $this->repo->find($id);
-        return view('admin.revenue.deposit_refunds.edit', compact('refund'));
-    }
 
-    public function update(Request $request, $id)
+    /**
+     * Process refund payment.
+     */
+    public function process(Request $request, $id)
     {
-        $data = $request->validate([
-            'uuid' => 'nullable|string',
-            'deposit_id' => 'nullable|integer',
-            'refund_no' => 'nullable|string',
-            'refund_date' => 'nullable|date',
-            'original_deposit' => 'nullable|numeric',
-            'outstanding_rent' => 'nullable|numeric',
-            'cam_deduction' => 'nullable|numeric',
-            'utility_deduction' => 'nullable|numeric',
-            'damage_deduction' => 'nullable|numeric',
-            'penalty_deduction' => 'nullable|numeric',
-            'other_deduction' => 'nullable|numeric',
-            'total_deduction' => 'nullable|numeric',
-            'refund_amount' => 'nullable|numeric',
-            'payment_mode' => 'nullable|string',
-            'bank_name' => 'nullable|string',
-            'transaction_reference' => 'nullable|string',
-            'refund_status' => 'nullable|string',
-            'approved_by' => 'nullable|integer',
-            'approved_at' => 'nullable|date',
-            'remarks' => 'nullable|string',
+        $validated = $request->validate([
+
+            'payment_mode' => [
+                'required',
+                'in:Cash,Cheque,NEFT,RTGS,IMPS,UPI',
+            ],
+
+            'bank_name' => [
+                'nullable',
+                'string',
+                'max:150',
+            ],
+
+            'transaction_reference' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'remarks' => [
+                'nullable',
+                'string',
+            ],
         ]);
 
-        $data['updated_by'] = auth()->id();
 
-        $this->repo->update($id, $data);
+        DB::transaction(function () use (
+            $validated,
+            $id
+        ) {
 
-        return redirect()->route('admin.revenue.deposit_refunds.index')->with('success', 'Deposit refund updated.');
+            $refund =
+                DepositRefund::where(
+                    'id',
+                    $id
+                )
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Only Approved Refund Can Be Processed
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $refund->refund_status !== 'Approved'
+            ) {
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'refund' =>
+                        'Only approved refunds can be processed.'
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Lock Deposit
+            |--------------------------------------------------------------------------
+            */
+
+            $deposit =
+                Deposit::where(
+                    'id',
+                    $refund->deposit_id
+                )
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Recheck Refundable Amount
+            |--------------------------------------------------------------------------
+            */
+
+            $processedRefundAmount =
+                DepositRefund::where(
+                    'deposit_id',
+                    $deposit->id
+                )
+                ->where(
+                    'refund_status',
+                    'Processed'
+                )
+                ->sum('refund_amount');
+
+
+            $remainingRefundable =
+                max(
+                    0,
+                    (float) $deposit->refundable_amount
+                    - (float) $processedRefundAmount
+                );
+
+
+            if (
+                (float) $refund->refund_amount
+                > $remainingRefundable
+            ) {
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'refund' =>
+                        'Refund amount exceeds the remaining refundable amount.'
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Process Refund
+            |--------------------------------------------------------------------------
+            */
+
+            /*$refund->update([
+
+                'payment_mode' =>
+                    $validated['payment_mode'],
+
+                'bank_name' =>
+                    $validated['bank_name']
+                    ?? null,
+
+                'transaction_reference' =>
+                    $validated['transaction_reference']
+                    ?? null,
+
+                'refund_status' =>
+                    'Processed',
+
+                'remarks' =>
+                    $validated['remarks']
+                    ?? $refund->remarks,
+
+                'updated_by' =>
+                    Auth::id(),
+            ]);*/
+
+            $newRefundableAmount = max( 0,  (float) $deposit->refundable_amount  - (float) $refund->refund_amount );
+
+            $deposit->update([
+
+                'refundable_amount' =>
+                    round($newRefundableAmount, 2),
+
+                'updated_by' =>
+                    Auth::id(),
+
+            ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Process Refund
+            |--------------------------------------------------------------------------
+            */
+
+            $refund->update([
+
+                'payment_mode' =>
+                    $validated['payment_mode'],
+
+                'bank_name' =>
+                    $validated['bank_name'] ?? null,
+
+                'transaction_reference' =>
+                    $validated['transaction_reference'] ?? null,
+
+                'refund_status' =>
+                    'Processed',
+
+                'remarks' =>
+                    $validated['remarks']
+                    ?? $refund->remarks,
+
+                'updated_by' =>
+                    Auth::id(),
+
+            ]);
+
+
+        });
+
+
+        return redirect()
+            ->route(
+                'admin.revenue.deposit-refunds.index'
+            )
+            ->with(
+                'success',
+                'Refund processed successfully.'
+            );
     }
 
-    public function destroy($id)
+
+    /**
+     * Cancel refund.
+     */
+    public function cancel(Request $request, $id)
     {
-        $this->repo->delete($id);
-        return redirect()->route('admin.revenue.deposit_refunds.index')->with('success', 'Deposit refund deleted.');
+        $validated = $request->validate([
+
+            'remarks' => [
+                'required',
+                'string',
+                'max:1000',
+            ],
+        ]);
+
+
+        $refund =
+            DepositRefund::findOrFail($id);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Only Pending / Approved Can Be Cancelled
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !in_array(
+                $refund->refund_status,
+                [
+                    'Pending',
+                    'Approved'
+                ],
+                true
+            )
+        ) {
+
+            return back()->with(
+                'error',
+                'Only pending or approved refunds can be cancelled.'
+            );
+        }
+
+
+        $refund->update([
+
+            'refund_status' =>
+                'Cancelled',
+
+            'remarks' =>
+                trim(
+                    ($refund->remarks
+                        ? $refund->remarks . "\n"
+                        : '')
+                    . 'Cancellation: '
+                    . $validated['remarks']
+                ),
+
+            'updated_by' =>
+                Auth::id(),
+        ]);
+
+
+        return redirect()
+            ->route(
+                'admin.revenue.deposit-refunds.index'
+            )
+            ->with(
+                'success',
+                'Refund cancelled successfully.'
+            );
     }
+
+
+    /**
+     * Generate refund number.
+     */
+    private function generateRefundNumber(): string
+    {
+        $year = now()->format('Y');
+
+        $lastRefund =
+            DepositRefund::where(
+                'refund_no',
+                'like',
+                'RF-' . $year . '-%'
+            )
+            ->orderByDesc('id')
+            ->first();
+
+
+        if (!$lastRefund) {
+
+            $number = 1;
+
+        } else {
+
+            $lastNumber =
+                (int) substr(
+                    $lastRefund->refund_no,
+                    -5
+                );
+
+            $number =
+                $lastNumber + 1;
+        }
+
+
+        return sprintf(
+            'RF-%s-%05d',
+            $year,
+            $number
+        );
+    }
+
 }

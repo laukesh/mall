@@ -301,7 +301,7 @@ select.form-control:not([size]):not([multiple]),
   font-size: 13px;
   background-color: var(--bg-input);
   color: var(--text-dark);
-  border: 1.5px solid var(--border-color);
+  /*border: 1.5px solid var(--border-color);*/
   border-radius: 10px;
   transition: all 0.2s ease-in-out;
   width: 100%;
@@ -2042,7 +2042,7 @@ nav.app-navigation
 	transition: 0.15s;
 	text-decoration: none;
 	display: inline-block;
-	padding: 13px 16px 12px;
+	padding: 12px 12px 12px;
 	border-bottom: 2.5px solid transparent;
 }
 

@@ -92,4 +92,12 @@ class User extends Authenticatable implements JWTSubject
             'user_id'
         );
     }
+
+    public function fitoutContractor()
+    {
+        return $this->hasOne(
+            FitoutContractor::class,
+            'user_id'
+        );
+    }
 }

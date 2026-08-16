@@ -13,230 +13,35 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-
             <h4 class="mb-1 fw-bold">
                 Tenant Dashboard
             </h4>
 
             <p class="text-muted mb-0">
-                Overview of tenants, documents and lease activity
+                Overview of tenants, leases, documents and activities
             </p>
-
         </div>
 
-
-        <div class="d-flex gap-2">
-
+        <div>
             <a href="{{ route('admin.tenants.create') }}"
                class="btn btn-primary">
 
                 <i class="fas fa-plus me-1"></i>
-
-                New Tenant
+                Add Tenant
 
             </a>
-
         </div>
 
     </div>
 
 
     {{-- =========================================================
-         MAIN STATISTICS
+         TENANT STATISTICS
     ========================================================== --}}
 
     <div class="row g-3 mb-4">
 
-
-        {{-- TOTAL TENANTS --}}
-
-        <div class="col-xl-3 col-md-6">
-
-            <a href="{{ route('admin.tenants.index') }}"
-               class="text-decoration-none">
-
-                <div class="card border-0 shadow-sm h-100">
-
-                    <div class="card-body">
-
-                        <div class="d-flex justify-content-between">
-
-                            <div>
-
-                                <div class="text-muted small mb-1">
-                                    Total Tenants
-                                </div>
-
-                                <div class="fs-2 fw-bold text-dark">
-                                    {{ $tenantTotal }}
-                                </div>
-
-                            </div>
-
-
-                            <div class="rounded-circle
-                                        bg-primary
-                                        bg-opacity-10
-                                        text-primary
-                                        p-3"
-                                 style="height:55px;width:55px;">
-
-                                <i class="fas fa-users fa-lg"></i>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="mt-3 small">
-
-                            <span class="text-success">
-                                Active:
-                            </span>
-
-                            <strong>
-                                {{ $tenantActive }}
-                            </strong>
-
-                            <span class="mx-2 text-muted">
-                                |
-                            </span>
-
-                            <span class="text-secondary">
-                                Inactive:
-                            </span>
-
-                            <strong>
-                                {{ $tenantInactive }}
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-        </div>
-
-
-        {{-- ACTIVE TENANTS --}}
-
-        <div class="col-xl-3 col-md-6">
-
-            <a href="{{ route('admin.tenants.index') }}"
-               class="text-decoration-none">
-
-                <div class="card border-0 shadow-sm h-100">
-
-                    <div class="card-body">
-
-                        <div class="d-flex justify-content-between">
-
-                            <div>
-
-                                <div class="text-muted small mb-1">
-                                    Active Tenants
-                                </div>
-
-                                <div class="fs-2 fw-bold text-success">
-                                    {{ $tenantActive }}
-                                </div>
-
-                            </div>
-
-
-                            <div class="rounded-circle
-                                        bg-success
-                                        bg-opacity-10
-                                        text-success
-                                        p-3"
-                                 style="height:55px;width:55px;">
-
-                                <i class="fas fa-user-check fa-lg"></i>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="mt-3 small text-muted">
-
-                            Currently active tenant accounts
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-        </div>
-
-
-        {{-- ACTIVE AGREEMENTS --}}
-
-        <div class="col-xl-3 col-md-6">
-
-            <a href="{{ route(
-                'admin.leasing.agreements.index'
-            ) }}"
-               class="text-decoration-none">
-
-                <div class="card border-0 shadow-sm h-100">
-
-                    <div class="card-body">
-
-                        <div class="d-flex justify-content-between">
-
-                            <div>
-
-                                <div class="text-muted small mb-1">
-                                    Active Leases
-                                </div>
-
-                                <div class="fs-2 fw-bold text-primary">
-                                    {{ $agreementActive }}
-                                </div>
-
-                            </div>
-
-
-                            <div class="rounded-circle
-                                        bg-primary
-                                        bg-opacity-10
-                                        text-primary
-                                        p-3"
-                                 style="height:55px;width:55px;">
-
-                                <i class="fas fa-file-signature fa-lg"></i>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="mt-3 small text-muted">
-
-                            Total Agreements:
-                            <strong>
-                                {{ $agreementTotal }}
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-        </div>
-
-
-        {{-- DOCUMENTS --}}
+        {{-- Total Tenants --}}
 
         <div class="col-xl-3 col-md-6">
 
@@ -248,52 +53,160 @@
 
                         <div>
 
-                            <div class="text-muted small mb-1">
-                                Tenant Documents
+                            <div class="text-muted small">
+                                Total Tenants
                             </div>
 
-                            <div class="fs-2 fw-bold text-warning">
-                                {{ $documentTotal }}
+                            <div class="fs-2 fw-bold">
+                                {{ $tenantTotal }}
                             </div>
 
                         </div>
 
-
                         <div class="rounded-circle
-                                    bg-warning
+                                    bg-primary
                                     bg-opacity-10
-                                    text-warning
-                                    p-3"
-                             style="height:55px;width:55px;">
+                                    text-primary
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:55px;height:55px;">
 
-                            <i class="fas fa-folder-open fa-lg"></i>
+                            <i class="fas fa-users fa-lg"></i>
 
                         </div>
 
                     </div>
 
+                </div>
 
-                    <div class="mt-3 small">
+            </div>
 
-                        <span class="text-warning">
-                            Pending:
-                        </span>
+        </div>
 
-                        <strong>
-                            {{ $documentPending }}
-                        </strong>
 
-                        <span class="mx-2 text-muted">
-                            |
-                        </span>
+        {{-- Active Tenants --}}
 
-                        <span class="text-success">
-                            Verified:
-                        </span>
+        <div class="col-xl-3 col-md-6">
 
-                        <strong>
-                            {{ $documentVerified }}
-                        </strong>
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <div class="text-muted small">
+                                Active Tenants
+                            </div>
+
+                            <div class="fs-2 fw-bold text-success">
+                                {{ $tenantActive }}
+                            </div>
+
+                        </div>
+
+                        <div class="rounded-circle
+                                    bg-success
+                                    bg-opacity-10
+                                    text-success
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:55px;height:55px;">
+
+                            <i class="fas fa-user-check fa-lg"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- Inactive Tenants --}}
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <div class="text-muted small">
+                                Inactive Tenants
+                            </div>
+
+                            <div class="fs-2 fw-bold text-secondary">
+                                {{ $tenantInactive }}
+                            </div>
+
+                        </div>
+
+                        <div class="rounded-circle
+                                    bg-secondary
+                                    bg-opacity-10
+                                    text-secondary
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:55px;height:55px;">
+
+                            <i class="fas fa-user-slash fa-lg"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- Active Leases --}}
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <div class="text-muted small">
+                                Active Leases
+                            </div>
+
+                            <div class="fs-2 fw-bold text-primary">
+                                {{ $agreementActive }}
+                            </div>
+
+                        </div>
+
+                        <div class="rounded-circle
+                                    bg-primary
+                                    bg-opacity-10
+                                    text-primary
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:55px;height:55px;">
+
+                            <i class="fas fa-file-signature fa-lg"></i>
+
+                        </div>
 
                     </div>
 
@@ -307,25 +220,26 @@
 
 
     {{-- =========================================================
-         DOCUMENT STATUS
+         LEASE / DOCUMENT STATISTICS
     ========================================================== --}}
 
-    <div class="card border-0 shadow-sm mb-4">
+    <div class="row g-3 mb-4">
 
-        <div class="card-header bg-white py-3">
+        {{-- Total Agreements --}}
 
-            <div class="d-flex justify-content-between
-                        align-items-center">
+        <div class="col-xl-3 col-md-6">
 
-                <div>
+            <div class="card border-0 shadow-sm">
 
-                    <h5 class="mb-1">
-                        Document Verification
-                    </h5>
+                <div class="card-body">
 
-                    <small class="text-muted">
-                        Tenant document verification status
-                    </small>
+                    <div class="text-muted small">
+                        Total Agreements
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        {{ $agreementTotal }}
+                    </div>
 
                 </div>
 
@@ -334,16 +248,98 @@
         </div>
 
 
+        {{-- Expired Agreements --}}
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Expired Agreements
+                    </div>
+
+                    <div class="fs-3 fw-bold text-danger">
+                        {{ $agreementExpired }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- Terminated Agreements --}}
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Terminated Agreements
+                    </div>
+
+                    <div class="fs-3 fw-bold text-danger">
+                        {{ $agreementTerminated }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- Documents --}}
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Tenant Documents
+                    </div>
+
+                    <div class="fs-3 fw-bold text-warning">
+                        {{ $documentTotal }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- =========================================================
+         DOCUMENT VERIFICATION
+    ========================================================== --}}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0">
+                Document Verification
+            </h5>
+
+        </div>
+
         <div class="card-body">
 
             <div class="row g-3">
 
-
-                {{-- PENDING --}}
-
                 <div class="col-md-4">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded p-3">
 
                         <div class="d-flex justify-content-between">
 
@@ -362,11 +358,9 @@
                 </div>
 
 
-                {{-- VERIFIED --}}
-
                 <div class="col-md-4">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded p-3">
 
                         <div class="d-flex justify-content-between">
 
@@ -385,11 +379,9 @@
                 </div>
 
 
-                {{-- REJECTED --}}
-
                 <div class="col-md-4">
 
-                    <div class="border rounded-3 p-3">
+                    <div class="border rounded p-3">
 
                         <div class="d-flex justify-content-between">
 
@@ -415,297 +407,288 @@
 
 
     {{-- =========================================================
-         EXPIRING AGREEMENTS + HISTORY
+         EXPIRING AGREEMENTS
     ========================================================== --}}
 
-    <div class="row g-4 mb-4">
+    <div class="card border-0 shadow-sm mb-4">
 
+        <div class="card-header bg-white">
 
-        {{-- EXPIRING AGREEMENTS --}}
+            <div class="d-flex justify-content-between align-items-center">
 
-        <div class="col-lg-7">
+                <div>
 
-            <div class="card border-0 shadow-sm h-100">
+                    <h5 class="mb-1">
+                        Upcoming Lease Expiry
+                    </h5>
 
-                <div class="card-header bg-white py-3">
-
-                    <div class="d-flex justify-content-between
-                                align-items-center">
-
-                        <div>
-
-                            <h5 class="mb-1">
-                                Upcoming Lease Expiry
-                            </h5>
-
-                            <small class="text-muted">
-                                Active leases expiring within 90 days
-                            </small>
-
-                        </div>
-
-                        <span class="badge bg-warning text-dark">
-
-                            {{ $expiringAgreements->count() }}
-
-                        </span>
-
-                    </div>
+                    <small class="text-muted">
+                        Active agreements expiring within 90 days
+                    </small>
 
                 </div>
 
+                <span class="badge bg-warning text-dark">
 
-                <div class="card-body p-0">
+                    {{ $expiringAgreements->count() }}
 
-                    <div class="table-responsive">
-
-                        <table class="table table-hover
-                                      align-middle mb-0">
-
-                            <thead class="table-light">
-
-                                <tr>
-
-                                    <th>
-                                        Agreement
-                                    </th>
-
-                                    <th>
-                                        Tenant
-                                    </th>
-
-                                    <th>
-                                        Expiry
-                                    </th>
-
-                                    <th>
-                                        Remaining
-                                    </th>
-
-                                </tr>
-
-                            </thead>
-
-
-                            <tbody>
-
-                            @forelse(
-                                $expiringAgreements
-                                as $agreement
-                            )
-
-                                @php
-
-                                    $daysRemaining =
-                                        now()
-                                            ->startOfDay()
-                                            ->diffInDays(
-                                                $agreement->lease_end_date,
-                                                false
-                                            );
-
-                                @endphp
-
-
-                                <tr>
-
-                                    <td>
-
-                                        <a href="{{ route(
-                                            'admin.leasing.agreements.show',
-                                            $agreement->id
-                                        ) }}"
-                                           class="fw-semibold
-                                                  text-decoration-none">
-
-                                            {{ $agreement->agreement_no }}
-
-                                        </a>
-
-                                    </td>
-
-
-                                    <td>
-
-                                        {{ $agreement->tenant?->company_name
-                                            ?? '-' }}
-
-                                    </td>
-
-
-                                    <td>
-
-                                        {{ $agreement->lease_end_date
-                                            ? $agreement->lease_end_date
-                                                ->format('d M Y')
-                                            : '-' }}
-
-                                    </td>
-
-
-                                    <td>
-
-                                        @if($daysRemaining <= 30)
-
-                                            <span class="badge bg-danger">
-
-                                                {{ $daysRemaining }} days
-
-                                            </span>
-
-                                        @elseif($daysRemaining <= 60)
-
-                                            <span class="badge
-                                                         bg-warning
-                                                         text-dark">
-
-                                                {{ $daysRemaining }} days
-
-                                            </span>
-
-                                        @else
-
-                                            <span class="badge bg-info">
-
-                                                {{ $daysRemaining }} days
-
-                                            </span>
-
-                                        @endif
-
-                                    </td>
-
-                                </tr>
-
-                            @empty
-
-                                <tr>
-
-                                    <td colspan="4"
-                                        class="text-center
-                                               text-muted
-                                               py-5">
-
-                                        <i class="fas fa-calendar-check
-                                                  fa-2x mb-2 d-block"></i>
-
-                                        No leases expiring
-                                        within 90 days.
-
-                                    </td>
-
-                                </tr>
-
-                            @endforelse
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
+                </span>
 
             </div>
 
         </div>
 
 
-        {{-- RECENT HISTORY --}}
+        <div class="card-body p-0">
 
-        <div class="col-lg-5">
+            <div class="table-responsive">
 
-            <div class="card border-0 shadow-sm h-100">
+                <table class="table table-hover align-middle mb-0">
 
-                <div class="card-header bg-white py-3">
+                    <thead class="table-light">
 
-                    <h5 class="mb-1">
-                        Recent Tenant Activities
-                    </h5>
+                        <tr>
 
-                    <small class="text-muted">
-                        Latest tenant activity
-                    </small>
+                            <th>
+                                Agreement No.
+                            </th>
 
-                </div>
+                            <th>
+                                Tenant
+                            </th>
+
+                            <th>
+                                Start Date
+                            </th>
+
+                            <th>
+                                End Date
+                            </th>
+
+                            <th>
+                                Remaining
+                            </th>
+
+                        </tr>
+
+                    </thead>
 
 
-                <div class="card-body">
+                    <tbody>
 
                     @forelse(
-                        $recentHistory
-                        as $history
+                        $expiringAgreements
+                        as $agreement
                     )
 
-                        <div class="d-flex
-                                    border-bottom
-                                    pb-3
-                                    mb-3">
+                        @php
 
-                            <div class="me-3">
+                            $daysRemaining = now()
+                                ->startOfDay()
+                                ->diffInDays(
+                                    $agreement->lease_end_date,
+                                    false
+                                );
 
-                                <div class="rounded-circle
-                                            bg-primary
-                                            bg-opacity-10
-                                            text-primary
-                                            d-flex
-                                            align-items-center
-                                            justify-content-center"
-                                     style="width:40px;height:40px;">
-
-                                    <i class="fas fa-history"></i>
-
-                                </div>
-
-                            </div>
+                        @endphp
 
 
-                            <div class="flex-grow-1">
+                        <tr>
 
-                                <div class="fw-semibold">
+                            <td>
 
-                                    {{ $history->activity_title }}
+                                <a href="{{ route(
+                                    'admin.leasing.agreements.show',
+                                    $agreement->id
+                                ) }}"
+                                   class="fw-semibold text-decoration-none">
 
-                                </div>
+                                    {{ $agreement->agreement_no }}
+
+                                </a>
+
+                            </td>
 
 
-                                <div class="small text-muted mt-1">
+                            <td>
 
-                                    {{ $history->tenant?->company_name
-                                        ?? '-' }}
+                                {{ $agreement->tenant?->company_name ?? '-' }}
 
-                                </div>
+                            </td>
 
 
-                                <div class="small text-muted mt-1">
+                            <td>
 
-                                    {{ $history->created_at
-                                        ? $history->created_at
-                                            ->format('d M Y H:i')
-                                        : '-' }}
+                                {{ $agreement->lease_start_date
+                                    ? $agreement->lease_start_date->format('d M Y')
+                                    : '-' }}
 
-                                </div>
+                            </td>
 
-                            </div>
 
-                        </div>
+                            <td>
+
+                                {{ $agreement->lease_end_date
+                                    ? $agreement->lease_end_date->format('d M Y')
+                                    : '-' }}
+
+                            </td>
+
+
+                            <td>
+
+                                @if($daysRemaining <= 30)
+
+                                    <span class="badge bg-danger">
+                                        {{ $daysRemaining }} days
+                                    </span>
+
+                                @elseif($daysRemaining <= 60)
+
+                                    <span class="badge bg-warning text-dark">
+                                        {{ $daysRemaining }} days
+                                    </span>
+
+                                @else
+
+                                    <span class="badge bg-info">
+                                        {{ $daysRemaining }} days
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                        </tr>
 
                     @empty
 
-                        <div class="text-center text-muted py-5">
+                        <tr>
 
-                            <i class="fas fa-history
-                                      fa-2x mb-2 d-block"></i>
+                            <td colspan="5"
+                                class="text-center text-muted py-5">
 
-                            No recent tenant activities.
+                                <i class="fas fa-calendar-check
+                                          fa-2x d-block mb-2"></i>
 
-                        </div>
+                                No active agreements are expiring
+                                within 90 days.
+
+                            </td>
+
+                        </tr>
 
                     @endforelse
 
-                </div>
+                    </tbody>
+
+                </table>
 
             </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- =========================================================
+         RECENT TENANT HISTORY
+    ========================================================== --}}
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-1">
+                Recent Tenant Activity
+            </h5>
+
+            <small class="text-muted">
+                Latest activities recorded against tenants
+            </small>
+
+        </div>
+
+
+        <div class="card-body">
+
+            @forelse(
+                $recentHistory
+                as $history
+            )
+
+                <div class="d-flex
+                            align-items-start
+                            border-bottom
+                            pb-3
+                            mb-3">
+
+                    <div class="me-3">
+
+                        <div class="rounded-circle
+                                    bg-primary
+                                    bg-opacity-10
+                                    text-primary
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:42px;height:42px;">
+
+                            <i class="fas fa-history"></i>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="flex-grow-1">
+
+                        <div class="fw-semibold">
+
+                            {{ $history->activity_type }}
+
+                        </div>
+
+
+                        <div class="text-muted small">
+
+                            {{ $history->description ?? '-' }}
+
+                        </div>
+
+
+                        <div class="small text-muted mt-1">
+
+                            Tenant:
+
+                            <strong>
+                                {{ $history->tenant?->company_name ?? '-' }}
+                            </strong>
+
+                            &nbsp; | &nbsp;
+
+                            {{ $history->activity_date
+                                ? $history->activity_date->format('d M Y H:i')
+                                : '-' }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            @empty
+
+                <div class="text-center text-muted py-5">
+
+                    <i class="fas fa-history
+                              fa-2x d-block mb-2"></i>
+
+                    No tenant activity found.
+
+                </div>
+
+            @endforelse
 
         </div>
 
@@ -718,7 +701,7 @@
 
     <div class="card border-0 shadow-sm mb-4">
 
-        <div class="card-header bg-white py-3">
+        <div class="card-header bg-white">
 
             <h5 class="mb-0">
                 Quick Actions
@@ -731,21 +714,17 @@
 
             <div class="d-flex flex-wrap gap-2">
 
-                <a href="{{ route(
-                    'admin.tenants.create'
-                ) }}"
+                <a href="{{ route('admin.tenants.create') }}"
                    class="btn btn-primary">
 
                     <i class="fas fa-user-plus me-1"></i>
 
-                    New Tenant
+                    Add Tenant
 
                 </a>
 
 
-                <a href="{{ route(
-                    'admin.tenants.index'
-                ) }}"
+                <a href="{{ route('admin.tenants.index') }}"
                    class="btn btn-outline-primary">
 
                     <i class="fas fa-users me-1"></i>

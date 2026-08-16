@@ -54,19 +54,11 @@ class InvoiceItem extends Model
         );
     }
 
-    public function creator()
+    public function allocations()
     {
-        return $this->belongsTo(
-            User::class,
-            'created_by'
-        );
-    }
-
-    public function updater()
-    {
-        return $this->belongsTo(
-            User::class,
-            'updated_by'
+        return $this->hasMany(
+            InvoiceItemAllocation::class,
+            'invoice_item_id'
         );
     }
 }

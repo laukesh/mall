@@ -119,15 +119,20 @@
                             @foreach($proposals as $proposal)
 
                                 <option value="{{ $proposal->id }}"
+                                    data-tenant="{{ $proposal->tenant_id }}"
+                                    data-lease-start="{{ $proposal->lease_start_date }}"
+                                    data-lease-end="{{ $proposal->lease_end_date }}"
+                                    data-monthly-rent="{{ $proposal->monthly_rent ?? 0 }}"
+                                    data-cam-amount="{{ $proposal->cam_amount ?? 0 }}"
+                                    data-security-deposit="{{ $proposal->security_deposit ?? 0 }}"
+                                    data-rent-free-days="{{ $proposal->rent_free_days ?? 0 }}"
+                                    data-fitout-days="{{ $proposal->fitout_period_days ?? 0 }}"
                                     {{ old('proposal_id') == $proposal->id ? 'selected' : '' }}>
 
                                     {{ $proposal->proposal_no }}
 
                                     @if($proposal->tenant)
-
-                                        -
-                                        {{ $proposal->tenant->company_name }}
-
+                                        - {{ $proposal->tenant->company_name }}
                                     @endif
 
                                 </option>
@@ -880,30 +885,71 @@ document.addEventListener('DOMContentLoaded', function () {
     |
     */
 
-    const proposalSelect =
-        document.getElementById('proposal_id');
+    const proposalSelect = document.getElementById('proposal_id');
 
-    const tenantSelect =
-        document.getElementById('tenant_id');
+    const tenantSelect = document.getElementById('tenant_id');
 
 
-    @foreach($proposals as $proposal)
+    function populateFromProposal() {
 
-        @if($proposal->tenant_id)
+        const selectedOption = proposalSelect.options[proposalSelect.selectedIndex];
 
-            if (
-                proposalSelect.value ==
-                '{{ $proposal->id }}'
-            ) {
+        if (!selectedOption || !selectedOption.value) {
+            return;
+        }
 
-                tenantSelect.value =
-                    '{{ $proposal->tenant_id }}';
+        /*
+        |--------------------------------------------------------------------------
+        | Tenant
+        |--------------------------------------------------------------------------
+        */
 
-            }
+        tenantSelect.value = selectedOption.dataset.tenant || '';
 
-        @endif
 
-    @endforeach
+        /*
+        |--------------------------------------------------------------------------
+        | Lease Dates
+        |--------------------------------------------------------------------------
+        */
+
+        startDate.value = selectedOption.dataset.leaseStart || '';
+
+        endDate.value = selectedOption.dataset.leaseEnd || '';
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Financial Details
+        |--------------------------------------------------------------------------
+        */
+
+        rent.value = selectedOption.dataset.monthlyRent || 0;
+
+        cam.value = selectedOption.dataset.camAmount || 0;
+
+        document.getElementById('security_deposit').value = selectedOption.dataset.securityDeposit || 0;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Rent Free Period
+        |--------------------------------------------------------------------------
+        */
+
+        document.querySelector( '[name="rent_free_days"]' ).value = selectedOption.dataset.rentFreeDays || 0;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Recalculate
+        |--------------------------------------------------------------------------
+        */
+
+        calculateLeasePeriod();
+
+        calculateTotal();
+    }
 
 
     /*
@@ -912,14 +958,11 @@ document.addEventListener('DOMContentLoaded', function () {
     |--------------------------------------------------------------------------
     */
 
-    const startDate =
-        document.getElementById('lease_start_date');
+    const startDate = document.getElementById('lease_start_date');
 
-    const endDate =
-        document.getElementById('lease_end_date');
+    const endDate = document.getElementById('lease_end_date');
 
-    const period =
-        document.getElementById('lease_period_months');
+    const period = document.getElementById('lease_period_months');
 
 
     function calculateLeasePeriod()
@@ -937,11 +980,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
 
-        const start =
-            new Date(startDate.value);
+        const start = new Date(startDate.value);
 
-        const end =
-            new Date(endDate.value);
+        const end = new Date(endDate.value);
 
 
         if (end < start) {
@@ -953,19 +994,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
 
-        let months =
-            (end.getFullYear() -
-             start.getFullYear()) * 12;
+        let months = (end.getFullYear() -  start.getFullYear()) * 12;
 
-        months +=
-            end.getMonth() -
-            start.getMonth();
+        months += end.getMonth() - start.getMonth();
 
 
-        if (
-            end.getDate() >=
-            start.getDate()
-        ) {
+        if (end.getDate() >=start.getDate() ) {
 
             months++;
 
@@ -994,20 +1028,15 @@ document.addEventListener('DOMContentLoaded', function () {
     |--------------------------------------------------------------------------
     */
 
-    const rent =
-        document.getElementById('monthly_rent');
+    const rent = document.getElementById('monthly_rent');
 
-    const cam =
-        document.getElementById('cam_amount');
+    const cam = document.getElementById('cam_amount');
 
-    const displayRent =
-        document.getElementById('display_rent');
+    const displayRent = document.getElementById('display_rent');
 
-    const displayCam =
-        document.getElementById('display_cam');
+    const displayCam = document.getElementById('display_cam');
 
-    const monthlyTotal =
-        document.getElementById('monthly_total');
+    const monthlyTotal = document.getElementById('monthly_total');
 
 
     function formatCurrency(value)
@@ -1027,24 +1056,18 @@ document.addEventListener('DOMContentLoaded', function () {
     function calculateTotal()
     {
 
-        const rentValue =
-            parseFloat(rent.value) || 0;
+        const rentValue = parseFloat(rent.value) || 0;
 
-        const camValue =
-            parseFloat(cam.value) || 0;
+        const camValue = parseFloat(cam.value) || 0;
 
-        const total =
-            rentValue + camValue;
+        const total = rentValue + camValue;
 
 
-        displayRent.textContent =
-            formatCurrency(rentValue);
+        displayRent.textContent = formatCurrency(rentValue);
 
-        displayCam.textContent =
-            formatCurrency(camValue);
+        displayCam.textContent = formatCurrency(camValue);
 
-        monthlyTotal.textContent =
-            formatCurrency(total);
+        monthlyTotal.textContent = formatCurrency(total);
 
     }
 
@@ -1069,26 +1092,16 @@ document.addEventListener('DOMContentLoaded', function () {
     |--------------------------------------------------------------------------
     */
 
-    const fitoutStart =
-        document.getElementById(
-            'fitout_start_date'
-        );
+    const fitoutStart =document.getElementById('fitout_start_date');
 
-    const fitoutEnd =
-        document.getElementById(
-            'fitout_end_date'
-        );
+    const fitoutEnd = document.getElementById( 'fitout_end_date');
 
 
     fitoutStart.addEventListener(
         'change',
         function () {
-
             if (fitoutStart.value) {
-
-                fitoutEnd.min =
-                    fitoutStart.value;
-
+                fitoutEnd.min = fitoutStart.value;
             }
 
         }
@@ -1103,32 +1116,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     proposalSelect.addEventListener(
         'change',
-        function () {
-
-            const selected =
-                proposalSelect.value;
-
-
-            @foreach($proposals as $proposal)
-
-                if (
-                    selected ==
-                    '{{ $proposal->id }}'
-                ) {
-
-                    @if($proposal->tenant_id)
-
-                        tenantSelect.value =
-                            '{{ $proposal->tenant_id }}';
-
-                    @endif
-
-                }
-
-            @endforeach
-
-        }
+        populateFromProposal
     );
+    if (proposalSelect.value) {
+        populateFromProposal();
+    }
 
 });
 

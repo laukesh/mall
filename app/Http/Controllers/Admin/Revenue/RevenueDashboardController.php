@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Admin\Revenue;
 
 use App\Http\Controllers\Controller;
-use App\Models\LeaseProposal;
-use App\Models\LeaseAgreement;
-use App\Models\LeaseRenewal;
-use App\Models\LeaseEscalation;
-use App\Models\LeaseTermination;
-use App\Models\LeaseHistory;
+use App\Models\Invoice;
+use App\Models\RentPayment;
+use App\Models\PaymentAllocation;
+use App\Models\RentSchedule;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class RevenueDashboardController extends Controller
 {
@@ -17,185 +16,399 @@ class RevenueDashboardController extends Controller
     {
         /*
         |--------------------------------------------------------------------------
-        | Proposals
-        |--------------------------------------------------------------------------
-        */
-
-        $totalProposals = LeaseProposal::count();
-
-        $pendingProposals = LeaseProposal::where(
-            'proposal_status',
-            'Pending Approval'
-        )->count();
-
-        $approvedProposals = LeaseProposal::where(
-            'proposal_status',
-            'Approved'
-        )->count();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Agreements
-        |--------------------------------------------------------------------------
-        */
-
-        $totalAgreements = LeaseAgreement::count();
-
-        $activeAgreements = LeaseAgreement::where(
-            'agreement_status',
-            'Active'
-        )->count();
-
-        $terminatedAgreements = LeaseAgreement::where(
-            'agreement_status',
-            'Terminated'
-        )->count();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Expiring Agreements
+        | Current Date
         |--------------------------------------------------------------------------
         */
 
         $today = Carbon::today();
 
-        $ninetyDays = Carbon::today()->addDays(90);
+        $monthStart = Carbon::now()->startOfMonth();
 
-        $expiringAgreements = LeaseAgreement::with('tenant')
-            ->where(
-                'agreement_status',
-                'Active'
+        $monthEnd = Carbon::now()->endOfMonth();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL INVOICED
+        |--------------------------------------------------------------------------
+        |
+        | Exclude Draft and Cancelled invoices.
+        |
+        */
+
+        $totalInvoiced = Invoice::whereNotIn(
+            'invoice_status',
+            ['Draft', 'Cancelled']
+        )->sum('total_amount');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL COLLECTED
+        |--------------------------------------------------------------------------
+        |
+        | Use active payment allocations.
+        | This prevents reversed allocations from being counted.
+        |
+        */
+
+        $totalCollected = PaymentAllocation::where(
+                'allocation_status',
+                'Allocated'
             )
-            ->whereDate(
-                'lease_end_date',
-                '>=',
+            ->sum('allocated_amount');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | OUTSTANDING
+        |--------------------------------------------------------------------------
+        */
+
+        $outstandingAmount = max(
+            0,
+            (float) $totalInvoiced -
+            (float) $totalCollected
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | OVERDUE
+        |--------------------------------------------------------------------------
+        */
+
+        $overdueAmount = Invoice::where(
+                'due_date',
+                '<',
                 $today
             )
-            ->whereDate(
-                'lease_end_date',
-                '<=',
-                $ninetyDays
+            ->whereNotIn(
+                'invoice_status',
+                ['Draft', 'Cancelled', 'Paid']
             )
-            ->orderBy('lease_end_date')
+            ->sum('balance_amount');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CURRENT MONTH INVOICED
+        |--------------------------------------------------------------------------
+        */
+
+        $currentMonthInvoiced = Invoice::whereBetween(
+                'invoice_date',
+                [
+                    $monthStart->toDateString(),
+                    $monthEnd->toDateString()
+                ]
+            )
+            ->whereNotIn(
+                'invoice_status',
+                ['Draft', 'Cancelled']
+            )
+            ->sum('total_amount');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CURRENT MONTH COLLECTION
+        |--------------------------------------------------------------------------
+        */
+
+        $currentMonthCollected = PaymentAllocation::where(
+                'allocation_status',
+                'Allocated'
+            )
+            ->whereBetween(
+                'allocation_date',
+                [
+                    $monthStart->toDateString(),
+                    $monthEnd->toDateString()
+                ]
+            )
+            ->sum('allocated_amount');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | COLLECTION RATE
+        |--------------------------------------------------------------------------
+        */
+
+        $collectionRate = 0;
+
+        if ($totalInvoiced > 0) {
+
+            $collectionRate =
+                ($totalCollected / $totalInvoiced) * 100;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PENDING RECONCILIATION
+        |--------------------------------------------------------------------------
+        */
+
+        $pendingReconciliation = RentPayment::where(
+                'payment_status',
+                'Confirmed'
+            )
+            ->where(
+                'reconciliation_status',
+                'Pending'
+            )
+            ->sum('payment_amount');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PAYMENT COUNTS
+        |--------------------------------------------------------------------------
+        */
+
+        $pendingPayments = RentPayment::where(
+            'payment_status',
+            'Pending'
+        )->count();
+
+        $confirmedPayments = RentPayment::where(
+            'payment_status',
+            'Confirmed'
+        )->count();
+
+        $reconciledPayments = RentPayment::where(
+            'reconciliation_status',
+            'Reconciled'
+        )->count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | INVOICE COUNTS
+        |--------------------------------------------------------------------------
+        */
+
+        $totalInvoices = Invoice::whereNotIn(
+            'invoice_status',
+            ['Draft', 'Cancelled']
+        )->count();
+
+        $paidInvoices = Invoice::where(
+            'invoice_status',
+            'Paid'
+        )->count();
+
+        $partialInvoices = Invoice::where(
+            'invoice_status',
+            'Partially Paid'
+        )->count();
+
+        $overdueInvoices = Invoice::where(
+                'due_date',
+                '<',
+                $today
+            )
+            ->whereNotIn(
+                'invoice_status',
+                ['Draft', 'Cancelled', 'Paid']
+            )
+            ->count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RECENT PAYMENTS
+        |--------------------------------------------------------------------------
+        */
+
+        $recentPayments = RentPayment::with([
+                'tenant',
+                'invoice',
+            ])
+            ->orderByDesc('id')
             ->limit(10)
             ->get();
 
 
-        $expiringCount = LeaseAgreement::where(
-            'agreement_status',
-            'Active'
-        )
-        ->whereDate(
-            'lease_end_date',
-            '>=',
-            $today
-        )
-        ->whereDate(
-            'lease_end_date',
-            '<=',
-            $ninetyDays
-        )
-        ->count();
+        /*
+        |--------------------------------------------------------------------------
+        | OUTSTANDING INVOICES
+        |--------------------------------------------------------------------------
+        */
+
+        $outstandingInvoices = Invoice::with([
+                'tenant',
+            ])
+            ->where(
+                'balance_amount',
+                '>',
+                0
+            )
+            ->whereNotIn(
+                'invoice_status',
+                ['Draft', 'Cancelled']
+            )
+            ->orderByDesc('due_date')
+            ->limit(10)
+            ->get();
 
 
         /*
         |--------------------------------------------------------------------------
-        | Renewals
+        | MONTHLY REVENUE
         |--------------------------------------------------------------------------
+        |
+        | Last 6 months.
+        |
         */
 
-        $pendingRenewals = LeaseRenewal::where(
-            'approval_status',
-            'Pending'
-        )->count();
-
-        $approvedRenewals = LeaseRenewal::where(
-            'approval_status',
-            'Approved'
-        )->count();
+        $monthlyRevenue = PaymentAllocation::select(
+                DB::raw(
+                    "DATE_FORMAT(allocation_date, '%Y-%m') as month"
+                ),
+                DB::raw(
+                    "SUM(allocated_amount) as total"
+                )
+            )
+            ->where(
+                'allocation_status',
+                'Allocated'
+            )
+            ->where(
+                'allocation_date',
+                '>=',
+                Carbon::now()
+                    ->subMonths(5)
+                    ->startOfMonth()
+                    ->toDateString()
+            )
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
 
 
         /*
         |--------------------------------------------------------------------------
-        | Escalations
+        | Monthly chart data
         |--------------------------------------------------------------------------
         */
 
-        $pendingEscalations = LeaseEscalation::where(
-            'status',
-            'Pending'
-        )->count();
+        $chartLabels = [];
+        $chartValues = [];
 
-        $appliedEscalations = LeaseEscalation::where(
-            'status',
-            'Applied'
-        )->count();
+        for ($i = 5; $i >= 0; $i--) {
 
+            $date = Carbon::now()
+                ->subMonths($i);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Terminations
-        |--------------------------------------------------------------------------
-        */
+            $monthKey = $date->format('Y-m');
 
-        $pendingTerminations = LeaseTermination::where(
-            'termination_status',
-            'Pending Approval'
-        )->count();
+            $chartLabels[] = $date->format('M Y');
 
-        $approvedTerminations = LeaseTermination::where(
-            'termination_status',
-            'Approved'
-        )->count();
+            $record = $monthlyRevenue->firstWhere(
+                'month',
+                $monthKey
+            );
 
-        $completedTerminations = LeaseTermination::where(
-            'termination_status',
-            'Completed'
-        )->count();
+            $chartValues[] = $record
+                ? (float) $record->total
+                : 0;
+        }
 
+        $chargeTypeRevenue = DB::table('invoice_items as ii')
+    ->join('charge_types as ct', 'ct.id', '=', 'ii.charge_type_id')
+    ->join('invoices as i', 'i.id', '=', 'ii.invoice_id')
 
-        /*
-        |--------------------------------------------------------------------------
-        | Recent Activities
-        |--------------------------------------------------------------------------
-        */
+    ->leftJoinSub(
+        DB::table('invoice_item_allocations')
+            ->select(
+                'invoice_item_id',
+                DB::raw('SUM(allocated_amount) as collected_amount')
+            )
+            ->where(
+                'allocation_status',
+                'Allocated'
+            )
+            ->groupBy('invoice_item_id'),
+        'allocations',
+        function ($join) {
+            $join->on(
+                'allocations.invoice_item_id',
+                '=',
+                'ii.id'
+            );
+        }
+    )
 
-        $recentActivities = LeaseHistory::with([
-            'agreement',
-            'performer'
-        ])
-        ->orderByDesc('activity_date')
-        ->limit(10)
-        ->get();
+    ->whereNotIn('i.invoice_status', [
+        'Draft',
+        'Cancelled'
+    ])
+
+    ->select(
+        'ct.id as charge_type_id',
+        'ct.charge_name',
+        'ct.charge_code',
+
+        DB::raw('SUM(ii.total_amount) as invoiced_amount'),
+
+        DB::raw('
+            SUM(
+                COALESCE(
+                    allocations.collected_amount,
+                    0
+                )
+            ) as collected_amount
+        '),
+
+        DB::raw('
+            SUM(ii.total_amount)
+            -
+            SUM(
+                COALESCE(
+                    allocations.collected_amount,
+                    0
+                )
+            ) as outstanding_amount
+        ')
+    )
+
+    ->groupBy(
+        'ct.id',
+        'ct.charge_name',
+        'ct.charge_code'
+    )
+
+    ->orderByDesc('invoiced_amount')
+
+    ->get();
 
 
         return view(
-            'admin.leasing.dashboard.dashboard',
+            'admin.revenue.dashboard',
             compact(
-                'totalProposals',
-                'pendingProposals',
-                'approvedProposals',
-
-                'totalAgreements',
-                'activeAgreements',
-                'terminatedAgreements',
-
-                'expiringCount',
-                'expiringAgreements',
-
-                'pendingRenewals',
-                'approvedRenewals',
-
-                'pendingEscalations',
-                'appliedEscalations',
-
-                'pendingTerminations',
-                'approvedTerminations',
-                'completedTerminations',
-
-                'recentActivities'
+                'totalInvoiced',
+                'totalCollected',
+                'outstandingAmount',
+                'overdueAmount',
+                'currentMonthInvoiced',
+                'currentMonthCollected',
+                'collectionRate',
+                'pendingReconciliation',
+                'pendingPayments',
+                'confirmedPayments',
+                'reconciledPayments',
+                'totalInvoices',
+                'paidInvoices',
+                'partialInvoices',
+                'overdueInvoices',
+                'recentPayments',
+                'outstandingInvoices',
+                'chartLabels',
+                'chartValues',
+                'chargeTypeRevenue'
             )
         );
     }

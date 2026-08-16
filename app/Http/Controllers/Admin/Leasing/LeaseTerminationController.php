@@ -469,29 +469,12 @@ class LeaseTerminationController extends Controller
                 $agreement->agreement_status;
 
 
-            $agreement->update([
-
-                'agreement_status' =>
-                    'Terminated',
-
-                'updated_by' =>
-                    auth()->id(),
-            ]);
-
-
+            $oldStatus = $agreement->agreement_status;
             $termination->update([
-
-                'termination_status' =>
-                    'Approved',
-
-                'approved_by' =>
-                    auth()->id(),
-
-                'approved_at' =>
-                    now(),
-
-                'updated_by' =>
-                    auth()->id(),
+                'termination_status' => 'Approved',
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
+                'updated_by' => auth()->id(),
             ]);
 
 
@@ -501,9 +484,9 @@ class LeaseTerminationController extends Controller
 
                 'Termination',
 
-                'Lease Agreement Terminated',
+                'Lease Termination Approved',
 
-                'Lease agreement was terminated.',
+                'Lease termination request was approved. Agreement remains active until the termination process is completed.',
 
                 [
                     'agreement_status' =>
