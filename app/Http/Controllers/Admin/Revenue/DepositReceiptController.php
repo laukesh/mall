@@ -141,6 +141,7 @@ class DepositReceiptController extends Controller
                 $paymentAmount > $balanceAmount
             ) {
 
+
                 throw \Illuminate\Validation\ValidationException::withMessages([
                     'payment_amount' =>
                         'Payment amount cannot be greater than the remaining deposit balance of ₹'
@@ -151,6 +152,7 @@ class DepositReceiptController extends Controller
                         . '.'
                 ]);
             }
+
 
 
             /*
@@ -932,3 +934,4 @@ private function generateReceiptNumber(): string
     }
 
 }
+

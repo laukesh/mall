@@ -40,16 +40,28 @@
 
             @endif
 
+            {{-- View Payments --}}
             <a
-    href="{{ route(
-        'admin.revenue.invoices.print',
-        $invoice->id
-    ) }}"
-    target="_blank"
-    class="btn btn-outline-secondary"
->
-    Print Invoice
-</a>
+                href="{{ route(
+                    'admin.revenue.payments.index',
+                    ['invoice_id' => $invoice->id]
+                ) }}"
+                class="btn btn-outline-primary"
+            >
+                <i class="fas fa-money-bill-wave me-1"></i>
+                View Payments
+            </a>
+
+            <a
+                href="{{ route(
+                    'admin.revenue.invoices.print',
+                    $invoice->id
+                ) }}"
+                target="_blank"
+                class="btn btn-outline-secondary"
+            >
+                Print Invoice
+            </a>
 
 
             <a

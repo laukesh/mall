@@ -11,7 +11,6 @@ class DepositReceipt extends Model
     use SoftDeletes;
 
     protected $table = 'deposit_receipts';
-
     protected $fillable = [
         'uuid',
         'deposit_id',
@@ -67,3 +66,4 @@ class DepositReceipt extends Model
         });
     }
 }
+

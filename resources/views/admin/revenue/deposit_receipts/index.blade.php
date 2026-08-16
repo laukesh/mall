@@ -942,3 +942,299 @@
 
 {{-- =============================================================
      BALANCE JAVASCRIPT
+
+<script>
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+        const depositSelect =
+            document.getElementById('deposit_id');
+
+        const paymentAmount =
+            document.getElementById('payment_amount');
+
+        const balanceInfo =
+            document.getElementById('balanceInfo');
+
+        const remainingBalance =
+            document.getElementById('remainingBalance');
+
+        const amountHelp =
+            document.getElementById('amountHelp');
+
+
+        function updateBalance()
+        {
+            const selectedOption =
+                depositSelect.options[
+                    depositSelect.selectedIndex
+                ];
+
+
+            if (
+                !selectedOption ||
+                !selectedOption.value
+            ) {
+
+                balanceInfo.classList.add('d-none');
+
+                paymentAmount.removeAttribute('max');
+
+                amountHelp.textContent =
+                    'Select a deposit first.';
+
+                return;
+            }
+
+
+            const balance =
+                parseFloat(
+                    selectedOption.dataset.balance
+                ) || 0;
+
+
+            balanceInfo.classList.remove('d-none');
+
+
+            remainingBalance.textContent =
+                '₹' +
+                balance.toLocaleString(
+                    'en-IN',
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                );
+
+
+            paymentAmount.setAttribute(
+                'max',
+                balance
+            );
+
+
+            amountHelp.textContent =
+                'Maximum payment allowed: ₹' +
+                balance.toLocaleString(
+                    'en-IN',
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                );
+        }
+
+
+        depositSelect.addEventListener(
+            'change',
+            updateBalance
+        );
+
+
+        updateBalance();
+
+    }
+);
+
+</script>
+
+@endsection
+
+{{-- =============================================================
+     REVERSAL MODAL
+
+<div class="modal fade"
+     id="reverseReceiptModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    <i class="fas fa-undo
+                              text-danger
+                              me-2"></i>
+
+                    Reverse Receipt
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <form method="POST"
+                  id="reverseReceiptForm">
+
+                @csrf
+
+                <div class="modal-body">
+
+                    <div class="alert alert-warning">
+
+                        <i class="fas fa-exclamation-triangle
+                                  me-1"></i>
+
+                        Reversing a confirmed receipt will reduce
+                        the received amount of the associated deposit.
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Receipt
+                        </label>
+
+                        <input type="text"
+                               id="reverseReceiptNo"
+                               class="form-control"
+                               readonly>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Amount
+                        </label>
+
+                        <input type="text"
+                               id="reverseReceiptAmount"
+                               class="form-control"
+                               readonly>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Reversal Reason
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <textarea name="reversal_remarks"
+                                  class="form-control"
+                                  rows="4"
+                                  required
+                                  placeholder="Enter reason for reversing this payment..."></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+
+                        Cancel
+
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-danger">
+
+                        <i class="fas fa-undo me-1"></i>
+
+                        Confirm Reversal
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+        const modal =
+            document.getElementById(
+                'reverseReceiptModal'
+            );
+
+        if (!modal) {
+            return;
+        }
+
+
+        modal.addEventListener(
+            'show.bs.modal',
+            function (event) {
+
+                const button =
+                    event.relatedTarget;
+
+
+                const receiptId =
+                    button.getAttribute(
+                        'data-receipt-id'
+                    );
+
+                const receiptNo =
+                    button.getAttribute(
+                        'data-receipt-no'
+                    );
+
+                const amount =
+                    button.getAttribute(
+                        'data-receipt-amount'
+                    );
+
+
+                document.getElementById(
+                    'reverseReceiptNo'
+                ).value = receiptNo;
+
+
+                document.getElementById(
+                    'reverseReceiptAmount'
+                ).value = '₹' + amount;
+
+
+                document.getElementById(
+                    'reverseReceiptForm'
+                ).action =
+                    "{{ url(
+                        'admin/revenue/deposit-receipts'
+                    ) }}"
+                    + '/'
+                    + receiptId
+                    + '/reverse';
+
+            }
+        );
+
+    }
+);
+
+</script>
+

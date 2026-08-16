@@ -11,7 +11,6 @@ class DepositRefund extends Model
     use SoftDeletes;
 
     protected $table = 'deposit_refunds';
-
     protected $fillable = [
         'uuid',
         'deposit_id',

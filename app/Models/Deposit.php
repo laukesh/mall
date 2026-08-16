@@ -11,7 +11,6 @@ class Deposit extends Model
     use SoftDeletes;
 
     protected $table = 'deposits';
-
     protected $fillable = [
         'uuid',
         'lease_agreement_id',
@@ -121,4 +120,6 @@ class Deposit extends Model
             'deposit_id'
         );
     }
+
 }
+

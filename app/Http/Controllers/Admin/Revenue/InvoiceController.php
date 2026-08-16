@@ -543,4 +543,5 @@ class InvoiceController extends Controller
 	        compact('invoice')
 	    );
 	}
+
 }

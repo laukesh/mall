@@ -87,6 +87,15 @@ class RentPaymentController extends Controller
 	        );
 	    }
 
+	    if ($request->filled('invoice_id')) {
+
+	        $query->where(
+	            'invoice_id',
+	            $request->invoice_id
+	        );
+
+	    }
+
 	    $payments = $query
 	        ->orderByDesc('id')
 	        ->paginate(20)

@@ -27,7 +27,7 @@
 
         </div>
 
-        <div class="d-flex gap-2">
+        <!-- <div class="d-flex gap-2">
 
             <a href="{{ route('admin.tenants.index') }}"
                class="btn btn-outline-secondary">
@@ -49,6 +49,115 @@
                 Edit Tenant
 
             </a>
+
+        </div> -->
+
+        <div class="d-flex gap-2">
+
+            <a href="{{ route('admin.tenants.index') }}"
+               class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>
+                Back
+            </a>
+
+            <a href="{{ route('admin.tenants.edit', $tenant->id) }}"
+               class="btn btn-warning">
+                <i class="fas fa-edit me-1"></i>
+                Edit
+            </a>
+
+            <a href="{{ route(
+                'admin.tenants.contacts.index',
+                $tenant->id
+            ) }}"
+               class="btn btn-primary">
+
+                <i class="fas fa-user-plus me-1"></i>
+                Add Contact
+
+            </a>
+
+            <div class="dropdown">
+
+                <button
+                    class="btn btn-outline-secondary dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                >
+                    More
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end" style="background: #f9f9f9;">
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="{{ route(
+                               'admin.tenants.addresses.index',
+                               $tenant->id
+                           ) }}">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            Manage Addresses
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="{{ route(
+                               'admin.tenants.bank-accounts.index',
+                               $tenant->id
+                           ) }}">
+                            <i class="fas fa-university me-2"></i>
+                            Bank Accounts
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="{{ route(
+                               'admin.tenants.documents.index',
+                               $tenant->id
+                           ) }}">
+                            <i class="fas fa-file-alt me-2"></i>
+                            Documents
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="{{ route(
+                               'admin.tenants.emergency-contacts.index',
+                               $tenant->id
+                           ) }}">
+                            <i class="fas fa-phone me-2"></i>
+                            Emergency Contacts
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="{{ route(
+                               'admin.tenants.notes.index',
+                               $tenant->id
+                           ) }}">
+                            <i class="fas fa-sticky-note me-2"></i>
+                            Notes
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="{{ route(
+                               'admin.tenants.history.index',
+                               $tenant->id
+                           ) }}">
+                            <i class="fas fa-history me-2"></i>
+                            History
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
 
         </div>
 
@@ -465,7 +574,17 @@
                                 <small class="text-muted">Agreement No</small>
                                 <div>
                                     <strong>
-                                        {{ $agreement->agreement_no }}
+                                        <a
+                                            href="{{ route(
+                                                'admin.leasing.proposals.show',
+                                                $agreement->proposal_id
+                                            ) }}"
+                                            class="fw-semibold text-primary text-decoration-none"
+                                        >
+                                            {{ $agreement->agreement_no }}
+
+                                            <i class="fas fa-external-link-alt ms-1 small"></i>
+                                        </a>
                                     </strong>
                                 </div>
                             </div>
@@ -757,11 +876,46 @@
 
     <div class="card border-0 shadow-sm mb-4">
 
-        <div class="card-header bg-white">
+        <div class="card-header bg-white
+            d-flex justify-content-between
+            align-items-center">
 
-            <h5 class="mb-0">
-                Contacts
-            </h5>
+            <div>
+                <h5 class="mb-0">
+                    <i class="fas fa-address-book text-primary me-2"></i>
+                    Contacts
+                </h5>
+
+                <small class="text-muted">
+                    Tenant contacts
+                </small>
+            </div>
+
+            <div class="d-flex gap-2">
+
+                <a href="{{ route(
+                    'admin.tenants.contacts.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-outline-primary">
+
+                    View All
+
+                </a>
+
+                <a href="{{ route(
+                    'admin.tenants.contacts.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-primary">
+
+                    <i class="fas fa-plus me-1"></i>
+
+                    Add Contact
+
+                </a>
+
+            </div>
 
         </div>
 
@@ -859,11 +1013,48 @@
 
     <div class="card border-0 shadow-sm mb-4">
 
-        <div class="card-header bg-white">
+        <div class="card-header bg-white
+            d-flex justify-content-between
+            align-items-center">
 
-            <h5 class="mb-0">
-                Addresses
-            </h5>
+            <div>
+
+                <h5 class="mb-0">
+
+                    <i class="fas fa-map-marker-alt
+                              text-success me-2"></i>
+
+                    Addresses
+
+                </h5>
+
+            </div>
+
+            <div class="d-flex gap-2">
+
+                <a href="{{ route(
+                    'admin.tenants.addresses.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-outline-primary">
+
+                    View All
+
+                </a>
+
+                <a href="{{ route(
+                    'admin.tenants.addresses.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-success">
+
+                    <i class="fas fa-plus me-1"></i>
+
+                    Add Address
+
+                </a>
+
+            </div>
 
         </div>
 
@@ -938,6 +1129,378 @@
         </div>
 
     </div>
+    {{-- =========================================================
+     BANK ACCOUNTS
+
+<div class="card border-0 shadow-sm mb-4">
+
+    <div class="card-header bg-white
+                d-flex justify-content-between
+                align-items-center">
+
+        <div>
+
+            <h5 class="mb-0">
+
+                <i class="fas fa-university text-primary me-2"></i>
+
+                Bank Accounts
+
+            </h5>
+
+            <small class="text-muted">
+
+                Tenant banking and payment details
+
+            </small>
+
+        </div>
+
+
+        <div class="d-flex gap-2">
+
+            {{-- View All --}}
+
+            <a
+                href="{{ route(
+                    'admin.tenants.bank-accounts.index',
+                    $tenant->id
+                ) }}"
+                class="btn btn-sm btn-outline-primary"
+            >
+
+                <i class="fas fa-list me-1"></i>
+
+                View All
+
+            </a>
+
+
+            {{-- Add Bank Account --}}
+
+            <a
+                href="{{ route(
+                    'admin.tenants.bank-accounts.index',
+                    $tenant->id
+                ) }}"
+                class="btn btn-sm btn-primary"
+            >
+
+                <i class="fas fa-plus me-1"></i>
+
+                Add Bank Account
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        @if($tenant->bankAccounts->count())
+
+            <div class="row g-3">
+
+                @foreach(
+                    $tenant->bankAccounts->take(3)
+                    as $account
+                )
+
+                    <div class="col-md-6">
+
+                        <div class="border rounded-3 p-3 h-100">
+
+                            {{-- HEADER --}}
+
+                            <div class="d-flex
+                                        justify-content-between
+                                        align-items-start
+                                        mb-3">
+
+                                <div class="d-flex
+                                            align-items-center">
+
+                                    <div
+                                        class="rounded-circle
+                                               bg-primary-subtle
+                                               d-flex
+                                               align-items-center
+                                               justify-content-center
+                                               me-3"
+                                        style="
+                                            width:44px;
+                                            height:44px;
+                                        "
+                                    >
+
+                                        <i class="
+                                            fas fa-university
+                                            text-primary
+                                        "></i>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <div class="fw-semibold">
+
+                                            {{ $account->bank_name }}
+
+                                        </div>
+
+                                        @if($account->branch_name)
+
+                                            <small class="text-muted">
+
+                                                {{ $account->branch_name }}
+
+                                            </small>
+
+                                        @endif
+
+                                    </div>
+
+                                </div>
+
+
+                                @if($account->is_default)
+
+                                    <span
+                                        class="badge bg-success"
+                                    >
+
+                                        <i class="fas fa-check me-1"></i>
+
+                                        Default
+
+                                    </span>
+
+                                @endif
+
+                            </div>
+
+
+                            {{-- ACCOUNT HOLDER --}}
+
+                            <div class="mb-2">
+
+                                <small class="text-muted d-block">
+
+                                    Account Holder
+
+                                </small>
+
+                                <span class="fw-semibold">
+
+                                    {{ $account->account_holder }}
+
+                                </span>
+
+                            </div>
+
+
+                            {{-- ACCOUNT NUMBER --}}
+
+                            <div class="mb-2">
+
+                                <small class="text-muted d-block">
+
+                                    Account Number
+
+                                </small>
+
+                                <span class="fw-semibold">
+
+                                    {{ $account->account_number }}
+
+                                </span>
+
+                            </div>
+
+
+                            {{-- ACCOUNT TYPE --}}
+
+                            <div class="row g-2 mb-2">
+
+                                <div class="col-6">
+
+                                    <small class="text-muted d-block">
+
+                                        Account Type
+
+                                    </small>
+
+                                    <span>
+
+                                        {{ $account->account_type ?: '—' }}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div class="col-6">
+
+                                    <small class="text-muted d-block">
+
+                                        IFSC Code
+
+                                    </small>
+
+                                    <span class="fw-semibold">
+
+                                        {{ $account->ifsc_code ?: '—' }}
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            {{-- SWIFT --}}
+
+                            @if($account->swift_code)
+
+                                <div class="mb-2">
+
+                                    <small class="text-muted d-block">
+
+                                        SWIFT Code
+
+                                    </small>
+
+                                    <span>
+
+                                        {{ $account->swift_code }}
+
+                                    </span>
+
+                                </div>
+
+                            @endif
+
+
+                            {{-- ACTION --}}
+
+                            <div class="border-top
+                                        pt-2
+                                        mt-3
+                                        d-flex
+                                        justify-content-end">
+
+                                <a
+                                    href="{{ route(
+                                        'admin.tenants.bank-accounts.index',
+                                        $tenant->id
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-secondary"
+                                >
+
+                                    Manage Account
+
+                                    <i class="fas fa-arrow-right ms-1"></i>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @endforeach
+
+            </div>
+
+
+            {{-- VIEW ALL --}}
+
+            @if($tenant->bankAccounts->count() > 3)
+
+                <div class="text-center
+                            border-top
+                            pt-3
+                            mt-3">
+
+                    <a
+                        href="{{ route(
+                            'admin.tenants.bank-accounts.index',
+                            $tenant->id
+                        ) }}"
+                        class="btn btn-sm btn-link"
+                    >
+
+                        View All
+                        {{ $tenant->bankAccounts->count() }}
+                        Bank Accounts
+
+                        <i class="fas fa-arrow-right ms-1"></i>
+
+                    </a>
+
+                </div>
+
+            @endif
+
+
+        @else
+
+            {{-- EMPTY STATE --}}
+
+            <div class="text-center py-4">
+
+                <div class="mb-3">
+
+                    <i class="
+                        fas fa-university
+                        fa-3x
+                        text-muted
+                    "></i>
+
+                </div>
+
+
+                <h6 class="mb-1">
+
+                    No bank accounts added
+
+                </h6>
+
+
+                <p class="text-muted small mb-3">
+
+                    Add the tenant's bank account
+                    information for payment and
+                    financial records.
+
+                </p>
+
+
+                <a
+                    href="{{ route(
+                        'admin.tenants.bank-accounts.index',
+                        $tenant->id
+                    ) }}"
+                    class="btn btn-sm btn-primary"
+                >
+
+                    <i class="fas fa-plus me-1"></i>
+
+                    Add Bank Account
+
+                </a>
+
+            </div>
+
+        @endif
+
+    </div>
+
+</div>
 
 
     {{-- =========================================================
@@ -946,11 +1509,51 @@
 
     <div class="card border-0 shadow-sm mb-4">
 
-        <div class="card-header bg-white">
+        <div class="card-header bg-white
+            d-flex justify-content-between
+            align-items-center">
 
-            <h5 class="mb-0">
-                Documents
-            </h5>
+            <div>
+
+                <h5 class="mb-0">
+                    <i class="fas fa-file-alt text-primary me-2"></i>
+                    Documents
+                </h5>
+
+                <small class="text-muted">
+                    Tenant registration and compliance documents
+                </small>
+
+            </div>
+
+            <div class="d-flex gap-2">
+
+                {{-- View All --}}
+                <a href="{{ route(
+                    'admin.tenants.documents.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-outline-primary">
+
+                    <i class="fas fa-list me-1"></i>
+                    View All
+
+                </a>
+
+
+                {{-- Add Document --}}
+                <a href="{{ route(
+                    'admin.tenants.documents.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-primary">
+
+                    <i class="fas fa-plus me-1"></i>
+                    Add Document
+
+                </a>
+
+            </div>
 
         </div>
 
@@ -1073,11 +1676,51 @@
 
     <div class="card border-0 shadow-sm mb-4">
 
-        <div class="card-header bg-white">
+        <div class="card-header bg-white
+            d-flex justify-content-between
+            align-items-center">
 
-            <h5 class="mb-0">
-                Emergency Contacts
-            </h5>
+            <div>
+
+                <h5 class="mb-0">
+                    <i class="fas fa-phone-alt text-danger me-2"></i>
+                    Emergency Contacts
+                </h5>
+
+                <small class="text-muted">
+                    Important contacts for emergency situations
+                </small>
+
+            </div>
+
+            <div class="d-flex gap-2">
+
+                {{-- View All --}}
+                <a href="{{ route(
+                    'admin.tenants.emergency-contacts.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-outline-primary">
+
+                    <i class="fas fa-list me-1"></i>
+                    View All
+
+                </a>
+
+
+                {{-- Add Emergency Contact --}}
+                <a href="{{ route(
+                    'admin.tenants.emergency-contacts.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-danger">
+
+                    <i class="fas fa-plus me-1"></i>
+                    Add Emergency Contact
+
+                </a>
+
+            </div>
 
         </div>
 
@@ -1149,11 +1792,52 @@
 
     <div class="card border-0 shadow-sm mb-4">
 
-        <div class="card-header bg-white">
+        <div class="card-header bg-white
+            d-flex justify-content-between
+            align-items-center">
 
-            <h5 class="mb-0">
-                Notes
-            </h5>
+            <div>
+
+                <h5 class="mb-0">
+
+                    <i class="fas fa-sticky-note
+                              text-warning me-2"></i>
+
+                    Notes
+
+                </h5>
+
+                <small class="text-muted">
+                    Internal tenant notes
+                </small>
+
+            </div>
+
+            <div class="d-flex gap-2">
+
+                <a href="{{ route(
+                    'admin.tenants.notes.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-outline-primary">
+
+                    View All
+
+                </a>
+
+                <a href="{{ route(
+                    'admin.tenants.notes.index',
+                    $tenant->id
+                ) }}"
+                   class="btn btn-sm btn-warning">
+
+                    <i class="fas fa-plus me-1"></i>
+
+                    Add Note
+
+                </a>
+
+            </div>
 
         </div>
 

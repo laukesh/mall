@@ -19,11 +19,86 @@ class TenantController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function index()
+    /*public function index()
     {
         $tenants = Tenant::with('user')
             ->latest('id')
             ->paginate(15);
+
+        return view(
+            'admin.tenants.index',
+            compact('tenants')
+        );
+    }*/
+
+    public function index(Request $request)
+    {
+        $query = Tenant::query()
+            ->with('user');
+
+        // Search
+        if ($request->filled('search')) {
+
+            $search = trim($request->search);
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where('tenant_code', 'like', "%{$search}%")
+                    ->orWhere('company_name', 'like', "%{$search}%")
+                    ->orWhere('brand_name', 'like', "%{$search}%")
+                    ->orWhere('gst_number', 'like', "%{$search}%")
+                    ->orWhere('pan_number', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+
+            });
+        }
+
+
+        // Tenant Status
+        if ($request->filled('status')) {
+
+            $query->where(
+                'status',
+                $request->status
+            );
+
+        }
+
+
+        // Login Status
+        if ($request->login_status === 'active') {
+
+            $query->whereHas('user', function ($q) {
+
+                $q->where('is_active', 1);
+
+            });
+
+        }
+
+        if ($request->login_status === 'inactive') {
+
+            $query->whereHas('user', function ($q) {
+
+                $q->where('is_active', 0);
+
+            });
+
+        }
+
+        if ($request->login_status === 'none') {
+
+            $query->whereDoesntHave('user');
+
+        }
+
+
+        $tenants = $query
+            ->latest('id')
+            ->paginate(20)
+            ->withQueryString();
+
 
         return view(
             'admin.tenants.index',

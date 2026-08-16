@@ -989,3 +989,565 @@
 
 {{-- =============================================================
      PROCESS REFUND MODAL
+
+<div class="modal fade"
+     id="processRefundModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    <i class="fas fa-money-bill-wave
+                              text-success
+                              me-2"></i>
+
+                    Process Refund
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <form method="POST"
+                  id="processRefundForm">
+
+                @csrf
+
+                <div class="modal-body">
+
+                    <div class="alert alert-success">
+
+                        This will mark the refund as
+                        <strong>Processed</strong>.
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Refund
+                        </label>
+
+                        <input type="text"
+                               id="processRefundNo"
+                               class="form-control"
+                               readonly>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Refund Amount
+                        </label>
+
+                        <input type="text"
+                               id="processRefundAmount"
+                               class="form-control"
+                               readonly>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Payment Mode
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <select name="payment_mode"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                Select Payment Mode
+                            </option>
+
+                            @foreach([
+                                'Cash',
+                                'Cheque',
+                                'NEFT',
+                                'RTGS',
+                                'IMPS',
+                                'UPI'
+                            ] as $mode)
+
+                                <option value="{{ $mode }}">
+                                    {{ $mode }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Bank Name
+                        </label>
+
+                        <input type="text"
+                               name="bank_name"
+                               class="form-control"
+                               maxlength="150">
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Transaction Reference
+
+                        </label>
+
+                        <input type="text"
+                               name="transaction_reference"
+                               class="form-control"
+                               maxlength="100">
+
+                    </div>
+
+
+                    <div class="mb-0">
+
+                        <label class="form-label">
+                            Remarks
+                        </label>
+
+                        <textarea name="remarks"
+                                  class="form-control"
+                                  rows="3"></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+
+                        Cancel
+
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-success">
+
+                        <i class="fas fa-check me-1"></i>
+
+                        Process Refund
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{{-- =============================================================
+     CANCEL REFUND MODAL
+
+<div class="modal fade"
+     id="cancelRefundModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    <i class="fas fa-times-circle
+                              text-danger
+                              me-2"></i>
+
+                    Cancel Refund
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <form method="POST"
+                  id="cancelRefundForm">
+
+                @csrf
+
+                <div class="modal-body">
+
+                    <label class="form-label">
+
+                        Cancellation Reason
+                        <span class="text-danger">*</span>
+
+                    </label>
+
+                    <textarea name="remarks"
+                              class="form-control"
+                              rows="4"
+                              required
+                              placeholder="Enter reason for cancellation..."></textarea>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+
+                        Cancel
+
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-danger">
+
+                        Confirm Cancellation
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{{-- =============================================================
+     CALCULATION SCRIPT
+
+<script>
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+        const depositSelect =
+            document.getElementById(
+                'deposit_id'
+            );
+
+        const depositSummary =
+            document.getElementById(
+                'depositSummary'
+            );
+
+        const originalDeposit =
+            document.getElementById(
+                'originalDeposit'
+            );
+
+        const availableRefund =
+            document.getElementById(
+                'availableRefund'
+            );
+
+        const totalDeduction =
+            document.getElementById(
+                'totalDeduction'
+            );
+
+        const refundAmount =
+            document.getElementById(
+                'refundAmount'
+            );
+
+
+        function formatCurrency(amount)
+        {
+            return '₹' +
+                Number(amount || 0).toLocaleString(
+                    'en-IN',
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                );
+        }
+
+
+        function calculateRefund()
+        {
+            let original = 0;
+
+            let available = 0;
+
+
+            const option =
+                depositSelect.options[
+                    depositSelect.selectedIndex
+                ];
+
+
+            if (
+                option &&
+                option.value
+            ) {
+
+                original =
+                    parseFloat(
+                        option.dataset.depositAmount
+                    ) || 0;
+
+                available =
+                    parseFloat(
+                        option.dataset.refundableAmount
+                    ) || 0;
+
+
+                depositSummary.classList.remove(
+                    'd-none'
+                );
+
+            } else {
+
+                depositSummary.classList.add(
+                    'd-none'
+                );
+            }
+
+
+            let deduction = 0;
+
+
+            document
+                .querySelectorAll('.deduction')
+                .forEach(function (input) {
+
+                    deduction +=
+                        parseFloat(
+                            input.value
+                        ) || 0;
+
+                });
+
+
+            const refund =
+                Math.max(
+                    0,
+                    original - deduction
+                );
+
+
+            totalDeduction.textContent =
+                formatCurrency(
+                    deduction
+                );
+
+
+            refundAmount.textContent =
+                formatCurrency(
+                    refund
+                );
+
+
+            originalDeposit.textContent =
+                formatCurrency(
+                    original
+                );
+
+
+            availableRefund.textContent =
+                formatCurrency(
+                    available
+                );
+
+
+            if (
+                refund > available
+                && option
+                && option.value
+            ) {
+
+                refundAmount.classList
+                    .remove('text-success');
+
+                refundAmount.classList
+                    .add('text-danger');
+
+            } else {
+
+                refundAmount.classList
+                    .remove('text-danger');
+
+                refundAmount.classList
+                    .add('text-success');
+
+            }
+        }
+
+
+        depositSelect.addEventListener(
+            'change',
+            calculateRefund
+        );
+
+
+        document
+            .querySelectorAll('.deduction')
+            .forEach(function (input) {
+
+                input.addEventListener(
+                    'input',
+                    calculateRefund
+                );
+
+            });
+
+
+        calculateRefund();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Process Modal
+        |--------------------------------------------------------------------------
+        */
+
+        const processModal =
+            document.getElementById(
+                'processRefundModal'
+            );
+
+
+        if (processModal) {
+
+            processModal.addEventListener(
+                'show.bs.modal',
+                function (event) {
+
+                    const button =
+                        event.relatedTarget;
+
+                    const id =
+                        button.getAttribute(
+                            'data-refund-id'
+                        );
+
+                    const refundNo =
+                        button.getAttribute(
+                            'data-refund-no'
+                        );
+
+                    const amount =
+                        button.getAttribute(
+                            'data-refund-amount'
+                        );
+
+
+                    document.getElementById(
+                        'processRefundNo'
+                    ).value =
+                        refundNo;
+
+
+                    document.getElementById(
+                        'processRefundAmount'
+                    ).value =
+                        '₹' + amount;
+
+
+                    document.getElementById(
+                        'processRefundForm'
+                    ).action =
+                        "{{ url(
+                            'admin/revenue/deposit-refunds'
+                        ) }}"
+                        + '/'
+                        + id
+                        + '/process';
+
+                });
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cancel Modal
+        |--------------------------------------------------------------------------
+        */
+
+        const cancelModal =
+            document.getElementById(
+                'cancelRefundModal'
+            );
+
+
+        if (cancelModal) {
+
+            cancelModal.addEventListener(
+                'show.bs.modal',
+                function (event) {
+
+                    const button =
+                        event.relatedTarget;
+
+                    const id =
+                        button.getAttribute(
+                            'data-refund-id'
+                        );
+
+
+                    document.getElementById(
+                        'cancelRefundForm'
+                    ).action =
+                        "{{ url(
+                            'admin/revenue/deposit-refunds'
+                        ) }}"
+                        + '/'
+                        + id
+                        + '/cancel';
+
+                });
+
+        }
+
+    }
+);
+
+</script>
+
+@endsection
