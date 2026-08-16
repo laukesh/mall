@@ -46,8 +46,7 @@
     <div class="app-flex-spacer"></div>
         <span class="app-date-tag">
             Welcome,
-            <strong>{{ auth()->user()->name }}</strong>
-            ({{ auth()->user()->getRoleNames()->implode(', ') }})
+            <strong>{{ auth()->user()->name ?? 'Guest' }}</strong>
         </span>
     <span class="app-date-tag" id="datechip"></span>
   </div>	

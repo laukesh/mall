@@ -19,7 +19,7 @@
         </div>
 
         <a
-            href="{{ route('admin.unit-types.index') }}"
+            href="{{ route('admin.assets.unit-types.index') }}"
             class="btn btn-secondary"
         >
             ← Back
@@ -58,7 +58,7 @@
             <form
                 method="POST"
                 action="{{ route(
-                    'admin.unit-types.update',
+                    'admin.assets.unit-types.update',
                     $unitType->id
                 ) }}"
             >
@@ -167,7 +167,7 @@
 
                     <a
                         href="{{ route(
-                            'admin.unit-types.show',
+                            'admin.assets.unit-types.show',
                             $unitType->id
                         ) }}"
                         class="btn btn-secondary"

@@ -3,7 +3,7 @@
 @section('content')
 <x-form-card title="Unit Statuses" subtitle="Manage unit statuses">
   <div class="mb-3 d-flex justify-content-between">
-    <a href="{{ route('admin.unit-statuses.create') }}" class="btn btn-primary">Create Status</a>
+    <a href="{{ route('admin.assets.unit-statuses.create') }}" class="btn btn-primary">Create Status</a>
   </div>
 
   <div class="table-responsive">
@@ -27,9 +27,9 @@
           <td>{{ $status->sort_order }}</td>
           <td>{{ $status->is_active ? 'Yes' : 'No' }}</td>
           <td>
-            <a href="{{ route('admin.unit-statuses.show', $status->id) }}" class="btn btn-sm btn-info">View</a>
-            <a href="{{ route('admin.unit-statuses.edit', $status->id) }}" class="btn btn-sm btn-warning">Edit</a>
-            <form action="{{ route('admin.unit-statuses.destroy', $status->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?')">
+            <a href="{{ route('admin.assets.unit-statuses.show', $status->id) }}" class="btn btn-sm btn-info">View</a>
+            <a href="{{ route('admin.assets.unit-statuses.edit', $status->id) }}" class="btn btn-sm btn-warning">Edit</a>
+            <form action="{{ route('admin.assets.unit-statuses.destroy', $status->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?')">
               @csrf
               @method('DELETE')
               <button class="btn btn-sm btn-danger">Delete</button>

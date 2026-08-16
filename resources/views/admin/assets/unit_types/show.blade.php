@@ -26,7 +26,7 @@
 
                 <a
                     href="{{ route(
-                        'admin.unit-types.edit',
+                        'admin.assets.unit-types.edit',
                         $unitType->id
                     ) }}"
                     class="btn btn-primary"
@@ -37,7 +37,7 @@
             @endcan
 
             <a
-                href="{{ route('admin.unit-types.index') }}"
+                href="{{ route('admin.assets.unit-types.index') }}"
                 class="btn btn-secondary"
             >
                 ← Back

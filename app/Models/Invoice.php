@@ -49,7 +49,7 @@ class Invoice extends Model
         'balance_amount' => 'decimal:2',
     ];
 
-    public function leaseAgreement()
+    public function generator()
     {
         return $this->belongsTo(
             LeaseAgreement::class,
@@ -57,7 +57,7 @@ class Invoice extends Model
         );
     }
 
-    public function tenant()
+    public function creator()
     {
         return $this->belongsTo(
             Tenant::class,

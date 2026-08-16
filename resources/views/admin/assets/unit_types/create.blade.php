@@ -19,7 +19,7 @@
         </div>
 
         <a
-            href="{{ route('admin.unit-types.index') }}"
+            href="{{ route('admin.assets.unit-types.index') }}"
             class="btn btn-secondary"
         >
             ← Back
@@ -59,7 +59,7 @@
 
             <form
                 method="POST"
-                action="{{ route('admin.unit-types.store') }}"
+                action="{{ route('admin.assets.unit-types.store') }}"
             >
 
                 @csrf
@@ -162,7 +162,7 @@
                 <div class="d-flex justify-content-end gap-2">
 
                     <a
-                        href="{{ route('admin.unit-types.index') }}"
+                        href="{{ route('admin.assets.unit-types.index') }}"
                         class="btn btn-secondary"
                     >
                         Cancel

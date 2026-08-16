@@ -18,7 +18,7 @@
 
         @can('zones.create')
             <a
-                href="{{ route('admin.zones.create') }}"
+                href="{{ route('admin.assets.zones.create') }}"
                 class="btn btn-primary"
             >
                 + Add Zone
@@ -44,7 +44,7 @@
 
             <form
                 method="GET"
-                action="{{ route('admin.zones.index') }}"
+                action="{{ route('admin.assets.zones.index') }}"
             >
 
                 <div class="row g-2">
@@ -71,7 +71,7 @@
                         </button>
 
                         <a
-                            href="{{ route('admin.zones.index') }}"
+                            href="{{ route('admin.assets.zones.index') }}"
                             class="btn btn-secondary"
                         >
                             Clear
@@ -152,7 +152,7 @@
                             <td>
 
                                 <a
-                                    href="{{ route('admin.zones.show', $zone->id) }}"
+                                    href="{{ route('admin.assets.zones.show', $zone->id) }}"
                                 >
                                     {{ $zone->zone_name }}
                                 </a>
@@ -187,7 +187,7 @@
                             <td>
 
                                 <a
-                                    href="{{ route('admin.zones.show', $zone->id) }}"
+                                    href="{{ route('admin.assets.zones.show', $zone->id) }}"
                                     class="btn btn-sm btn-info"
                                 >
                                     View
@@ -196,7 +196,7 @@
                                 @can('zones.edit')
 
                                     <a
-                                        href="{{ route('admin.zones.edit', $zone->id) }}"
+                                        href="{{ route('admin.assets.zones.edit', $zone->id) }}"
                                         class="btn btn-sm btn-primary"
                                     >
                                         Edit
@@ -209,7 +209,7 @@
 
                                     <form
                                         method="POST"
-                                        action="{{ route('admin.zones.destroy', $zone->id) }}"
+                                        action="{{ route('admin.assets.zones.destroy', $zone->id) }}"
                                         class="d-inline"
                                     >
 
