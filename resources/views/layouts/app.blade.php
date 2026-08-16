@@ -190,7 +190,7 @@
                 {{-- =====================================================
                     LEASING
                 ====================================================== --}}
-                <li class="app-nav-item has-dropdown">
+                <!-- <li class="app-nav-item has-dropdown">
 
                     <a href="{{ route('admin.leasing.dashboard') }}"
                        class="app-nav-link {{ request()->routeIs('admin.leasing.*') ? 'active' : '' }}">
@@ -264,6 +264,317 @@
                         </li>
 
                     </ul>
+                </li> -->
+
+                <li class="app-nav-item has-dropdown">
+
+                    <a href="#"
+                       class="app-nav-link">
+
+                        Leasing
+
+                        <i class="ri-arrow-down-s-line"></i>
+
+                    </a>
+
+
+                    <ul class="dropdown-menu level-2">
+
+
+                        {{-- =====================================================
+                             DASHBOARD
+                        ====================================================== --}}
+
+                        <li class="dropdown-item">
+
+                            <a
+                                href="{{ route('admin.leasing.dashboard') }}"
+                                class="dropdown-link"
+                            >
+
+                                <i class="ri-dashboard-line me-2"></i>
+
+                                Leasing Dashboard
+
+                            </a>
+
+                        </li>
+
+
+                        {{-- =====================================================
+                             LEASE MANAGEMENT
+                        ====================================================== --}}
+
+                        <li class="dropdown-item has-dropdown">
+
+                            <a
+                                href="#"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+                                    <i class="ri-file-list-3-line me-2"></i>
+                                    Lease Management
+                                </span>
+
+                                <i class="ri-arrow-right-s-line"></i>
+
+                            </a>
+
+
+                            <ul class="dropdown-menu level-3">
+
+
+                                {{-- ALL LEASING --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route('admin.leasing.index') }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        All Leasing
+
+                                    </a>
+
+                                </li>
+
+
+                                {{-- PROPOSALS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.leasing.proposals.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Lease Proposals
+
+                                    </a>
+
+                                </li>
+
+
+                                {{-- AGREEMENTS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.leasing.agreements.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Lease Agreements
+
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+
+                        {{-- =====================================================
+                             LEASE DETAILS
+                        ====================================================== --}}
+
+                        <li class="dropdown-item has-dropdown">
+
+                            <a
+                                href="#"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+                                    <i class="ri-file-info-line me-2"></i>
+                                    Lease Details
+                                </span>
+
+                                <i class="ri-arrow-right-s-line"></i>
+
+                            </a>
+
+
+                            <ul class="dropdown-menu level-3">
+
+
+                                {{-- TERMS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.leasing.terms.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Lease Terms
+
+                                    </a>
+
+                                </li>
+
+
+                                {{-- DOCUMENTS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.leasing.documents.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Lease Documents
+
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+
+                        {{-- =====================================================
+                             LEASE CHANGES
+                        ====================================================== --}}
+
+                        <li class="dropdown-item has-dropdown">
+
+                            <a
+                                href="#"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+                                    <i class="ri-line-chart-line me-2"></i>
+                                    Lease Changes
+                                </span>
+
+                                <i class="ri-arrow-right-s-line"></i>
+
+                            </a>
+
+
+                            <ul class="dropdown-menu level-3">
+
+
+                                {{-- ESCALATIONS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.leasing.escalations.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Rent Escalations
+
+                                    </a>
+
+                                </li>
+
+
+                                {{-- RENEWALS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.leasing.renewals.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Lease Renewals
+
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+
+                        {{-- =====================================================
+                             EXIT MANAGEMENT
+                        ====================================================== --}}
+
+                        <li class="dropdown-item has-dropdown">
+
+                            <a
+                                href="#"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+                                    <i class="ri-logout-box-line me-2"></i>
+                                    Exit Management
+                                </span>
+
+                                <i class="ri-arrow-right-s-line"></i>
+
+                            </a>
+
+
+                            <ul class="dropdown-menu level-3">
+
+
+                                {{-- TERMINATIONS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.leasing.terminations.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Lease Terminations
+
+                                    </a>
+
+                                </li>
+
+
+                                {{-- HISTORY --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.leasing.history.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Lease History
+
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+
+                    </ul>
+
                 </li>
 
 
@@ -920,7 +1231,7 @@
                 {{-- =====================================================
                     MAINTENANCE
                 ====================================================== --}}
-                <li class="app-nav-item has-dropdown">
+                <!-- <li class="app-nav-item has-dropdown">
 
                     <a href="#"
                        class="app-nav-link">
@@ -961,6 +1272,314 @@
                         </li>
 
                     </ul>
+                </li> -->
+
+                <li class="app-nav-item has-dropdown">
+
+                    <a href="#"
+                       class="app-nav-link">
+
+                        Fit-Out
+
+                        <i class="ri-arrow-down-s-line"></i>
+
+                    </a>
+
+
+                    <ul class="dropdown-menu level-2">
+
+
+                        {{-- =====================================================
+                             DASHBOARD
+                        ====================================================== --}}
+
+                        <li class="dropdown-item">
+
+                            <a
+                                href="{{ route('admin.fitout.dashboard') }}"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+                                    <i class="ri-dashboard-line me-2"></i>
+                                    Fit-Out Dashboard
+                                </span>
+
+                            </a>
+
+                        </li>
+
+
+                        {{-- =====================================================
+                             FIT-OUT MANAGEMENT
+                        ====================================================== --}}
+
+                        <li class="dropdown-item has-dropdown">
+
+                            <a
+                                href="#"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+
+                                    <i class="ri-file-list-3-line me-2"></i>
+
+                                    Fit-Out Management
+
+                                </span>
+
+                                <i class="ri-arrow-right-s-line"></i>
+
+                            </a>
+
+
+                            <ul class="dropdown-menu level-3">
+
+
+                                {{-- REQUESTS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.fitout.requests.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Fit-Out Requests
+
+                                    </a>
+
+                                </li>
+
+
+                                {{-- APPROVALS --}}
+
+                                <li class="dropdown-item has-dropdown">
+
+                                    <a
+                                        href="#"
+                                        class="dropdown-link"
+                                    >
+
+                                        <span>
+                                            Approvals
+                                        </span>
+
+                                        <i class="ri-arrow-right-s-line"></i>
+
+                                    </a>
+
+
+                                    <ul class="dropdown-menu level-4">
+
+                                        <li class="dropdown-item">
+
+                                            <a
+                                                href="{{ route(
+                                                    'admin.fitout.approvals.index'
+                                                ) }}"
+                                                class="dropdown-link"
+                                            >
+
+                                                All Approvals
+
+                                            </a>
+
+                                        </li>
+
+
+                                        <li class="dropdown-item">
+
+                                            <a
+                                                href="{{ route(
+                                                    'admin.fitout.approvals.pending'
+                                                ) }}"
+                                                class="dropdown-link"
+                                            >
+
+                                                Pending Approvals
+
+                                            </a>
+
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+
+                                {{-- STAGES --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.fitout.requests.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Fit-Out Stages
+
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+
+                        {{-- =====================================================
+                             CONTRACTORS
+                        ====================================================== --}}
+
+                        <li class="dropdown-item">
+
+                            <a
+                                href="{{ route(
+                                    'admin.fitout.contractors.index'
+                                ) }}"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+
+                                    <i class="ri-team-line me-2"></i>
+
+                                    Contractors
+
+                                </span>
+
+                            </a>
+
+                        </li>
+
+
+                        {{-- =====================================================
+                             QUALITY & INSPECTION
+                        ====================================================== --}}
+
+                        <li class="dropdown-item has-dropdown">
+
+                            <a
+                                href="#"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+
+                                    <i class="ri-search-eye-line me-2"></i>
+
+                                    Quality & Inspection
+
+                                </span>
+
+                                <i class="ri-arrow-right-s-line"></i>
+
+                            </a>
+
+
+                            <ul class="dropdown-menu level-3">
+
+
+                                {{-- INSPECTIONS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.fitout.inspections.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Inspections
+
+                                    </a>
+
+                                </li>
+
+
+                                {{-- SNAGS --}}
+
+                                <li class="dropdown-item">
+
+                                    <a
+                                        href="{{ route(
+                                            'admin.fitout.snags.index'
+                                        ) }}"
+                                        class="dropdown-link"
+                                    >
+
+                                        Snags
+
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+
+                        {{-- =====================================================
+                             DOCUMENTS
+                        ====================================================== --}}
+
+                        <li class="dropdown-item">
+
+                            <a
+                                href="{{ route(
+                                    'admin.fitout.documents.index'
+                                ) }}"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+
+                                    <i class="ri-folder-line me-2"></i>
+
+                                    Fit-Out Documents
+
+                                </span>
+
+                            </a>
+
+                        </li>
+
+
+                        {{-- =====================================================
+                             HANDOVER
+                        ====================================================== --}}
+
+                        <li class="dropdown-item">
+
+                            <a
+                                href="{{ route(
+                                    'admin.fitout.handovers.index'
+                                ) }}"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+
+                                    <i class="ri-key-2-line me-2"></i>
+
+                                    Handovers
+
+                                </span>
+
+                            </a>
+
+                        </li>
+
+
+                    </ul>
+
                 </li>
 
 

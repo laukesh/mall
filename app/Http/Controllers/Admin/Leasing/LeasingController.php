@@ -157,42 +157,100 @@ class LeasingController extends Controller
 
 	    $agreement = DB::table('lease_agreements as la')
 
-	        ->leftJoin(
-	            'lease_proposals as lp',
-	            'lp.id',
-	            '=',
-	            'la.proposal_id'
-	        )
+        ->leftJoin(
+            'lease_proposals as lp',
+            'lp.id',
+            '=',
+            'la.proposal_id'
+        )
 
-	        ->leftJoin(
-	            'tenants as t',
-	            't.id',
-	            '=',
-	            'la.tenant_id'
-	        )
+        ->leftJoin(
+            'tenants as t',
+            't.id',
+            '=',
+            'la.tenant_id'
+        )
 
-	        ->where('la.id', $id)
+        ->where('la.id', $id)
 
-	        ->whereNull('la.deleted_at')
+        ->whereNull('la.deleted_at')
 
-	        ->select([
-	            'la.*',
+        ->select([
+            'la.*',
 
-	            'lp.proposal_no',
-	            'lp.proposal_title',
-	            'lp.proposal_status',
-	            'lp.proposal_date',
-	            'lp.expected_start_date',
-	            'lp.expected_end_date',
+            'lp.proposal_no',
+            'lp.proposal_title',
+            'lp.proposal_status',
+            'lp.proposal_date',
+            'lp.expected_start_date',
+            'lp.expected_end_date',
 
-	            't.tenant_code',
-	            't.company_name as tenant_name',
-	            't.brand_name',
-	            't.email as tenant_email',
-	            't.phone as tenant_phone',
-	        ])
+            't.tenant_code',
+            't.company_name as tenant_name',
+            't.brand_name',
+            't.email as tenant_email',
+            't.phone as tenant_phone',
+        ])
 
-	        ->first();
+        ->first();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Agreement Not Found
+    |--------------------------------------------------------------------------
+    */
+
+    if (!$agreement) {
+
+        abort(
+            404,
+            'Lease agreement not found for ID: ' . $id
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Units
+    |--------------------------------------------------------------------------
+    */
+
+    $units = DB::table('proposal_units as pu')
+
+        ->join(
+            'units as u',
+            'u.id',
+            '=',
+            'pu.unit_id'
+        )
+
+        ->where(
+            'pu.proposal_id',
+            $agreement->proposal_id
+        )
+
+        ->whereNull('pu.deleted_at')
+
+        ->select([
+            'pu.id as proposal_unit_id',
+            'pu.unit_id',
+
+            'pu.proposed_rent',
+            'pu.proposed_cam_rate',
+            'pu.proposed_security_deposit',
+            'pu.rent_free_days',
+            'pu.fitout_period_days',
+
+            'u.unit_no',
+            'u.shop_name',
+            'u.carpet_area',
+            'u.builtup_area',
+            'u.monthly_rent',
+        ])
+
+        ->get();
 
 
 	    /*
@@ -325,6 +383,21 @@ class LeasingController extends Controller
 
 	        ->get();
 
+	    /*
+		|--------------------------------------------------------------------------
+		| History
+		|--------------------------------------------------------------------------
+		*/
+
+		$history = DB::table('lease_history')
+		    ->where(
+		        'lease_agreement_id',
+		        $agreement->id
+		    )
+		    ->orderByDesc('activity_date')
+		    ->orderByDesc('id')
+		    ->get();
+
 
 	    return view(
 	        'admin.leasing.show',
@@ -335,7 +408,9 @@ class LeasingController extends Controller
 	            'escalations',
 	            'renewals',
 	            'extensions',
-	            'terminations'
+	            'terminations',
+	            'history',
+	            'units'
 	        )
 	    );
 	}

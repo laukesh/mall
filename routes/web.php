@@ -521,16 +521,6 @@ Route::middleware('auth')->group(function () {
             ->name('leasing.')
             ->group(function () {
 
-                Route::get('/', [
-                    LeasingController::class,
-                    'index'
-                ])->name('index');
-
-                Route::get('/{agreement}', [
-                    LeasingController::class,
-                    'show'
-                ])->name('show');
-
                 /*
                 |--------------------------------------------------------------------------
                 | Lease Proposals
@@ -774,6 +764,16 @@ Route::middleware('auth')->group(function () {
                         'index'
                     ]
                 )->name('dashboard');
+
+                Route::get('/', [
+                    LeasingController::class,
+                    'index'
+                ])->name('index');
+
+                Route::get('/{agreement}', [
+                    LeasingController::class,
+                    'show'
+                ])->name('show');
 
 
             });

@@ -152,11 +152,337 @@
          SUMMARY
     ====================================================== --}}
 
+    <div class="card border-0 bg-light mb-4">
+
+    <div class="card-body">
+
+        <div class="d-flex align-items-center
+                    justify-content-between">
+
+            <div class="text-center">
+
+                <div class="rounded-circle
+                            bg-success
+                            text-white
+                            mx-auto mb-2"
+                     style="width:40px;height:40px;
+                            line-height:40px;">
+
+                    ✓
+
+                </div>
+
+                <small class="fw-semibold">
+                    Proposal
+                </small>
+
+            </div>
+
+
+            <div class="flex-grow-1
+                        border-top mx-3"></div>
+
+
+            <div class="text-center">
+
+                <div class="rounded-circle
+                            bg-success
+                            text-white
+                            mx-auto mb-2"
+                     style="width:40px;height:40px;
+                            line-height:40px;">
+
+                    ✓
+
+                </div>
+
+                <small class="fw-semibold">
+                    Agreement
+                </small>
+
+            </div>
+
+
+            <div class="flex-grow-1
+                        border-top mx-3"></div>
+
+
+            <div class="text-center">
+
+                <div class="rounded-circle
+                            bg-success
+                            text-white
+                            mx-auto mb-2"
+                     style="width:40px;height:40px;
+                            line-height:40px;">
+
+                    ✓
+
+                </div>
+
+                <small class="fw-semibold">
+                    Active
+                </small>
+
+            </div>
+
+
+            <div class="flex-grow-1
+                        border-top mx-3"></div>
+
+
+            <div class="text-center">
+
+                <div class="rounded-circle
+                            bg-secondary
+                            text-white
+                            mx-auto mb-2"
+                     style="width:40px;height:40px;
+                            line-height:40px;">
+
+                    4
+
+                </div>
+
+                <small class="fw-semibold">
+                    Renewal
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
     <div class="card border-0 shadow-sm mb-4">
 
         <div class="card-body">
 
             <div class="row g-4">
+
+                {{-- =================================================
+                     UNITS
+                ================================================== --}}
+
+                <div class="mt-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center mb-3">
+
+                        <div>
+
+                            <h5 class="fw-bold mb-1">
+
+                                Leased Units
+
+                            </h5>
+
+                            <small class="text-muted">
+
+                                Units associated with this lease proposal
+
+                            </small>
+
+                        </div>
+
+                        <span class="badge bg-light text-dark border">
+
+                            {{ $units->count() }} Unit(s)
+
+                        </span>
+
+                    </div>
+
+
+                    @if($units->count())
+
+                        <div class="row g-3">
+
+                            @foreach($units as $unit)
+
+                                <div class="col-md-6 col-xl-4">
+
+                                    <div class="card
+                                                border
+                                                h-100">
+
+                                        <div class="card-body">
+
+                                            <div class="d-flex
+                                                        justify-content-between
+                                                        align-items-start">
+
+                                                <div>
+
+                                                    <div class="fw-bold fs-5">
+
+                                                        {{ $unit->unit_no }}
+
+                                                    </div>
+
+                                                    @if($unit->shop_name)
+
+                                                        <small class="text-muted">
+
+                                                            {{ $unit->shop_name }}
+
+                                                        </small>
+
+                                                    @endif
+
+                                                </div>
+
+
+                                                <span class="badge
+                                                             bg-primary">
+
+                                                    Unit
+
+                                                </span>
+
+                                            </div>
+
+
+                                            <hr>
+
+
+                                            <div class="row g-3">
+
+                                                <div class="col-6">
+
+                                                    <small class="text-muted d-block">
+
+                                                        Carpet Area
+
+                                                    </small>
+
+                                                    <strong>
+
+                                                        {{ number_format(
+                                                            $unit->carpet_area ?? 0,
+                                                            2
+                                                        ) }}
+
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <div class="col-6">
+
+                                                    <small class="text-muted d-block">
+
+                                                        Built-up Area
+
+                                                    </small>
+
+                                                    <strong>
+
+                                                        {{ number_format(
+                                                            $unit->builtup_area ?? 0,
+                                                            2
+                                                        ) }}
+
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <div class="col-6">
+
+                                                    <small class="text-muted d-block">
+
+                                                        Proposed Rent
+
+                                                    </small>
+
+                                                    <strong>
+
+                                                        ₹{{ number_format(
+                                                            $unit->proposed_rent ?? 0,
+                                                            2
+                                                        ) }}
+
+                                                    </strong>
+
+                                                </div>
+
+
+                                                <div class="col-6">
+
+                                                    <small class="text-muted d-block">
+
+                                                        CAM
+
+                                                    </small>
+
+                                                    <strong>
+
+                                                        ₹{{ number_format(
+                                                            $unit->proposed_cam_rate ?? 0,
+                                                            2
+                                                        ) }}
+
+                                                    </strong>
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <div class="mt-3">
+
+                                                <a
+                                                    href=""
+                                                    class="btn
+                                                           btn-sm
+                                                           btn-outline-primary
+                                                           w-100"
+                                                >
+
+                                                    View Unit
+
+                                                    <i class="
+                                                        fas
+                                                        fa-arrow-right
+                                                        ms-1
+                                                    "></i>
+
+                                                </a>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            @endforeach
+
+                        </div>
+
+                    @else
+
+                        <div class="alert alert-light border">
+
+                            <i class="
+                                fas
+                                fa-info-circle
+                                me-2
+                                text-muted
+                            "></i>
+
+                            No units are associated with this lease.
+
+                        </div>
+
+                    @endif
+
+                </div>
 
 
                 {{-- AGREEMENT --}}
@@ -182,29 +508,35 @@
 
                 <div class="col-md-3">
 
-                    <small class="text-muted d-block mb-1">
+                <small class="text-muted d-block mb-1">
+                    Tenant
+                </small>
 
-                        Tenant
+                <div class="d-flex align-items-center gap-2">
 
-                    </small>
-
-                    <div class="fw-semibold">
-
+                    <a
+                        href="{{ route(
+                            'admin.tenants.show',
+                            $agreement->tenant_id
+                        ) }}"
+                        class="fw-semibold text-primary text-decoration-none"
+                    >
                         {{ $agreement->tenant_name ?: '—' }}
 
-                    </div>
-
-                    @if($agreement->brand_name)
-
-                        <small class="text-muted">
-
-                            {{ $agreement->brand_name }}
-
-                        </small>
-
-                    @endif
+                        <i class="fas fa-external-link-alt ms-1 small"></i>
+                    </a>
 
                 </div>
+
+                @if($agreement->brand_name)
+
+                    <small class="text-muted">
+                        {{ $agreement->brand_name }}
+                    </small>
+
+                @endif
+
+            </div>
 
 
                 {{-- AGREEMENT DATE --}}
@@ -434,6 +766,62 @@
 
                 </div>
 
+                <div class="col-md-4">
+
+                    <div class="border rounded p-3 h-100">
+
+                        <div class="d-flex
+                                    justify-content-between
+                                    align-items-start">
+
+                            <div>
+
+                                <small class="text-muted">
+                                    Revenue
+                                </small>
+
+                                <div class="fw-bold fs-5 mt-1">
+
+                                    ₹{{ number_format(
+                                        $agreement->monthly_rent ?? 0,
+                                        2
+                                    ) }}
+
+                                </div>
+
+                                <small class="text-muted">
+                                    Monthly Rent
+                                </small>
+
+                            </div>
+
+                            <i class="
+                                fas fa-indian-rupee-sign
+                                text-success
+                            "></i>
+
+                        </div>
+
+                        <a
+                            href="{{ url(
+                                '/admin/revenue/rent-schedules'
+                            ) }}?agreement_id={{ $agreement->id }}"
+                            class="btn btn-sm
+                                   btn-outline-success
+                                   mt-3"
+                        >
+
+                            View Rent Schedule
+
+                            <i class="fas fa-arrow-right ms-1"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
             </div>
 
         </div>
@@ -625,6 +1013,20 @@
 
                         </span>
 
+                    </button>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <button
+                        class="nav-link"
+                        data-bs-toggle="tab"
+                        data-bs-target="#history"
+                        type="button"
+                    >
+                        <i class="fas fa-history me-1"></i>
+                        History
                     </button>
 
                 </li>
@@ -1197,17 +1599,16 @@
                         </h5>
 
 
-                        <button
-                            type="button"
-                            class="btn btn-sm
-                                   btn-primary"
+                        <a
+                            href="{{ route(
+                                'admin.leasing.documents.create',
+                                ['agreement_id' => $agreement->id]
+                            ) }}"
+                            class="btn btn-sm btn-primary"
                         >
-
                             <i class="fas fa-plus me-1"></i>
-
                             Add Document
-
-                        </button>
+                        </a>
 
                     </div>
 
@@ -1366,16 +1767,16 @@
                         </h5>
 
 
-                        <button
-                            type="button"
+                        <a
+                            href="{{ route(
+                                'admin.leasing.escalations.create',
+                                ['agreement_id' => $agreement->id]
+                            ) }}"
                             class="btn btn-sm btn-primary"
                         >
-
                             <i class="fas fa-plus me-1"></i>
-
                             Add Escalation
-
-                        </button>
+                        </a>
 
                     </div>
 
@@ -1514,6 +1915,17 @@
                         Lease Renewals
 
                     </h5>
+
+                    <a
+                        href="{{ route(
+                            'admin.leasing.renewals.create',
+                            ['agreement_id' => $agreement->id]
+                        ) }}"
+                        class="btn btn-sm btn-primary"
+                    >
+                        <i class="fas fa-plus me-1"></i>
+                        Add Renewal
+                    </a>
 
 
                     @if($renewals->count())
@@ -1776,6 +2188,16 @@
 
                     </h5>
 
+                    <button
+                        type="button"
+                        class="btn btn-outline-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#terminationModal"
+                    >
+                        <i class="fas fa-ban me-1"></i>
+                        Initiate Termination
+                    </button>
+
 
                     @if($terminations->count())
 
@@ -1899,6 +2321,297 @@
 
                                 This lease has no termination
                                 request.
+
+                            </small>
+
+                        </div>
+
+                    @endif
+
+                </div>
+
+                {{-- =================================================
+                     HISTORY
+                ================================================== --}}
+
+                <div
+                    class="tab-pane fade"
+                    id="history"
+                >
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center mb-4">
+
+                        <div>
+
+                            <h5 class="fw-bold mb-1">
+
+                                Lease History
+
+                            </h5>
+
+                            <small class="text-muted">
+
+                                Complete activity and audit trail
+                                for this lease.
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    @if($history->count())
+
+                        <div class="lease-history">
+
+                            @foreach($history as $item)
+
+                                <div class="history-item">
+
+                                    {{-- Timeline marker --}}
+
+                                    <div class="history-marker">
+
+                                        @php
+
+                                            $icon = match(
+                                                $item->activity_type
+                                            ) {
+
+                                                'Proposal'
+                                                    => 'fa-file-contract',
+
+                                                'Agreement'
+                                                    => 'fa-file-signature',
+
+                                                'Approval'
+                                                    => 'fa-check-circle',
+
+                                                'Rent Update'
+                                                    => 'fa-money-bill-wave',
+
+                                                'Escalation'
+                                                    => 'fa-chart-line',
+
+                                                'Renewal'
+                                                    => 'fa-sync',
+
+                                                'Extension'
+                                                    => 'fa-calendar-plus',
+
+                                                'Document'
+                                                    => 'fa-file',
+
+                                                'Invoice'
+                                                    => 'fa-file-invoice',
+
+                                                'Payment'
+                                                    => 'fa-credit-card',
+
+                                                'Inspection'
+                                                    => 'fa-search',
+
+                                                'Handover'
+                                                    => 'fa-key',
+
+                                                'Termination'
+                                                    => 'fa-ban',
+
+                                                default
+                                                    => 'fa-history',
+                                            };
+
+                                        @endphp
+
+                                        <i class="
+                                            fas
+                                            {{ $icon }}
+                                        "></i>
+
+                                    </div>
+
+
+                                    {{-- Content --}}
+
+                                    <div class="history-content">
+
+                                        <div class="d-flex
+                                                    justify-content-between
+                                                    align-items-start">
+
+                                            <div>
+
+                                                <div class="fw-semibold">
+
+                                                    {{ $item->activity_title }}
+
+                                                </div>
+
+                                                <span class="badge
+                                                             bg-light
+                                                             text-dark
+                                                             border
+                                                             mt-1">
+
+                                                    {{ $item->activity_type }}
+
+                                                </span>
+
+                                            </div>
+
+
+                                            <small class="text-muted">
+
+                                                {{ $item->activity_date
+                                                    ? \Carbon\Carbon::parse(
+                                                        $item->activity_date
+                                                    )->format(
+                                                        'd M Y, h:i A'
+                                                    )
+                                                    : '—' }}
+
+                                            </small>
+
+                                        </div>
+
+
+                                        @if($item->description)
+
+                                            <div class="text-muted mt-2">
+
+                                                {{ $item->description }}
+
+                                            </div>
+
+                                        @endif
+
+
+                                        {{-- OLD / NEW VALUES --}}
+
+                                        @if(
+                                            $item->old_value ||
+                                            $item->new_value
+                                        )
+
+                                            <div class="row g-3 mt-2">
+
+
+                                                @if($item->old_value)
+
+                                                    <div class="col-md-6">
+
+                                                        <div class="history-value
+                                                                    bg-light
+                                                                    rounded
+                                                                    p-3">
+
+                                                            <small class="text-muted
+                                                                          d-block
+                                                                          mb-1">
+
+                                                                Previous Value
+
+                                                            </small>
+
+                                                            <pre class="mb-0 small">{{ $item->old_value }}</pre>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                @endif
+
+
+                                                @if($item->new_value)
+
+                                                    <div class="col-md-6">
+
+                                                        <div class="history-value
+                                                                    bg-light
+                                                                    rounded
+                                                                    p-3">
+
+                                                            <small class="text-muted
+                                                                          d-block
+                                                                          mb-1">
+
+                                                                New Value
+
+                                                            </small>
+
+                                                            <pre class="mb-0 small">{{ $item->new_value }}</pre>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                @endif
+
+                                            </div>
+
+                                        @endif
+
+
+                                        {{-- PERFORMED BY --}}
+
+                                        <div class="mt-3
+                                                    small
+                                                    text-muted">
+
+                                            <i class="fas fa-user me-1"></i>
+
+                                            {{ $item->performer?->name
+                                                ?? 'System' }}
+
+                                            @if($item->reference_module)
+
+                                                <span class="mx-1">•</span>
+
+                                                {{ $item->reference_module }}
+
+                                                @if($item->reference_id)
+
+                                                    #{{ $item->reference_id }}
+
+                                                @endif
+
+                                            @endif
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            @endforeach
+
+                        </div>
+
+                    @else
+
+                        <div class="text-center
+                                    text-muted
+                                    py-5">
+
+                            <i class="
+                                fas fa-history
+                                fa-2x
+                                mb-3
+                            "></i>
+
+                            <div class="fw-semibold">
+
+                                No history available
+
+                            </div>
+
+                            <small>
+
+                                Lease activity will appear here
+                                as actions are performed.
 
                             </small>
 
