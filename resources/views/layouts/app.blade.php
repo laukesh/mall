@@ -60,204 +60,432 @@
 
             @auth
 
-                {{-- =====================================================
-                    DASHBOARD / OVERVIEW
-                ====================================================== --}}
+                {{-- =========================================================
+                    OVERVIEW
+                ========================================================== --}}
                 @can('dashboard.view')
                     <li class="app-nav-item">
                         <a href="{{ route('admin.dashboard') }}"
                            class="app-nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                            <i class="ri-dashboard-line"></i>
                             Overview
                         </a>
                     </li>
                 @endcan
 
 
-                {{-- =====================================================
-                    ASSET OPERATIONS
-                ====================================================== --}}
-                @if(
-                    auth()->user()->can('malls.view') ||
-                    auth()->user()->can('buildings.view') ||
-                    auth()->user()->can('floors.view') ||
-                    auth()->user()->can('zones.view') ||
-                    auth()->user()->can('unit_types.view') ||
-                    auth()->user()->can('units.view')
-                )
+                    {{-- =========================================================
+    ASSETS
+========================================================= --}}
+@if(
+    auth()->user()->can('malls.view') ||
+    auth()->user()->can('buildings.view') ||
+    auth()->user()->can('floors.view') ||
+    auth()->user()->can('zones.view') ||
+    auth()->user()->can('unit_types.view') ||
+    auth()->user()->can('units.view') ||
+    auth()->user()->can('unit_statuses.view') ||
+    auth()->user()->can('unit_documents.view') ||
+    auth()->user()->can('departments.view') ||
+    auth()->user()->can('assets.categories.view') ||
+    auth()->user()->can('assets.view')
+)
 
-                    <li class="app-nav-item has-dropdown">
+    <li class="app-nav-item has-dropdown">
 
-                        <a href="#"
-                           class="app-nav-link {{ request()->routeIs('admin.assets.*') ? 'active' : '' }}">
-                            Asset 
-                            <i class="ri-arrow-down-s-line"></i>
-                        </a>
+        <a href="#"
+           class="app-nav-link {{ request()->routeIs('admin.assets.*') ? 'active' : '' }}">
 
-                        <ul class="dropdown-menu level-2">
+            <i class="ri-building-2-line"></i>
+            Assets
+            <i class="ri-arrow-down-s-line"></i>
 
-                            {{-- Malls --}}
-                            @can('malls.view')
-                                <li class="dropdown-item">
-                                    <a href="{{ route('admin.assets.malls.index') }}"
-                                       class="dropdown-link {{ request()->routeIs('admin.assets.malls.*') ? 'active' : '' }}">
-                                        Malls
-                                    </a>
-                                </li>
-                            @endcan
+        </a>
 
 
-                            {{-- Buildings --}}
-                            @can('buildings.view')
-                                <li class="dropdown-item">
-                                    <a href="{{ route('admin.assets.buildings.index') }}"
-                                       class="dropdown-link {{ request()->routeIs('admin.assets.buildings.*') ? 'active' : '' }}">
-                                        Buildings
-                                    </a>
-                                </li>
-                            @endcan
+        <ul class="dropdown-menu level-2">
+
+            {{-- =================================================
+                PROPERTY STRUCTURE
+            ================================================== --}}
+            @if(
+                auth()->user()->can('malls.view') ||
+                auth()->user()->can('buildings.view') ||
+                auth()->user()->can('floors.view') ||
+                auth()->user()->can('zones.view')
+            )
+
+                <li class="dropdown-item has-dropdown">
+
+                    <a href="#"
+                       class="dropdown-link">
+
+                        <i class="ri-building-line"></i>
+                        Property Structure
+
+                        <i class="ri-arrow-right-s-line"></i>
+
+                    </a>
 
 
-                            {{-- Floors --}}
-                            @can('floors.view')
-                                <li class="dropdown-item">
-                                    <a href="{{ route('admin.assets.floors.index') }}"
-                                       class="dropdown-link {{ request()->routeIs('admin.assets.floors.*') ? 'active' : '' }}">
-                                        Floors
-                                    </a>
-                                </li>
-                            @endcan
+                    <ul class="dropdown-menu level-3">
+
+                        {{-- Malls --}}
+                        @can('malls.view')
+
+                            <li class="dropdown-item">
+
+                                <a href="{{ route('admin.assets.malls.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.malls.*') ? 'active' : '' }}">
+
+                                    <i class="ri-store-2-line"></i>
+                                    Malls
+
+                                </a>
+
+                            </li>
+
+                        @endcan
 
 
-                            {{-- Zones --}}
-                            @can('zones.view')
-                                <li class="dropdown-item">
-                                    <a href="{{ route('admin.assets.zones.index') }}"
-                                       class="dropdown-link {{ request()->routeIs('admin.assets.zones.*') ? 'active' : '' }}">
-                                        Zones
-                                    </a>
-                                </li>
-                            @endcan
+                        {{-- Buildings --}}
+                        @can('buildings.view')
+
+                            <li class="dropdown-item">
+
+                                <a href="{{ route('admin.assets.buildings.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.buildings.*') ? 'active' : '' }}">
+
+                                    <i class="ri-building-line"></i>
+                                    Buildings
+
+                                </a>
+
+                            </li>
+
+                        @endcan
 
 
-                            {{-- Unit Types --}}
-                            @can('unit_types.view')
-                                <li class="dropdown-item">
-                                    <a href="{{ route('admin.assets.unit-types.index') }}"
-                                       class="dropdown-link {{ request()->routeIs('admin.assets.unit-types.*') ? 'active' : '' }}">
-                                        Unit Types
-                                    </a>
-                                </li>
-                            @endcan
+                        {{-- Floors --}}
+                        @can('floors.view')
+
+                            <li class="dropdown-item">
+
+                                <a href="{{ route('admin.assets.floors.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.floors.*') ? 'active' : '' }}">
+
+                                    <i class="ri-layout-4-line"></i>
+                                    Floors
+
+                                </a>
+
+                            </li>
+
+                        @endcan
 
 
-                            {{-- Units + Floor Submenu --}}
-                            @can('units.view')
+                        {{-- Zones --}}
+                        @can('zones.view')
 
-                                <li class="dropdown-item has-dropdown">
+                            <li class="dropdown-item">
 
-                                    <a href="{{ route('admin.assets.units.index') }}"
-                                       class="dropdown-link {{ request()->routeIs('admin.assets.units.*') ? 'active' : '' }}">
-                                        Units
-                                        <i class="ri-arrow-right-s-line"></i>
-                                    </a>
+                                <a href="{{ route('admin.assets.zones.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.zones.*') ? 'active' : '' }}">
 
-                                    <ul class="dropdown-menu level-3">
+                                    <i class="ri-map-pin-line"></i>
+                                    Zones
 
-                                        @can('floors.view')
+                                </a>
 
-                                            <li class="dropdown-item">
-                                                <a href="{{ route('admin.assets.floors.index') }}"
-                                                   class="dropdown-link">
-                                                    All Floors
-                                                </a>
-                                            </li>
+                            </li>
 
-                                        @endcan
+                        @endcan
 
-                                    </ul>
+                    </ul>
 
-                                </li>
+                </li>
 
-                            @endcan
-
-                        </ul>
-                    </li>
-
-                @endif
+            @endif
 
 
-                {{-- =====================================================
+            {{-- =================================================
+                UNITS & DOCUMENTS
+            ================================================== --}}
+            @if(
+                auth()->user()->can('unit_types.view') ||
+                auth()->user()->can('units.view') ||
+                auth()->user()->can('unit_statuses.view') ||
+                auth()->user()->can('unit_documents.view')
+            )
+
+                <li class="dropdown-item has-dropdown">
+
+                    <a href="#"
+                       class="dropdown-link">
+
+                        <i class="ri-home-office-line"></i>
+                        Units & Tenants
+
+                        <i class="ri-arrow-right-s-line"></i>
+
+                    </a>
+
+
+                    <ul class="dropdown-menu level-3">
+
+                        {{-- Unit Types --}}
+                        @can('unit_types.view')
+
+                            <li class="dropdown-item">
+
+                                <a href="{{ route('admin.assets.unit_types.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.unit_types.*') ? 'active' : '' }}">
+
+                                    <i class="ri-grid-line"></i>
+                                    Unit Types
+
+                                </a>
+
+                            </li>
+
+                        @endcan
+
+
+                        {{-- Units --}}
+                        @can('units.view')
+
+                            <li class="dropdown-item">
+
+                                <a href="{{ route('admin.assets.units.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.units.*') ? 'active' : '' }}">
+
+                                    <i class="ri-home-office-line"></i>
+                                    All Units
+
+                                </a>
+
+                            </li>
+
+                        @endcan
+
+
+                        {{-- Unit Statuses --}}
+                        @can('unit_statuses.view')
+
+                            <li class="dropdown-item">
+
+                                <a href="{{ route('admin.assets.unit-statuses.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.unit-statuses.*') ? 'active' : '' }}">
+
+                                    <i class="ri-checkbox-circle-line"></i>
+                                    Unit Statuses
+
+                                </a>
+
+                            </li>
+
+                        @endcan
+
+
+                        {{-- Unit Documents --}}
+                        @can('unit_documents.view')
+
+                            <li class="dropdown-item">
+
+                                <a href="{{ route('admin.assets.unit-documents.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.unit-documents.*') ? 'active' : '' }}">
+
+                                    <i class="ri-file-text-line"></i>
+                                    Unit Documents
+
+                                </a>
+
+                            </li>
+
+                        @endcan
+
+                    </ul>
+
+                </li>
+
+            @endif
+
+
+            {{-- =================================================
+                ORGANIZATION
+            ================================================== --}}
+            @can('departments.view')
+
+                <li class="dropdown-item">
+
+                    <a href="{{ route('admin.assets.departments.index') }}"
+                       class="dropdown-link {{ request()->routeIs('admin.assets.departments.*') ? 'active' : '' }}">
+
+                        <i class="ri-organization-chart"></i>
+                        Departments
+
+                    </a>
+
+                </li>
+
+            @endcan
+
+
+            {{-- =================================================
+                ASSET MANAGEMENT
+            ================================================== --}}
+            @if(
+                auth()->user()->can('asset_categories.view') ||
+                auth()->user()->can('assets.view')
+            )
+
+                <li class="dropdown-item has-dropdown">
+
+                    <a href="#"
+                       class="dropdown-link">
+
+                        <i class="ri-tools-line"></i>
+                        Asset Management
+
+                        <i class="ri-arrow-right-s-line"></i>
+
+                    </a>
+
+
+                    <ul class="dropdown-menu level-3">
+
+                        {{-- Asset Categories --}}
+                        @can('asset_categories.view')
+
+                            <li class="dropdown-item">
+
+                                <a href="{{ route('admin.assets.asset-categories.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.asset-categories.*') ? 'active' : '' }}">
+
+                                    <i class="ri-price-tag-3-line"></i>
+                                    Asset Categories
+
+                                </a>
+
+                            </li>
+
+                        @endcan
+
+
+                        {{-- Assets --}}
+                        @can('assets.view')
+
+                            <li class="dropdown-item">
+
+                                <a href="{{ route('admin.assets.assets.index') }}"
+                                   class="dropdown-link {{ request()->routeIs('admin.assets.assets.*') ? 'active' : '' }}">
+
+                                    <i class="ri-tools-line"></i>
+                                    Assets
+
+                                </a>
+
+                            </li>
+
+                        @endcan
+
+                    </ul>
+
+                </li>
+
+            @endif
+
+        </ul>
+
+    </li>
+
+@endif
+
+
+                {{-- =========================================================
                     LEASING
-                ====================================================== --}}
+                ========================================================== --}}
                 <li class="app-nav-item has-dropdown">
 
                     <a href="{{ route('admin.leasing.dashboard') }}"
                        class="app-nav-link {{ request()->routeIs('admin.leasing.*') ? 'active' : '' }}">
+
+                        <i class="ri-file-text-line"></i>
                         Leasing
                         <i class="ri-arrow-down-s-line"></i>
+
                     </a>
 
                     <ul class="dropdown-menu level-2">
 
                         <li class="dropdown-item">
                             <a href="{{ route('admin.leasing.dashboard') }}"
-                               class="dropdown-link">
+                               class="dropdown-link {{ request()->routeIs('admin.leasing.dashboard') ? 'active' : '' }}">
+                                <i class="ri-dashboard-line"></i>
                                 Leasing Dashboard
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="{{ route('admin.leasing.proposals.index') }}"
-                               class="dropdown-link">
+                               class="dropdown-link {{ request()->routeIs('admin.leasing.proposals.*') ? 'active' : '' }}">
+                                <i class="ri-file-edit-line"></i>
                                 Lease Proposals
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="{{ route('admin.leasing.agreements.index') }}"
-                               class="dropdown-link">
+                               class="dropdown-link {{ request()->routeIs('admin.leasing.agreements.*') ? 'active' : '' }}">
+                                <i class="ri-contract-line"></i>
                                 Lease Agreements
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="{{ route('admin.leasing.terms.index') }}"
-                               class="dropdown-link">
+                               class="dropdown-link {{ request()->routeIs('admin.leasing.terms.*') ? 'active' : '' }}">
+                                <i class="ri-file-list-3-line"></i>
                                 Lease Terms
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="{{ route('admin.leasing.documents.index') }}"
-                               class="dropdown-link">
+                               class="dropdown-link {{ request()->routeIs('admin.leasing.documents.*') ? 'active' : '' }}">
+                                <i class="ri-folder-open-line"></i>
                                 Lease Documents
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="{{ route('admin.leasing.renewals.index') }}"
-                               class="dropdown-link">
+                               class="dropdown-link {{ request()->routeIs('admin.leasing.renewals.*') ? 'active' : '' }}">
+                                <i class="ri-refresh-line"></i>
                                 Renewals
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="{{ route('admin.leasing.escalations.index') }}"
-                               class="dropdown-link">
+                               class="dropdown-link {{ request()->routeIs('admin.leasing.escalations.*') ? 'active' : '' }}">
+                                <i class="ri-arrow-up-circle-line"></i>
                                 Escalations
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="{{ route('admin.leasing.history.index') }}"
-                               class="dropdown-link">
+                               class="dropdown-link {{ request()->routeIs('admin.leasing.history.*') ? 'active' : '' }}">
+                                <i class="ri-history-line"></i>
                                 Lease History
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="{{ route('admin.leasing.terminations.index') }}"
-                               class="dropdown-link">
+                               class="dropdown-link {{ request()->routeIs('admin.leasing.terminations.*') ? 'active' : '' }}">
+                                <i class="ri-close-circle-line"></i>
                                 Terminations
                             </a>
                         </li>
@@ -266,68 +494,562 @@
                 </li>
 
 
-                {{-- =====================================================
-                    TENANTS
-                ====================================================== --}}
-                <li class="app-nav-item">
+            {{-- =========================================================
+    TENANTS
+========================================================= --}}
+<li class="app-nav-item has-dropdown">
 
-                    <a href="{{ route('admin.tenants.dashboard') }}"
-                       class="app-nav-link {{ request()->routeIs('admin.tenants.*') ? 'active' : '' }}">
-                        Tenants
+    <a href="{{ route('admin.tenants.dashboard') }}"
+       class="app-nav-link {{ request()->routeIs('admin.tenants.*') ? 'active' : '' }}">
+
+        <i class="ri-user-3-line"></i>
+        Tenants
+
+        <i class="ri-arrow-down-s-line"></i>
+    </a>
+
+    <ul class="dropdown-menu level-2">
+
+        {{-- Dashboard --}}
+        <li class="dropdown-item">
+            <a href="{{ route('admin.tenants.dashboard') }}"
+               class="dropdown-link {{ request()->routeIs('admin.tenants.dashboard') ? 'active' : '' }}">
+
+                <i class="ri-dashboard-line"></i>
+                Tenant Dashboard
+            </a>
+        </li>
+
+        {{-- All Tenants --}}
+        <li class="dropdown-item">
+            <a href="{{ route('admin.tenants.index') }}"
+               class="dropdown-link {{ request()->routeIs('admin.tenants.index') ? 'active' : '' }}">
+
+                <i class="ri-team-line"></i>
+                All Tenants
+            </a>
+        </li>
+
+        {{-- Add Tenant --}}
+        <li class="dropdown-item">
+            <a href="{{ route('admin.tenants.create') }}"
+               class="dropdown-link {{ request()->routeIs('admin.tenants.create') ? 'active' : '' }}">
+
+                <i class="ri-user-add-line"></i>
+                Add Tenant
+            </a>
+        </li>
+
+    </ul>
+
+</li>
+{{-- =========================================================
+    FIT-OUT
+========================================================= --}}
+<li class="app-nav-item has-dropdown">
+
+    <a href="{{ route('admin.fitout.dashboard') }}"
+       class="app-nav-link {{ request()->routeIs('admin.fitout.*') ? 'active' : '' }}">
+
+        <i class="ri-tools-line"></i>
+        Fit-out
+
+        <i class="ri-arrow-down-s-line"></i>
+    </a>
+
+    <ul class="dropdown-menu level-2">
+
+        {{-- Dashboard --}}
+        <li class="dropdown-item">
+
+            <a href="{{ route('admin.fitout.dashboard') }}"
+               class="dropdown-link {{ request()->routeIs('admin.fitout.dashboard') ? 'active' : '' }}">
+
+                <i class="ri-dashboard-line"></i>
+                Fit-out Dashboard
+
+            </a>
+
+        </li>
+
+
+        {{-- =====================================================
+            REQUESTS
+        ====================================================== --}}
+        <li class="dropdown-item">
+
+            <a href="{{ route('admin.fitout.requests.index') }}"
+               class="dropdown-link {{ request()->routeIs('admin.fitout.requests.*') ? 'active' : '' }}">
+
+                <i class="ri-file-edit-line"></i>
+                Fit-out Requests
+
+            </a>
+
+        </li>
+
+
+        {{-- =====================================================
+            STAGES
+        ====================================================== --}}
+        <li class="dropdown-item">
+
+            <a href="{{ route('admin.fitout.stages.show', ['id' => 0]) }}"
+               class="dropdown-link">
+
+                <i class="ri-list-check-3"></i>
+                Fit-out Stages
+
+            </a>
+
+        </li>
+
+
+        {{-- =====================================================
+            APPROVALS
+        ====================================================== --}}
+        <li class="dropdown-item has-dropdown">
+
+            <a href="{{ route('admin.fitout.approvals.index') }}"
+               class="dropdown-link {{ request()->routeIs('admin.fitout.approvals.*') ? 'active' : '' }}">
+
+                <i class="ri-checkbox-circle-line"></i>
+                Approvals
+
+                <i class="ri-arrow-right-s-line"></i>
+
+            </a>
+
+            <ul class="dropdown-menu level-3">
+
+                <li class="dropdown-item">
+
+                    <a href="{{ route('admin.fitout.approvals.index') }}"
+                       class="dropdown-link">
+
+                        <i class="ri-file-list-3-line"></i>
+                        All Approvals
+
                     </a>
 
                 </li>
 
+                <li class="dropdown-item">
 
-                {{-- =====================================================
+                    <a href="{{ route('admin.fitout.approvals.pending') }}"
+                       class="dropdown-link">
+
+                        <i class="ri-time-line"></i>
+                        Pending Approvals
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </li>
+
+
+        {{-- =====================================================
+            INSPECTIONS
+        ====================================================== --}}
+        <li class="dropdown-item">
+
+            <a href="{{ route('admin.fitout.inspections.index') }}"
+               class="dropdown-link {{ request()->routeIs('admin.fitout.inspections.*') ? 'active' : '' }}">
+
+                <i class="ri-search-eye-line"></i>
+                Inspections
+
+            </a>
+
+        </li>
+
+
+        {{-- =====================================================
+            DOCUMENTS
+        ====================================================== --}}
+        <li class="dropdown-item">
+
+            <a href="{{ route('admin.fitout.documents.index') }}"
+               class="dropdown-link {{ request()->routeIs('admin.fitout.documents.*') ? 'active' : '' }}">
+
+                <i class="ri-folder-open-line"></i>
+                Documents
+
+            </a>
+
+        </li>
+
+
+        {{-- =====================================================
+            CONTRACTORS
+        ====================================================== --}}
+        <li class="dropdown-item">
+
+            <a href="{{ route('admin.fitout.contractors.index') }}"
+               class="dropdown-link {{ request()->routeIs('admin.fitout.contractors.*') ? 'active' : '' }}">
+
+                <i class="ri-team-line"></i>
+                Contractors
+
+            </a>
+
+        </li>
+
+
+        {{-- =====================================================
+            HANDOVERS
+        ====================================================== --}}
+        <li class="dropdown-item">
+
+            <a href="{{ route('admin.fitout.handovers.index') }}"
+               class="dropdown-link {{ request()->routeIs('admin.fitout.handovers.*') ? 'active' : '' }}">
+
+                <i class="ri-hand-coin-line"></i>
+                Handovers
+
+            </a>
+
+        </li>
+
+
+        {{-- =====================================================
+            SNAGS
+        ====================================================== --}}
+        <li class="dropdown-item">
+
+            <a href="{{ route('admin.fitout.snags.index') }}"
+               class="dropdown-link {{ request()->routeIs('admin.fitout.snags.*') ? 'active' : '' }}">
+
+                <i class="ri-error-warning-line"></i>
+                Snags
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</li>
+
+
+                {{-- =========================================================
                     REVENUE
-                ====================================================== --}}
+                ========================================================== --}}
                 <li class="app-nav-item has-dropdown">
 
-                    <a href="#"
-                       class="app-nav-link">
+                    <a href="{{ route('admin.revenue.dashboard') }}"
+                       class="app-nav-link {{ request()->routeIs('admin.revenue.*') ? 'active' : '' }}">
+
+                        <i class="ri-money-dollar-circle-line"></i>
                         Revenue
                         <i class="ri-arrow-down-s-line"></i>
+
                     </a>
 
                     <ul class="dropdown-menu level-2">
 
+                        {{-- Dashboard --}}
                         <li class="dropdown-item">
-                            <a href="{{ route('admin.revenue.dashboard') }}" class="dropdown-link">
+                            <a href="{{ route('admin.revenue.dashboard') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.dashboard') ? 'active' : '' }}">
+                                <i class="ri-dashboard-line"></i>
                                 Revenue Dashboard
                             </a>
                         </li>
 
+                        {{-- Rent Schedules --}}
                         <li class="dropdown-item">
-                            <a href="{{ route('admin.revenue.invoices.index') }}" class="dropdown-link">
+                            <a href="{{ route('admin.revenue.rent-schedules.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.rent-schedules.*') ? 'active' : '' }}">
+                                <i class="ri-calendar-schedule-line"></i>
+                                Rent Schedules
+                            </a>
+                        </li>
+
+                        {{-- Invoices --}}
+                        <li class="dropdown-item">
+                            <a href="{{ route('admin.revenue.invoices.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.invoices.*') ? 'active' : '' }}">
+                                <i class="ri-file-text-line"></i>
                                 Invoices
                             </a>
                         </li>
 
+                        {{-- Payments --}}
                         <li class="dropdown-item">
-                            <a href="{{ route('admin.revenue.payments.index') }}" class="dropdown-link">
+                            <a href="{{ route('admin.revenue.payments.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.payments.*') ? 'active' : '' }}">
+                                <i class="ri-bank-card-line"></i>
                                 Payments
                             </a>
                         </li>
 
+                        {{-- Receipts --}}
                         <li class="dropdown-item">
-                            <a href="{{ route('admin.revenue.receipts.index') }}" class="dropdown-link">
+                            <a href="{{ route('admin.revenue.deposit-receipts.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.deposit-receipts.*') ? 'active' : '' }}">
+                                <i class="ri-receipt-line"></i>
                                 Receipts
                             </a>
                         </li>
 
+                        {{-- Deposits --}}
+                        <li class="dropdown-item">
+                            <a href="{{ route('admin.revenue.deposits.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.deposits.*') ? 'active' : '' }}">
+                                <i class="ri-wallet-3-line"></i>
+                                Deposits
+                            </a>
+                        </li>
+
+                        {{-- Deposit Refunds --}}
+                        <li class="dropdown-item">
+                            <a href="{{ route('admin.revenue.deposit-refunds.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.deposit-refunds.*') ? 'active' : '' }}">
+                                <i class="ri-refund-2-line"></i>
+                                Deposit Refunds
+                            </a>
+                        </li>
+
+                        {{-- Outstanding --}}
+                        <li class="dropdown-item has-dropdown">
+
+                            <a href="{{ route('admin.revenue.outstanding.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.outstanding.*') ? 'active' : '' }}">
+
+                                <i class="ri-alert-line"></i>
+                                Outstanding
+
+                                <i class="ri-arrow-right-s-line"></i>
+
+                            </a>
+
+                            <ul class="dropdown-menu level-3">
+
+                                <li class="dropdown-item">
+                                    <a href="{{ route('admin.revenue.outstanding.index') }}"
+                                       class="dropdown-link">
+                                        All Outstanding
+                                    </a>
+                                </li>
+
+                                <li class="dropdown-item">
+                                    <a href="{{ route('admin.revenue.outstanding.overdue') }}"
+                                       class="dropdown-link">
+                                        Overdue
+                                    </a>
+                                </li>
+
+                                <li class="dropdown-item">
+                                    <a href="{{ route('admin.revenue.outstanding.tenants') }}"
+                                       class="dropdown-link">
+                                        Tenant Outstanding
+                                    </a>
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+
+                        {{-- Reports --}}
+                        <li class="dropdown-item has-dropdown">
+
+                            <a href="{{ route('admin.revenue.reports.revenue') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.reports.*') ? 'active' : '' }}">
+
+                                <i class="ri-bar-chart-2-line"></i>
+                                Revenue Reports
+
+                                <i class="ri-arrow-right-s-line"></i>
+
+                            </a>
+
+                            <ul class="dropdown-menu level-3">
+
+                                <li class="dropdown-item">
+                                    <a href="{{ route('admin.revenue.reports.revenue') }}"
+                                       class="dropdown-link">
+                                        Revenue Report
+                                    </a>
+                                </li>
+
+                                <li class="dropdown-item">
+                                    <a href="{{ route('admin.revenue.reports.collections') }}"
+                                       class="dropdown-link">
+                                        Collection Report
+                                    </a>
+                                </li>
+
+                                <li class="dropdown-item">
+                                    <a href="{{ route('admin.revenue.reports.charge-wise') }}"
+                                       class="dropdown-link">
+                                        Charge-wise Report
+                                    </a>
+                                </li>
+
+                                <li class="dropdown-item">
+                                    <a href="{{ route('admin.revenue.reports.tenant-wise') }}"
+                                       class="dropdown-link">
+                                        Tenant-wise Report
+                                    </a>
+                                </li>
+
+                                <li class="dropdown-item">
+                                    <a href="{{ route('admin.revenue.reports.aging') }}"
+                                       class="dropdown-link">
+                                        Aging Report
+                                    </a>
+                                </li>
+
+                            </ul>
+
+                        </li>
+
+
+                        {{-- Reconciliation --}}
+                        <li class="dropdown-item">
+                            <a href="{{ route('admin.revenue.reconciliation.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.reconciliation.*') ? 'active' : '' }}">
+                                <i class="ri-check-double-line"></i>
+                                Reconciliation
+                            </a>
+                        </li>
+
+
+                        {{-- Charge Types --}}
+                        <li class="dropdown-item">
+                            <a href="{{ route('admin.revenue.settings.charge-types.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.settings.charge-types.*') ? 'active' : '' }}">
+                                <i class="ri-price-tag-3-line"></i>
+                                Charge Types
+                            </a>
+                        </li>
+
+
+                        {{-- Audit Log --}}
+                        <li class="dropdown-item">
+                            <a href="{{ route('admin.revenue.audit.index') }}"
+                               class="dropdown-link {{ request()->routeIs('admin.revenue.audit.*') ? 'active' : '' }}">
+                                <i class="ri-shield-check-line"></i>
+                                Revenue Audit Log
+                            </a>
+                        </li>
+
                     </ul>
+
                 </li>
 
 
-                {{-- =====================================================
+                {{-- =========================================================
                     MAINTENANCE
-                ====================================================== --}}
+                ========================================================== --}}
+         <li class="app-nav-item has-dropdown">
+
+    <a href="#"
+       class="app-nav-link">
+        <i class="ri-tools-line"></i>
+        Maintenance
+        <i class="ri-arrow-down-s-line"></i>
+    </a>
+
+    <ul class="dropdown-menu level-2">
+
+        {{-- Maintenance Dashboard --}}
+        @can('maintenance_history.view')
+            <li class="dropdown-item">
+                <a href="{{ route('admin.maintenance-history.index') }}"
+                   class="dropdown-link">
+                    <i class="ri-dashboard-line"></i>
+                    Maintenance Dashboard
+                </a>
+            </li>
+        @endcan
+      {{-- maintenance requests --}}
+        @can('maintenance_requests.view')
+            <li class="dropdown-item">
+                <a href="{{ route('admin.maintenance-requests.index') }}"
+                   class="dropdown-link">
+                    <i class="ri-file-list-3-line"></i>
+                    Maintenance requests
+                </a>
+            </li>
+        @endcan
+         {{-- maintenance performance --}}
+        @can('preventive_maintenance.view')
+            <li class="dropdown-item">
+                <a href="{{ route('admin.preventive-maintenance.index') }}"
+                   class="dropdown-link">
+                    <i class="ri-file-list-3-line"></i>
+                   Preventive maintenance
+                </a>
+            </li>
+        @endcan
+
+        {{-- Work Orders --}}
+        @can('work_orders.view')
+            <li class="dropdown-item">
+                <a href="{{ route('admin.maintenance.work-orders.index') }}"
+                   class="dropdown-link">
+                    <i class="ri-file-list-3-line"></i>
+                    Work Orders
+                </a>
+            </li>
+        @endcan
+
+
+        {{-- Service Requests --}}
+        @can('service_requests.view')
+            <li class="dropdown-item">
+                <a href="{{ route('admin.maintenance.service-requests.index') }}"
+                   class="dropdown-link">
+                    <i class="ri-customer-service-2-line"></i>
+                    Service Requests
+                </a>
+            </li>
+        @endcan
+
+
+        {{-- Preventive Maintenance --}}
+        @can('preventive_maintenance.view')
+            <li class="dropdown-item">
+                <a href="{{ route('admin.preventive-maintenance.index') }}"
+                   class="dropdown-link">
+                    <i class="ri-calendar-check-line"></i>
+                    Preventive Maintenance
+                </a>
+            </li>
+        @endcan
+
+
+        {{-- Maintenance Reports --}}
+        @can('maintenance_reports.view')
+            <li class="dropdown-item">
+                <a href="{{ route('admin.maintenance.reports.index') }}"
+                   class="dropdown-link">
+                    <i class="ri-bar-chart-line"></i>
+                    Maintenance Reports
+                </a>
+            </li>
+        @endcan
+
+    </ul>
+
+</li>
+
+
+                {{-- =========================================================
+                    PERFORMANCE
+                ========================================================== --}}
                 <li class="app-nav-item has-dropdown">
 
                     <a href="#"
                        class="app-nav-link">
-                        Maintenance
+                        <i class="ri-line-chart-line"></i>
+                        Performance
                         <i class="ri-arrow-down-s-line"></i>
                     </a>
 
@@ -335,88 +1057,47 @@
 
                         <li class="dropdown-item">
                             <a href="#" class="dropdown-link">
-                                Maintenance Dashboard
-                            </a>
-                        </li>
-
-                        <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
-                                Work Orders
-                            </a>
-                        </li>
-
-                        <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
-                                Service Requests
-                            </a>
-                        </li>
-
-                        <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
-                                Preventive Maintenance
-                            </a>
-                        </li>
-
-                        <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
-                                Maintenance Reports
-                            </a>
-                        </li>
-
-                    </ul>
-                </li>
-
-
-                {{-- =====================================================
-                    PERFORMANCE MANAGEMENT
-                ====================================================== --}}
-                <li class="app-nav-item has-dropdown">
-
-                    <a href="#"
-                       class="app-nav-link">
-                        Performance Management
-                        <i class="ri-arrow-down-s-line"></i>
-                    </a>
-
-                    <ul class="dropdown-menu level-2">
-
-                        <li class="dropdown-item">
-                            <a href="#" class="dropdown-link">
+                                <i class="ri-dashboard-line"></i>
                                 Performance Dashboard
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="#" class="dropdown-link">
+                                <i class="ri-target-line"></i>
                                 KPI
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="#" class="dropdown-link">
+                                <i class="ri-building-4-line"></i>
                                 Occupancy Performance
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="#" class="dropdown-link">
+                                <i class="ri-money-dollar-box-line"></i>
                                 Revenue Performance
                             </a>
                         </li>
 
                         <li class="dropdown-item">
                             <a href="#" class="dropdown-link">
+                                <i class="ri-file-chart-line"></i>
                                 Reports
                             </a>
                         </li>
 
                     </ul>
+
                 </li>
 
 
-                {{-- =====================================================
+                {{-- =========================================================
                     ADMINISTRATION
-                ====================================================== --}}
+                ========================================================== --}}
                 @if(
                     auth()->user()->can('users.view') ||
                     auth()->user()->can('roles.view') ||
@@ -427,8 +1108,11 @@
 
                         <a href="#"
                            class="app-nav-link {{ request()->routeIs('admin.users.*', 'admin.roles.*') ? 'active' : '' }}">
+
+                            <i class="ri-admin-line"></i>
                             Administration
                             <i class="ri-arrow-down-s-line"></i>
+
                         </a>
 
                         <ul class="dropdown-menu level-2">
@@ -436,7 +1120,8 @@
                             @can('users.view')
                                 <li class="dropdown-item">
                                     <a href="{{ route('admin.users.index') }}"
-                                       class="dropdown-link">
+                                       class="dropdown-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                                        <i class="ri-user-settings-line"></i>
                                         Manage Users
                                     </a>
                                 </li>
@@ -445,8 +1130,9 @@
                             @can('roles.view')
                                 <li class="dropdown-item">
                                     <a href="{{ route('admin.roles.index') }}"
-                                       class="dropdown-link">
-                                        Roles &amp; Permissions
+                                       class="dropdown-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+                                        <i class="ri-shield-user-line"></i>
+                                        Roles & Permissions
                                     </a>
                                 </li>
                             @endcan
@@ -455,6 +1141,7 @@
                                 <li class="dropdown-item">
                                     <a href="{{ route('admin.users.audits', auth()->id()) }}"
                                        class="dropdown-link">
+                                        <i class="ri-history-line"></i>
                                         Audit Trail
                                     </a>
                                 </li>
@@ -467,61 +1154,81 @@
                 @endif
 
 
-                {{-- =====================================================
+                {{-- =========================================================
                     PROFILE
-                ====================================================== --}}
-                <li class="app-nav-item">
+                ========================================================== --}}
+                <li class="app-nav-item has-dropdown">
 
-                    <a href="{{ route('profile.show') }}"
-                       class="app-nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
-                        Profile
-                    </a>
+                        <a href="#"
+                           class="app-nav-link {{ request()->routeIs('admin.users.*', 'admin.roles.*') ? 'active' : '' }}">
+                             <i class="ri-user-line"></i>
 
-                </li>
+                        </a>
 
+                        <ul class="dropdown-menu level-2">
 
-                {{-- =====================================================
-                    LOGOUT
-                ====================================================== --}}
-                <li class="app-nav-item">
+                          <li  class="dropdown-item">>
 
-                    <form action="{{ route('logout') }}"
-                          method="POST">
+                                <a href="{{ route('profile.show') }}"
+                                class="dropdown-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
 
-                        @csrf
+                                    <i class="ri-user-line"></i>
+                                    Profile
 
-                        <button type="submit"
-                                class="app-nav-link"
-                                style="border:0;background:none;cursor:pointer;">
-                            Logout
-                        </button>
+                                </a>
 
-                    </form>
-
-                </li>
+                            </li>
 
 
-            @else
+                            {{-- =========================================================
+                                LOGOUT
+                            ========================================================== --}}
+                            <li class="dropdown-item">
 
-                {{-- =====================================================
-                    GUEST
-                ====================================================== --}}
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
 
-                <li class="app-nav-item">
-                    <a href="{{ route('login.form') }}"
-                       class="app-nav-link {{ request()->routeIs('login.form') ? 'active' : '' }}">
-                        Login
-                    </a>
-                </li>
+                                    <button type="submit"
+                                            class="dropdown-link"
+                                            style="border:0;background:none;cursor:pointer;">
 
-                <li class="app-nav-item">
-                    <a href="{{ route('register.form') }}"
-                       class="app-nav-link {{ request()->routeIs('register.form') ? 'active' : '' }}">
-                        Register
-                    </a>
-                </li>
+                                        <i class="ri-logout-box-r-line"></i>
+                                        Logout
 
-            @endauth
+                                    </button>
+                                </form>
+
+                            </li>
+
+
+                        @else
+
+                            {{-- =========================================================
+                                GUEST
+                            ========================================================== --}}
+
+                            <li class="dropdown-item">
+                                <a href="{{ route('login.form') }}"
+                                class="dropdown-link {{ request()->routeIs('login.form') ? 'active' : '' }}">
+                                    <i class="ri-login-box-line"></i>
+                                    Login
+                                </a>
+                            </li>
+
+                            <li class="dropdown-item">
+                                <a href="{{ route('register.form') }}"
+                                class="dropdown-link {{ request()->routeIs('register.form') ? 'active' : '' }}">
+                                    <i class="ri-user-add-line"></i>
+                                    Register
+                                </a>
+                            </li>
+
+                        @endauth
+
+                        </ul>
+
+                    </li>
+                
 
         </ul>
     </div>

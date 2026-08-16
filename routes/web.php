@@ -13,6 +13,11 @@ use App\Http\Controllers\Admin\Assets\BuildingController;
 use App\Http\Controllers\Admin\Assets\FloorController;
 use App\Http\Controllers\Admin\Assets\ZoneController;
 use App\Http\Controllers\Admin\Assets\UnitTypeController;
+use App\Http\Controllers\Admin\Assets\AssetController;
+use App\Http\Controllers\Admin\Assets\AssetCategoryController;
+use App\Http\Controllers\Admin\Assets\UnitController;
+use App\Http\Controllers\Admin\Assets\UnitDocumentController;
+use App\Http\Controllers\Admin\Assets\DepartmentController;
 use App\Http\Controllers\Admin\Leasing\LeaseProposalController;
 use App\Http\Controllers\Admin\Leasing\LeaseAgreementController;
 use App\Http\Controllers\Admin\Leasing\LeaseTermController;
@@ -57,6 +62,16 @@ use App\Http\Controllers\Admin\Fitout\SnagListController;
 use App\Http\Controllers\Admin\Fitout\HandoverController;
 use App\Http\Controllers\Admin\Fitout\FitoutDashboardController;
 
+use App\Http\Controllers\Admin\Complaints\ComplaintController;
+use App\Http\Controllers\Admin\Maintenance\MaintenanceHistoryController;
+use App\Http\Controllers\Admin\Maintenance\MaintenanceRequestController;
+use App\Http\Controllers\Admin\Maintenance\PreventiveMaintenanceController;
+use App\Http\Controllers\Admin\Vendors\VendorContractController;
+use App\Http\Controllers\Admin\Vendors\VendorPaymentController;
+use App\Http\Controllers\Admin\Vendors\VendorPerformanceController;
+use App\Http\Controllers\Admin\Vendors\VendorServiceController;
+use App\Http\Controllers\Admin\Maintenance\WorkOrderController;
+use App\Http\Controllers\Admin\Maintenance\WorkOrderTaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -456,17 +471,18 @@ Route::middleware('auth')->group(function () {
             */
 
             Route::resource(
-                'unit-types',
-                UnitTypeController::class
-            )
+                    'unit-types',
+                    App\Http\Controllers\Admin\Assets\UnitTypeController::class
+                )
+                ->names('unit_types')
                 ->middleware([
-                    'index'   => 'permission:unit_types.view',
-                    'show'    => 'permission:unit_types.view',
-                    'create'  => 'permission:unit_types.create',
-                    'store'   => 'permission:unit_types.create',
-                    'edit'    => 'permission:unit_types.edit',
-                    'update'  => 'permission:unit_types.edit',
-                    'destroy' => 'permission:unit_types.delete',
+                     'index' => 'permission:unit_types.view',
+                       'show' => 'permission:unit_types.view',
+                        'create' => 'permission:unit_types.create',
+                        'store' => 'permission:unit_types.create',
+                        'edit' => 'permission:unit_types.edit',
+                        'update' => 'permission:unit_types.edit',
+                        'destroy' => 'permission:unit_types.delete',
                 ]);
 
    
@@ -493,10 +509,178 @@ Route::middleware('auth')->group(function () {
                 'update' => 'permission:unit_statuses.edit',
                 'destroy' => 'permission:unit_statuses.delete',
             ]);
-        });
-    });
-});
+                  Route::resource(
+            'assets',
+            AssetController::class
+        )->middleware([
+            'index'   => 'permission:assets.view',
+            'show'    => 'permission:assets.view',
+            'create'  => 'permission:assets.create',
+            'store'   => 'permission:assets.create',
+            'edit'    => 'permission:assets.edit',
+            'update'  => 'permission:assets.edit',
+            'destroy' => 'permission:assets.delete',
+        ]);
 
+        Route::resource(
+            'asset-categories',
+            AssetCategoryController::class
+        )->middleware([
+            'index'   => 'permission:asset_categories.view',
+            'show'    => 'permission:asset_categories.view',
+            'create'  => 'permission:asset_categories.create',
+            'store'   => 'permission:asset_categories.create',
+            'edit'    => 'permission:asset_categories.edit',
+            'update'  => 'permission:asset_categories.edit',
+            'destroy' => 'permission:asset_categories.delete',
+        ]);
+
+        Route::resource(
+            'unit-documents',
+            UnitDocumentController::class
+        )->middleware([
+            'index'   => 'permission:unit_documents.view',
+            'show'    => 'permission:unit_documents.view',
+            'create'  => 'permission:unit_documents.create',
+            'store'   => 'permission:unit_documents.create',
+            'edit'    => 'permission:unit_documents.edit',
+            'update'  => 'permission:unit_documents.edit',
+            'destroy' => 'permission:unit_documents.delete',
+        ]);
+            Route::resource(
+                'departments',
+                DepartmentController::class
+            )->middleware([
+                'index'   => 'permission:departments.view',
+                'show'    => 'permission:departments.view',
+                'create'  => 'permission:departments.create',
+                'store'   => 'permission:departments.create',
+                'edit'    => 'permission:departments.edit',
+                'update'  => 'permission:departments.edit',
+                'destroy' => 'permission:departments.delete',
+            ]);
+
+        });
+      
+   
+
+///  Maintenance  
+ Route::resource('maintenance-history', MaintenanceHistoryController::class)
+        ->middleware([
+            'index'   => 'permission:maintenance_history.view',
+            'show'    => 'permission:maintenance_history.view',
+            'create'  => 'permission:maintenance_history.create',
+            'store'   => 'permission:maintenance_history.create',
+            'edit'    => 'permission:maintenance_history.edit',
+            'update'  => 'permission:maintenance_history.edit',
+            'destroy' => 'permission:maintenance_history.delete',
+        ]);
+
+    Route::resource('maintenance-requests', MaintenanceRequestController::class)
+        ->middleware([
+            'index'   => 'permission:maintenance_requests.view',
+            'show'    => 'permission:maintenance_requests.view',
+            'create'  => 'permission:maintenance_requests.create',
+            'store'   => 'permission:maintenance_requests.create',
+            'edit'    => 'permission:maintenance_requests.edit',
+            'update'  => 'permission:maintenance_requests.edit',
+            'destroy' => 'permission:maintenance_requests.delete',
+        ]);
+
+    Route::resource('preventive-maintenance', PreventiveMaintenanceController::class)
+        ->middleware([
+            'index'   => 'permission:preventive_maintenance.view',
+            'show'    => 'permission:preventive_maintenance.view',
+            'create'  => 'permission:preventive_maintenance.create',
+            'store'   => 'permission:preventive_maintenance.create',
+            'edit'    => 'permission:preventive_maintenance.edit',
+            'update'  => 'permission:preventive_maintenance.edit',
+            'destroy' => 'permission:preventive_maintenance.delete',
+        ]);
+  Route::prefix('maintenance')
+    ->name('maintenance.')
+    ->group(function () {
+  Route::resource('complaints', ComplaintController::class)
+        ->middleware([
+            'index'   => 'permission:complaints.view',
+            'show'    => 'permission:complaints.view',
+            'create'  => 'permission:complaints.create',
+            'store'   => 'permission:complaints.create',
+            'edit'    => 'permission:complaints.edit',
+            'update'  => 'permission:complaints.edit',
+            'destroy' => 'permission:complaints.delete',
+        ]);
+
+   
+
+    Route::resource('vendor-contracts', VendorContractController::class)
+        ->middleware([
+            'index'   => 'permission:vendor_contracts.view',
+            'show'    => 'permission:vendor_contracts.view',
+            'create'  => 'permission:vendor_contracts.create',
+            'store'   => 'permission:vendor_contracts.create',
+            'edit'    => 'permission:vendor_contracts.edit',
+            'update'  => 'permission:vendor_contracts.edit',
+            'destroy' => 'permission:vendor_contracts.delete',
+        ]);
+
+    Route::resource('vendor-payments', VendorPaymentController::class)
+        ->middleware([
+            'index'   => 'permission:vendor_payments.view',
+            'show'    => 'permission:vendor_payments.view',
+            'create'  => 'permission:vendor_payments.create',
+            'store'   => 'permission:vendor_payments.create',
+            'edit'    => 'permission:vendor_payments.edit',
+            'update'  => 'permission:vendor_payments.edit',
+            'destroy' => 'permission:vendor_payments.delete',
+        ]);
+
+    Route::resource('vendor-performance', VendorPerformanceController::class)
+        ->middleware([
+            'index'   => 'permission:vendor_performance.view',
+            'show'    => 'permission:vendor_performance.view',
+            'create'  => 'permission:vendor_performance.create',
+            'store'   => 'permission:vendor_performance.create',
+            'edit'    => 'permission:vendor_performance.edit',
+            'update'  => 'permission:vendor_performance.edit',
+            'destroy' => 'permission:vendor_performance.delete',
+        ]);
+
+    Route::resource('vendor-services', VendorServiceController::class)
+        ->middleware([
+            'index'   => 'permission:vendor_services.view',
+            'show'    => 'permission:vendor_services.view',
+            'create'  => 'permission:vendor_services.create',
+            'store'   => 'permission:vendor_services.create',
+            'edit'    => 'permission:vendor_services.edit',
+            'update'  => 'permission:vendor_services.edit',
+            'destroy' => 'permission:vendor_services.delete',
+        ]);
+
+    Route::resource('work-orders', WorkOrderController::class)
+        ->middleware([
+            'index'   => 'permission:work_orders.view',
+            'show'    => 'permission:work_orders.view',
+            'create'  => 'permission:work_orders.create',
+            'store'   => 'permission:work_orders.create',
+            'edit'    => 'permission:work_orders.edit',
+            'update'  => 'permission:work_orders.edit',
+            'destroy' => 'permission:work_orders.delete',
+        ]);
+
+    Route::resource('work-order-tasks', WorkOrderTaskController::class)
+        ->middleware([
+            'index'   => 'permission:work_order_tasks.view',
+            'show'    => 'permission:work_order_tasks.view',
+            'create'  => 'permission:work_order_tasks.create',
+            'store'   => 'permission:work_order_tasks.create',
+            'edit'    => 'permission:work_order_tasks.edit',
+            'update'  => 'permission:work_order_tasks.edit',
+            'destroy' => 'permission:work_order_tasks.delete',
+        ]);
+    });
+    });
+ });
 /*Leasing*/
 
 
@@ -763,19 +947,7 @@ Route::middleware('auth')->group(function () {
             });
 
 
-            /*Route::prefix('tenants')
-            ->name('tenants.')
-            ->group(function () {
-
-                Route::get(
-                    'dashboard',
-                    [
-                        TenantDashboardController::class,
-                        'index'
-                    ]
-                )->name('dashboard');
-
-            });*/
+          
 
             Route::get(
                 'tenants/dashboard',
@@ -1922,36 +2094,6 @@ Route::middleware('auth')->group(function () {
     });
 
 
-/*Revenue*/
 
 
-    Route::prefix('admin')
-    ->name('admin.')
-    ->middleware(['auth'])
-    ->group(function () {
-                Route::prefix('revenue')
-            ->name('revenue.')
-            ->group(function () {   
-                Route::get(
-                    'dashboard',
-                    [
-                        App\Http\Controllers\Admin\Revenue\RevenueDashboardController::class,
-                        'index'
-                    ]
-                )->name('dashboard');
 
-                Route::resource('invoices', App\Http\Controllers\Admin\Revenue\InvoiceController::class);
-
-                Route::resource('payments', App\Http\Controllers\Admin\Revenue\PaymentController::class);
-
-                Route::resource('receipts', App\Http\Controllers\Admin\Revenue\DepositReceiptController::class);
-
-                Route::resource('credit-notes', App\Http\Controllers\Admin\Revenue\DepositController::class);
-
-                Route::resource('debit-notes', App\Http\Controllers\Admin\Revenue\CamChargeController::class);
-                Route::resource('deposit_receipts', App\Http\Controllers\Admin\Revenue\DepositReceiptController::class);
-
-            });
-
-
-    });
