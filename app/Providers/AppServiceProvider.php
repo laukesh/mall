@@ -16,6 +16,8 @@ use App\Repositories\InvoiceRepositoryInterface;
 use App\Repositories\EloquentInvoiceRepository;
 use App\Repositories\InvoiceItemRepositoryInterface;
 use App\Repositories\EloquentInvoiceItemRepository;
+use App\Repositories\DepartmentRepositoryInterface;
+use App\Repositories\EloquentDepartmentRepository;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -81,7 +83,22 @@ class AppServiceProvider extends ServiceProvider
             InvoiceItemRepositoryInterface::class,
             EloquentInvoiceItemRepository::class
         );
-    }
+        $this->app->bind(\App\Repositories\ComplaintRepositoryInterface::class, \App\Repositories\EloquentComplaintRepository::class);
+        $this->app->bind(\App\Repositories\MaintenanceHistoryRepositoryInterface::class, \App\Repositories\EloquentMaintenanceHistoryRepository::class);
+        $this->app->bind(\App\Repositories\MaintenanceRequestRepositoryInterface::class, \App\Repositories\EloquentMaintenanceRequestRepository::class);
+        $this->app->bind(\App\Repositories\PreventiveMaintenanceRepositoryInterface::class, \App\Repositories\EloquentPreventiveMaintenanceRepository::class);
+        $this->app->bind(\App\Repositories\VendorContractRepositoryInterface::class, \App\Repositories\EloquentVendorContractRepository::class);
+        $this->app->bind(\App\Repositories\VendorPaymentRepositoryInterface::class, \App\Repositories\EloquentVendorPaymentRepository::class);
+        $this->app->bind(\App\Repositories\VendorPerformanceRepositoryInterface::class, \App\Repositories\EloquentVendorPerformanceRepository::class);
+        $this->app->bind(\App\Repositories\VendorServiceRepositoryInterface::class, \App\Repositories\EloquentVendorServiceRepository::class);
+        $this->app->bind(\App\Repositories\WorkOrderRepositoryInterface::class, \App\Repositories\EloquentWorkOrderRepository::class);
+        $this->app->bind(\App\Repositories\WorkOrderTaskRepositoryInterface::class, \App\Repositories\EloquentWorkOrderTaskRepository::class);
+        $this->app->bind(\App\Repositories\AssetRepositoryInterface::class, \App\Repositories\EloquentAssetRepository::class);
+        $this->app->bind(\App\Repositories\DepartmentRepositoryInterface::class, \App\Repositories\EloquentDepartmentRepository::class);
+         $this->app->bind(\App\Repositories\UnitDocumentRepositoryInterface::class, \App\Repositories\EloquentUnitDocumentRepository::class);
+   
+        $this->app->bind(\App\Repositories\AssetCategoryRepositoryInterface::class, \App\Repositories\EloquentAssetCategoryRepository::class);
+   }
 
     /**
      * Bootstrap application services.
