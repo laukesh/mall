@@ -21,6 +21,7 @@ class TenantDocumentController extends Controller
 
     public function index($tenantId)
     {
+        dd($tenantId);
         $tenant = Tenant::findOrFail($tenantId);
 
         $documents = TenantDocument::with('documentType')

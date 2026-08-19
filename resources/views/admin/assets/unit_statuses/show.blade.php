@@ -6,20 +6,26 @@
 
 <div class="container-fluid">
 
-    {{-- Page Header --}}
+    {{-- =========================================================
+        PAGE HEADER
+    ========================================================== --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h1 class="h3 mb-1">
-                {{ $status->status_name }}
-            </h1>
 
-            <p class="text-muted mb-0">
+            <h4 class="mb-1">
+                <i class="fas fa-toggle-on me-2"></i>
+                {{ $status->status_name }}
+            </h4>
+
+            <div class="text-muted">
                 Unit Status #{{ $status->id }}
-            </p>
+            </div>
+
         </div>
 
-        <div>
+
+        <div class="d-flex gap-2">
 
             @can('unit_statuses.edit')
 
@@ -30,16 +36,21 @@
                     ) }}"
                     class="btn btn-primary"
                 >
+                    <i class="fas fa-edit me-1"></i>
                     Edit
                 </a>
 
             @endcan
 
+
             <a
-                href="{{ route('admin.assets.unit-statuses.index') }}"
-                class="btn btn-secondary"
+                href="{{ route(
+                    'admin.assets.unit-statuses.index'
+                ) }}"
+                class="btn btn-outline-secondary"
             >
-                ← Back
+                <i class="fas fa-arrow-left me-1"></i>
+                Back
             </a>
 
         </div>
@@ -47,27 +58,35 @@
     </div>
 
 
-    {{-- Unit Status Information --}}
-    <div class="card mb-4">
+    {{-- =========================================================
+        UNIT STATUS INFORMATION
+    ========================================================== --}}
+    <div class="card border-0 shadow-sm mb-4">
 
-        <div class="card-header">
+        <div class="card-header bg-white">
 
             <h5 class="mb-0">
+
+                <i class="fas fa-info-circle me-2"></i>
                 Unit Status Information
+
             </h5>
 
         </div>
+
 
         <div class="card-body">
 
             <div class="row">
 
                 {{-- ID --}}
-                <div class="col-md-4 mb-3">
+                <div class="col-lg-4 col-md-6 mb-3">
 
-                    <strong>ID</strong>
+                    <strong>
+                        ID
+                    </strong>
 
-                    <div>
+                    <div class="mt-1">
                         {{ $status->id }}
                     </div>
 
@@ -75,34 +94,44 @@
 
 
                 {{-- Status Name --}}
-                <div class="col-md-4 mb-3">
+                <div class="col-lg-4 col-md-6 mb-3">
 
-                    <strong>Status Name</strong>
+                    <strong>
+                        Status Name
+                    </strong>
 
-                    <div>
+                    <div class="mt-1">
                         {{ $status->status_name }}
                     </div>
 
                 </div>
 
 
-                {{-- Active Status --}}
-                <div class="col-md-4 mb-3">
+                {{-- Active --}}
+                <div class="col-lg-4 col-md-6 mb-3">
 
-                    <strong>Status</strong>
+                    <strong>
+                        Status
+                    </strong>
 
-                    <div>
+                    <div class="mt-1">
 
                         @if($status->is_active)
 
                             <span class="badge bg-success">
+
+                                <i class="fas fa-check-circle me-1"></i>
                                 Active
+
                             </span>
 
                         @else
 
                             <span class="badge bg-secondary">
+
+                                <i class="fas fa-times-circle me-1"></i>
                                 Inactive
+
                             </span>
 
                         @endif
@@ -113,23 +142,25 @@
 
 
                 {{-- Color --}}
-                <div class="col-md-6 mb-3">
+                <div class="col-lg-6 col-md-6 mb-3">
 
-                    <strong>Color</strong>
+                    <strong>
+                        Color
+                    </strong>
 
-                    <div class="d-flex align-items-center mt-1">
+                    <div class="d-flex align-items-center mt-2">
 
                         @if($status->color_code)
 
                             <span
+                                class="me-2"
                                 style="
                                     display:inline-block;
-                                    width:30px;
-                                    height:30px;
+                                    width:32px;
+                                    height:32px;
                                     background-color: {{ $status->color_code }};
-                                    border:1px solid #ccc;
-                                    border-radius:5px;
-                                    margin-right:10px;
+                                    border:1px solid #ced4da;
+                                    border-radius:6px;
                                 "
                                 title="{{ $status->color_code }}"
                             ></span>
@@ -141,7 +172,7 @@
                         @else
 
                             <span class="text-muted">
-                                -
+                                Not specified
                             </span>
 
                         @endif
@@ -152,27 +183,35 @@
 
 
                 {{-- Sort Order --}}
-                <div class="col-md-6 mb-3">
+                <div class="col-lg-6 col-md-6 mb-3">
 
-                    <strong>Sort Order</strong>
+                    <strong>
+                        Sort Order
+                    </strong>
 
-                    <div>
-                        <span class="badge bg-light text-dark">
-                            {{ $status->sort_order }}
+                    <div class="mt-2">
+
+                        <span class="badge bg-light text-dark border">
+
+                            {{ $status->sort_order ?? 0 }}
+
                         </span>
+
                     </div>
 
                 </div>
 
 
                 {{-- Description --}}
-                <div class="col-md-12 mb-3">
+                <div class="col-12 mb-3">
 
-                    <strong>Description</strong>
+                    <strong>
+                        Description
+                    </strong>
 
-                    <div class="mt-1">
+                    <div class="border rounded bg-light p-3 mt-2">
 
-                        {{ $status->description ?: '-' }}
+                        {{ $status->description ?: 'No description available.' }}
 
                     </div>
 
@@ -185,64 +224,90 @@
     </div>
 
 
-    {{-- Audit Information --}}
-    <div class="card">
+    {{-- =========================================================
+        AUDIT INFORMATION
+    ========================================================== --}}
+    <div class="card border-0 shadow-sm">
 
-        <div class="card-header">
+        <div class="card-header bg-white">
 
             <h5 class="mb-0">
+
+                <i class="fas fa-history me-2"></i>
                 Audit Information
+
             </h5>
 
         </div>
+
 
         <div class="card-body">
 
             <div class="row">
 
                 {{-- Created By --}}
-                <div class="col-md-3 mb-3">
+                <div class="col-lg-3 col-md-6 mb-3">
 
-                    <strong>Created By</strong>
+                    <strong>
+                        Created By
+                    </strong>
 
-                    <div>
-                        {{ $status->creator->name ?? '-' }}
+                    <div class="mt-1">
+
+                        {{ $status->creator?->name ?? '-' }}
+
                     </div>
 
                 </div>
 
 
                 {{-- Updated By --}}
-                <div class="col-md-3 mb-3">
+                <div class="col-lg-3 col-md-6 mb-3">
 
-                    <strong>Updated By</strong>
+                    <strong>
+                        Updated By
+                    </strong>
 
-                    <div>
-                        {{ $status->updater->name ?? '-' }}
+                    <div class="mt-1">
+
+                        {{ $status->updater?->name ?? '-' }}
+
                     </div>
 
                 </div>
 
 
                 {{-- Created At --}}
-                <div class="col-md-3 mb-3">
+                <div class="col-lg-3 col-md-6 mb-3">
 
-                    <strong>Created At</strong>
+                    <strong>
+                        Created At
+                    </strong>
 
-                    <div>
-                        {{ $status->created_at?->format('d M Y H:i') ?? '-' }}
+                    <div class="mt-1">
+
+                        {{ $status->created_at?->format(
+                            'd M Y H:i'
+                        ) ?? '-' }}
+
                     </div>
 
                 </div>
 
 
                 {{-- Updated At --}}
-                <div class="col-md-3 mb-3">
+                <div class="col-lg-3 col-md-6 mb-3">
 
-                    <strong>Updated At</strong>
+                    <strong>
+                        Updated At
+                    </strong>
 
-                    <div>
-                        {{ $status->updated_at?->format('d M Y H:i') ?? '-' }}
+                    <div class="mt-1">
+
+                        {{ $status->updated_at?->format(
+                            'd M Y H:i'
+                        ) ?? '-' }}
+
                     </div>
 
                 </div>

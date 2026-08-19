@@ -1,188 +1,156 @@
-<div class="row">
+@extends('layouts.app')
 
-    {{-- Status Name --}}
-    <div class="col-md-6 mb-3">
+@section('title', 'Edit Unit Status')
 
-        <label for="status_name" class="form-label">
-            Status Name
-            <span class="text-danger">*</span>
-        </label>
+@section('content')
 
-        <input
-            type="text"
-            name="status_name"
-            id="status_name"
-            class="form-control @error('status_name') is-invalid @enderror"
-            value="{{ old('status_name', $status->status_name ?? '') }}"
-            placeholder="e.g. Available"
-            required
-        >
+<div class="container-fluid">
 
-        @error('status_name')
-            <div class="invalid-feedback">
-                {{ $message }}
+    {{-- =========================================================
+        PAGE HEADER
+    ========================================================== --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h4 class="mb-1">
+                <i class="ri-edit-2-line me-2"></i>
+                Edit Unit Status
+            </h4>
+
+            <div class="text-muted">
+                Update unit status information.
             </div>
-        @enderror
+        </div>
 
-    </div>
+        <div class="d-flex gap-2">
 
-
-    {{-- Color Code --}}
-    <div class="col-md-6 mb-3">
-
-        <label for="color_code" class="form-label">
-            Color Code
-        </label>
-
-        <div class="input-group">
-
-            <input
-                type="text"
-                name="color_code"
-                id="color_code"
-                class="form-control @error('color_code') is-invalid @enderror"
-                value="{{ old('color_code', $status->color_code ?? '') }}"
-                placeholder="#ffffff"
-                maxlength="7"
+            <a
+                href="{{ route(
+                    'admin.assets.unit-statuses.show',
+                    $status->id
+                ) }}"
+                class="btn btn-outline-info"
             >
+                <i class="ri-eye-line me-1"></i>
+                View
+            </a>
 
-            <span class="input-group-text p-1">
-                <input
-                    type="color"
-                    id="color_picker"
-                    class="form-control form-control-color border-0"
-                    value="{{ old('color_code', $status->color_code ?? '#ffffff') }}"
-                    title="Choose status color"
-                >
-            </span>
+            <a
+                href="{{ route('admin.assets.unit-statuses.index') }}"
+                class="btn btn-outline-secondary"
+            >
+                <i class="ri-arrow-left-line me-1"></i>
+                Back
+            </a>
 
         </div>
 
-        @error('color_code')
-            <div class="invalid-feedback d-block">
-                {{ $message }}
-            </div>
-        @enderror
-
     </div>
 
 
-    {{-- Description --}}
-    <div class="col-md-12 mb-3">
+    {{-- =========================================================
+        VALIDATION ERRORS
+    ========================================================== --}}
+    @if($errors->any())
 
-        <label for="description" class="form-label">
-            Description
-        </label>
+        <div class="alert alert-danger alert-dismissible fade show"
+             role="alert">
 
-        <textarea
-            name="description"
-            id="description"
-            rows="4"
-            class="form-control @error('description') is-invalid @enderror"
-            placeholder="Enter status description..."
-        >{{ old('description', $status->description ?? '') }}</textarea>
+            <div class="fw-semibold mb-2">
 
-        @error('description')
-            <div class="invalid-feedback">
-                {{ $message }}
+                <i class="ri-error-warning-line me-1"></i>
+
+                Please correct the following errors:
+
             </div>
-        @enderror
 
-    </div>
+            <ul class="mb-0">
 
+                @foreach($errors->all() as $error)
 
-    {{-- Sort Order --}}
-    <div class="col-md-6 mb-3">
+                    <li>{{ $error }}</li>
 
-        <label for="sort_order" class="form-label">
-            Sort Order
-        </label>
+                @endforeach
 
-        <input
-            type="number"
-            name="sort_order"
-            id="sort_order"
-            class="form-control @error('sort_order') is-invalid @enderror"
-            value="{{ old('sort_order', $status->sort_order ?? 0) }}"
-            min="0"
-        >
+            </ul>
 
-        @error('sort_order')
-            <div class="invalid-feedback">
-                {{ $message }}
-            </div>
-        @enderror
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+            ></button>
 
-    </div>
+        </div>
+
+    @endif
 
 
-    {{-- Active --}}
-    <div class="col-md-6 mb-3">
+    {{-- =========================================================
+        UNIT STATUS FORM
+    ========================================================== --}}
+    <div class="card border-0 shadow-sm">
 
-        <label for="is_active" class="form-label">
-            Status
-            <span class="text-danger">*</span>
-        </label>
+        <div class="card-header bg-white">
 
-        <select
-            name="is_active"
-            id="is_active"
-            class="form-select @error('is_active') is-invalid @enderror"
-            required
-        >
+            <h5 class="mb-0">
 
-            <option
-                value="1"
-                {{ old('is_active', $status->is_active ?? 1) == 1 ? 'selected' : '' }}
+                <i class="ri-information-line me-2"></i>
+                Unit Status Information
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form
+                method="POST"
+                action="{{ route(
+                    'admin.assets.unit-statuses.update',
+                    $status->id
+                ) }}"
             >
-                Active
-            </option>
 
-            <option
-                value="0"
-                {{ old('is_active', $status->is_active ?? 1) == 0 ? 'selected' : '' }}
-            >
-                Inactive
-            </option>
+                @csrf
+                @method('PUT')
 
-        </select>
+                @include('admin.assets.unit_statuses._form')
 
-        @error('is_active')
-            <div class="invalid-feedback">
-                {{ $message }}
-            </div>
-        @enderror
+
+                {{-- =================================================
+                    FORM ACTIONS
+                ================================================== --}}
+                <div class="d-flex justify-content-end gap-2 mt-4">
+
+                    <a
+                        href="{{ route(
+                            'admin.assets.unit-statuses.show',
+                            $status->id
+                        ) }}"
+                        class="btn btn-outline-secondary"
+                    >
+                        <i class="ri-close-line me-1"></i>
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        <i class="ri-save-3-line me-1"></i>
+                        Update Unit Status
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
 
     </div>
 
 </div>
 
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    const colorInput = document.getElementById('color_code');
-    const colorPicker = document.getElementById('color_picker');
-
-    if (!colorInput || !colorPicker) {
-        return;
-    }
-
-    colorPicker.addEventListener('input', function () {
-        colorInput.value = this.value;
-    });
-
-    colorInput.addEventListener('input', function () {
-
-        const value = this.value.trim();
-
-        if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
-            colorPicker.value = value;
-        }
-
-    });
-
-});
-</script>
-@endpush
+@endsection

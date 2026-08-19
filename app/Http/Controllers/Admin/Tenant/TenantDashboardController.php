@@ -13,6 +13,7 @@ class TenantDashboardController extends Controller
 {
     public function index()
     {
+       // dd('Tenant Dashboard');
         /*
         |--------------------------------------------------------------------------
         | Tenant Statistics

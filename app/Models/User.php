@@ -84,6 +84,14 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+    public static function getAll()
+    {
+        return self::with('role')->orderBy('full_name')->get();
+    }
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 
     public function tenant()
     {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Assets;
 use App\Http\Controllers\Controller;
 use App\Repositories\UnitTypeRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class UnitTypeController extends Controller
 {
@@ -48,10 +49,12 @@ class UnitTypeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+
             'type_name' => [
                 'required',
                 'string',
                 'max:150',
+                'unique:unit_types,type_name',
             ],
 
             'description' => [
@@ -64,6 +67,10 @@ class UnitTypeController extends Controller
                 'required',
                 'in:0,1',
             ],
+
+        ], [
+            'type_name.unique' =>
+                'This unit type already exists.',
         ]);
 
         $validated['created_by'] = auth()->id();
@@ -71,7 +78,7 @@ class UnitTypeController extends Controller
         $this->repository->create($validated);
 
         return redirect()
-            ->route('admin.assets.unit-types.index')
+            ->route('admin.assets.unit_types.index')
             ->with(
                 'success',
                 'Unit type created successfully.'
@@ -112,10 +119,16 @@ class UnitTypeController extends Controller
         int $id
     ) {
         $validated = $request->validate([
+
             'type_name' => [
                 'required',
                 'string',
                 'max:150',
+
+                Rule::unique(
+                    'unit_types',
+                    'type_name'
+                )->ignore($id),
             ],
 
             'description' => [
@@ -128,6 +141,10 @@ class UnitTypeController extends Controller
                 'required',
                 'in:0,1',
             ],
+
+        ], [
+            'type_name.unique' =>
+                'This unit type already exists.',
         ]);
 
         $validated['updated_by'] = auth()->id();
@@ -138,7 +155,7 @@ class UnitTypeController extends Controller
         );
 
         return redirect()
-            ->route('admin.assets.unit-types.index')
+            ->route('admin.assets.unit_types.index')
             ->with(
                 'success',
                 'Unit type updated successfully.'
@@ -153,7 +170,7 @@ class UnitTypeController extends Controller
         $this->repository->delete($id);
 
         return redirect()
-            ->route('admin.assets.unit-types.index')
+            ->route('admin.assets.unit_types.index')
             ->with(
                 'success',
                 'Unit type deleted successfully.'

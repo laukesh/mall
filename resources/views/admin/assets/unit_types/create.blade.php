@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <a href="{{ route('admin.assets.unit-types.index') }}"
+        <a href="{{ route('admin.assets.unit_types.index') }}"
            class="btn btn-outline-secondary">
 
             <i class="fas fa-arrow-left me-1"></i>
@@ -85,7 +85,7 @@
         <div class="card-body">
 
             <form method="POST"
-                  action="{{ route('admin.assets.unit-types.store') }}">
+                  action="{{ route('admin.assets.unit_types.store') }}">
 
                 @csrf
 
@@ -211,7 +211,7 @@
                 ================================================== --}}
                 <div class="d-flex justify-content-end gap-2 mt-3">
 
-                    <a href="{{ route('admin.assets.unit-types.index') }}"
+                    <a href="{{ route('admin.assets.unit_types.index') }}"
                        class="btn btn-outline-secondary">
 
                         <i class="fas fa-times me-1"></i>
