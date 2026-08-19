@@ -6173,7 +6173,7 @@ body .app-content {
 
     .fitout-summary-card:nth-child(3) {
 
-        border-right: 0;
+        border-right: 0 !important;
 
     }
 
