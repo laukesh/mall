@@ -56,7 +56,7 @@ use App\Http\Controllers\Admin\Revenue\ReconciliationController;
 use App\Http\Controllers\Admin\Revenue\RevenueAuditLogController;
 
 use App\Http\Controllers\Admin\Fitout\FitoutRequestController;
-use App\Http\Controllers\Admin\Fitout\ContractorController;
+use App\Http\Controllers\Admin\Fitout\ContractorController as FitoutContractorController;
 use App\Http\Controllers\Admin\Fitout\FitoutStageController;
 use App\Http\Controllers\Admin\Fitout\FitoutDocumentController;
 use App\Http\Controllers\Admin\Fitout\FitoutApprovalController;
@@ -81,7 +81,7 @@ use App\Http\Controllers\Admin\Maintenance\WorkOrderTaskController;
 //use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\WorkPackageController;
-//use App\Http\Controllers\ContractorController;
+use App\Http\Controllers\ContractorController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProcurementController;
 use App\Http\Controllers\InventoryController;
@@ -95,6 +95,7 @@ use App\Http\Controllers\LandAcquisitionController;
 use App\Http\Controllers\FeasibilityController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\ConsultantController;
+use App\Http\Controllers\PmStatusHistoryController;
 use App\Http\Controllers\CommonController;
 /*
 |--------------------------------------------------------------------------
@@ -862,15 +863,15 @@ Route::middleware('auth')->group(function () {
                 ->name('requests.generate-approval');
 
             // Contractors
-            Route::get('contractors', [ContractorController::class, 'index'])->name('contractors.index');
-            Route::get('contractors/create', [ContractorController::class, 'create'])->name('contractors.create');
-            Route::post('contractors', [ContractorController::class, 'store'])->name('contractors.store');
-            Route::get('contractors/{id}', [ContractorController::class, 'show'])->name('contractors.show');
-            Route::get('contractors/{id}/edit', [ContractorController::class, 'edit'])->name('contractors.edit');
-            Route::put('contractors/{id}', [ContractorController::class, 'update'])->name('contractors.update');
-            Route::post('contractors/{id}/approve', [ContractorController::class, 'approve'])->name('contractors.approve');
-            Route::post('contractors/{id}/reject', [ContractorController::class, 'reject'])->name('contractors.reject');
-            Route::post('contractors/{id}/suspend', [ContractorController::class, 'suspend'])->name('contractors.suspend');
+            Route::get('contractors', [FitoutContractorController::class, 'index'])->name('contractors.index');
+            Route::get('contractors/create', [FitoutContractorController::class, 'create'])->name('contractors.create');
+            Route::post('contractors', [FitoutContractorController::class, 'store'])->name('contractors.store');
+            Route::get('contractors/{id}', [FitoutContractorController::class, 'show'])->name('contractors.show');
+            Route::get('contractors/{id}/edit', [FitoutContractorController::class, 'edit'])->name('contractors.edit');
+            Route::put('contractors/{id}', [FitoutContractorController::class, 'update'])->name('contractors.update');
+            Route::post('contractors/{id}/approve', [FitoutContractorController::class, 'approve'])->name('contractors.approve');
+            Route::post('contractors/{id}/reject', [FitoutContractorController::class, 'reject'])->name('contractors.reject');
+            Route::post('contractors/{id}/suspend', [FitoutContractorController::class, 'suspend'])->name('contractors.suspend');
 
             // Stages
             Route::get('requests/{fitoutRequestId}/stages', [FitoutStageController::class, 'index'])->name('stages.index');
@@ -951,6 +952,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [ProjectController::class, 'destroy'])->name('destroy');
         Route::post('/phase/store', [ProjectController::class, 'storePhase'])->name('phase.store');
         Route::post('/team/store', [ProjectController::class, 'storeTeam'])->name('team.store');
+        Route::post('/{id}/status', [ProjectController::class, 'updateStatus'])->name('status.update');
+        Route::post('/{id}/progress', [ProjectController::class, 'updateProgress'])->name('progress.update');
     });
 
     // Work Package Management
@@ -964,6 +967,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/{id}/update', [WorkPackageController::class, 'update'])->name('update');
         Route::delete('/{id}', [WorkPackageController::class, 'destroy'])->name('destroy');
         Route::post('/task/store', [WorkPackageController::class, 'storeTask'])->name('task.store');
+        Route::post('/{id}/status', [WorkPackageController::class, 'updateStatus'])->name('status.update');
+        Route::post('/{id}/progress', [WorkPackageController::class, 'updateProgress'])->name('progress.update');
     });
 
     // Contractor Management
@@ -978,6 +983,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [ContractorController::class, 'destroy'])->name('destroy');
         Route::post('/contract/store', [ContractorController::class, 'storeContract'])->name('contract.store');
         Route::post('/bill/store', [ContractorController::class, 'storeBill'])->name('bill.store');
+        Route::post('/{id}/status', [ContractorController::class, 'updateStatus'])->name('status.update');
+        Route::post('/bill/{billId}/status', [ContractorController::class, 'updateBillStatus'])->name('bill.status.update');
     });
 
     // Client Management
@@ -1000,9 +1007,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/vendors/create', [ProcurementController::class, 'createVendor'])->name('vendor.create');
         Route::post('/vendors/store', [ProcurementController::class, 'storeVendor'])->name('vendor.store');
         Route::get('/requisitions', [ProcurementController::class, 'requisitions'])->name('requisitions');
+        Route::get('/requisitions/{id}', [ProcurementController::class, 'showRequisition'])->name('requisition.show');
         Route::post('/requisitions/store', [ProcurementController::class, 'storeRequisition'])->name('requisition.store');
+        Route::post('/requisitions/{id}/status', [ProcurementController::class, 'updateRequisitionStatus'])->name('requisition.status.update');
+        Route::post('/requisitions/{id}/progress', [ProcurementController::class, 'updateRequisitionProgress'])->name('requisition.progress.update');
         Route::get('/orders', [ProcurementController::class, 'orders'])->name('orders');
+        Route::get('/orders/{id}', [ProcurementController::class, 'showOrder'])->name('order.show');
         Route::post('/orders/store', [ProcurementController::class, 'storeOrder'])->name('order.store');
+        Route::post('/orders/{id}/status', [ProcurementController::class, 'updateOrderStatus'])->name('order.status.update');
+        Route::post('/orders/{id}/progress', [ProcurementController::class, 'updateOrderProgress'])->name('order.progress.update');
         Route::get('/receipts', [ProcurementController::class, 'receipts'])->name('receipts');
     });
 
@@ -1016,7 +1029,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/stock', [InventoryController::class, 'stock'])->name('stock');
         Route::post('/stock/store', [InventoryController::class, 'storeStock'])->name('stock.store');
         Route::get('/issue-requests', [InventoryController::class, 'issueRequests'])->name('issue-requests');
+        Route::get('/issue-requests/{id}', [InventoryController::class, 'showIssueRequest'])->name('issue-request.show');
         Route::post('/issue-requests/store', [InventoryController::class, 'storeIssueRequest'])->name('issue-request.store');
+        Route::post('/issue-requests/{id}/status', [InventoryController::class, 'updateIssueRequestStatus'])->name('issue-request.status.update');
+        Route::post('/issue-requests/{id}/progress', [InventoryController::class, 'updateIssueRequestProgress'])->name('issue-request.progress.update');
         Route::get('/issues', [InventoryController::class, 'issues'])->name('issues');
         Route::post('/issues/store', [InventoryController::class, 'storeIssue'])->name('issue.store');
     });
@@ -1030,6 +1046,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}', [MobilizationController::class, 'show'])->name('show');
         Route::get('/{id}/edit', [MobilizationController::class, 'edit'])->name('edit');
         Route::post('/{id}/update', [MobilizationController::class, 'update'])->name('update');
+        Route::post('/{id}/status', [MobilizationController::class, 'updateStatus'])->name('status.update');
+        Route::post('/{id}/progress', [MobilizationController::class, 'updateProgress'])->name('progress.update');
         Route::delete('/{id}', [MobilizationController::class, 'destroy'])->name('destroy');
         Route::post('/resource/store', [MobilizationController::class, 'storeResource'])->name('resource.store');
         Route::post('/checklist/store', [MobilizationController::class, 'storeChecklist'])->name('checklist.store');
@@ -1046,6 +1064,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}', [DocumentController::class, 'show'])->name('show');
         Route::get('/{id}/edit', [DocumentController::class, 'edit'])->name('edit');
         Route::post('/{id}/update', [DocumentController::class, 'update'])->name('update');
+        Route::post('/{id}/status', [DocumentController::class, 'updateStatus'])->name('status.update');
+        Route::post('/{id}/progress', [DocumentController::class, 'updateProgress'])->name('progress.update');
         Route::delete('/{id}', [DocumentController::class, 'destroy'])->name('destroy');
     });
 
@@ -1053,9 +1073,14 @@ Route::middleware('auth')->group(function () {
    // Route::group(['prefix' => 'admin/hse', 'as' => 'admin.hse.'], function () {
    Route::prefix('hse')->name('hse.')->group(function () {  
         Route::get('/incidents', [HseController::class, 'incidents'])->name('incidents');
+        Route::get('/incidents/{id}', [HseController::class, 'showIncident'])->name('incident.show');
         Route::post('/incidents/store', [HseController::class, 'storeIncident'])->name('incident.store');
+        Route::post('/incidents/{id}/status', [HseController::class, 'updateIncidentStatus'])->name('incident.status.update');
+        Route::post('/incidents/{id}/progress', [HseController::class, 'updateIncidentProgress'])->name('incident.progress.update');
         Route::get('/inspections', [HseController::class, 'inspections'])->name('inspections');
+        Route::get('/inspections/{id}', [HseController::class, 'showInspection'])->name('inspection.show');
         Route::post('/inspections/store', [HseController::class, 'storeInspection'])->name('inspection.store');
+        Route::post('/inspections/{id}/status', [HseController::class, 'updateInspectionStatus'])->name('inspection.status.update');
         Route::get('/ppe', [HseController::class, 'ppe'])->name('ppe');
         Route::post('/ppe/store', [HseController::class, 'storePpe'])->name('ppe.store');
     });
@@ -1066,6 +1091,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [FinanceController::class, 'index'])->name('index');
         Route::get('/payments', [FinanceController::class, 'payments'])->name('payments');
         Route::post('/payments/store', [FinanceController::class, 'storePayment'])->name('payment.store');
+        Route::post('/payments/{id}/status', [FinanceController::class, 'updatePaymentStatus'])->name('payment.status.update');
         Route::get('/expenses', [FinanceController::class, 'expenses'])->name('expenses');
         Route::post('/expenses/store', [FinanceController::class, 'storeExpense'])->name('expense.store');
         Route::get('/budgets', [FinanceController::class, 'budgets'])->name('budgets');
@@ -1100,6 +1126,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/survey/store', [LandAcquisitionController::class, 'storeSurvey'])->name('survey.store');
         Route::post('/document/store', [LandAcquisitionController::class, 'storeDocument'])->name('document.store');
         Route::post('/payment/store', [LandAcquisitionController::class, 'storePayment'])->name('payment.store');
+        Route::post('/{id}/status', [LandAcquisitionController::class, 'updateStatus'])->name('status.update');
+    });
+
+    Route::prefix('pm')->name('pm.')->group(function () {
+        Route::get('/status-history', [PmStatusHistoryController::class, 'index'])->name('status-history.index');
     });
 
     // Feasibility Studies
@@ -1114,6 +1145,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [FeasibilityController::class, 'destroy'])->name('destroy');
         Route::post('/soil/store', [FeasibilityController::class, 'storeSoilTest'])->name('soil.store');
         Route::post('/risk/store', [FeasibilityController::class, 'storeRisk'])->name('risk.store');
+        Route::post('/{id}/status', [FeasibilityController::class, 'updateStatus'])->name('status.update');
+        Route::post('/{id}/progress', [FeasibilityController::class, 'updateProgress'])->name('progress.update');
     });
 
     // Consultants (Design)
@@ -1131,10 +1164,15 @@ Route::middleware('auth')->group(function () {
                 Route::get('/packages', [DesignController::class, 'packages'])->name('packages.index');
                 Route::get('/packages/create', [DesignController::class, 'createPackage'])->name('packages.create');
                 Route::post('/packages/store', [DesignController::class, 'storePackage'])->name('packages.store');
+                Route::get('/packages/{id}', [DesignController::class, 'showPackage'])->name('packages.show');
+                Route::post('/packages/{id}/status', [DesignController::class, 'updatePackageStatus'])->name('packages.status.update');
+                Route::post('/packages/{id}/progress', [DesignController::class, 'updatePackageProgress'])->name('packages.progress.update');
                 Route::get('/drawings', [DesignController::class, 'drawings'])->name('drawings.index');
                 Route::get('/drawings/create', [DesignController::class, 'createDrawing'])->name('drawings.create');
                 Route::post('/drawings/store', [DesignController::class, 'storeDrawing'])->name('drawings.store');
                 Route::get('/drawings/{id}', [DesignController::class, 'showDrawing'])->name('drawings.show');
+                Route::post('/drawings/{id}/status', [DesignController::class, 'updateDrawingStatus'])->name('drawings.status.update');
+                Route::post('/drawings/{id}/progress', [DesignController::class, 'updateDrawingProgress'])->name('drawings.progress.update');
                 Route::get('/boq', [DesignController::class, 'boqIndex'])->name('boq.index');
                 Route::post('/boq/store', [DesignController::class, 'storeBoq'])->name('boq.store');
                 Route::get('/rfis', [DesignController::class, 'rfiIndex'])->name('rfi.index');

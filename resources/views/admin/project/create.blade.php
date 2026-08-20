@@ -43,6 +43,17 @@
               @endforeach
             </select>
           </div>
+          <div class="col-12 form-group">
+            <label>Land Parcels</label>
+            <select name="land_ids[]" class="form-control" >
+              @foreach($lands as $land)
+                <option value="{{ $land->id }}" @selected(collect(old('land_ids', []))->contains($land->id))>
+                  {{ $land->land_name }} ({{ $land->land_code }}) — {{ $land->village }}, {{ $land->district }}
+                </option>
+              @endforeach
+            </select>
+            <small class="text-muted">Hold Ctrl/Cmd to select multiple lands. Only unassigned lands are listed.</small>
+          </div>
           <div class="col-md-6 form-group"><label>Location</label><input type="text" name="location" class="form-control" value="{{ old('location') }}"></div>
           <div class="col-md-3 form-group"><label>City</label><input type="text" name="city" class="form-control" value="{{ old('city') }}"></div>
           <div class="col-md-3 form-group"><label>State</label><input type="text" name="state" class="form-control" value="{{ old('state') }}"></div>

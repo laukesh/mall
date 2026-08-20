@@ -22,7 +22,6 @@ return [
     */
 
     'guards' => [
-
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
@@ -33,7 +32,22 @@ return [
             'provider' => 'users',
         ],
 
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'sf' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'callcenter' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------

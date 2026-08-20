@@ -588,7 +588,8 @@
                 'admin.hse.*',
                 'admin.finance.*',
                 'admin.audit.*',
-                'admin.report.*'
+                'admin.report.*',
+                'admin.pm.*'
             ) ? 'open' : '' }}
         >
 
@@ -714,7 +715,7 @@
                 </a>
 
 
-                {{-- CLIENTS --}}
+                <!-- {{-- CLIENTS --}}
 
                 <a
                     href="{{ route('admin.client.index') }}"
@@ -726,7 +727,7 @@
 
                     <span>Clients</span>
 
-                </a>
+                </a> -->
 
 
                 {{-- MOBILIZATION --}}
@@ -857,6 +858,21 @@
                     <i class="ri-bar-chart-box-line"></i>
 
                     <span>Reports</span>
+
+                </a>
+
+
+                {{-- STATUS HISTORY --}}
+
+                <a
+                    href="{{ route('admin.pm.status-history.index') }}"
+                    class="sidebar-sublink
+                        {{ request()->routeIs('admin.pm.status-history.*') ? 'active' : '' }}"
+                >
+
+                    <i class="ri-exchange-line"></i>
+
+                    <span>Status History</span>
 
                 </a>
 

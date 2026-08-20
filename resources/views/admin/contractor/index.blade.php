@@ -6,7 +6,9 @@
 <section class="section">
   <div class="section-header d-flex justify-content-between align-items-center">
     <h1>Contractors</h1>
+    @if(($canAddMainContractor ?? false) || ($canAddSubContractor ?? false))
     <a href="{{ route('admin.contractor.create') }}" class="btn btn-primary">Add Contractor</a>
+    @endif
   </div>
 
   <div class="card">
@@ -18,6 +20,7 @@
               <th>Code</th>
               <th>Company Name</th>
               <th>Type</th>
+              <th>Parent Contractor</th>
               <th>Contact</th>
               <th>Status</th>
               <th class="text-end">Actions</th>
@@ -29,6 +32,14 @@
               <td>{{ $contractor->contractor_code }}</td>
               <td>{{ $contractor->company_name }}</td>
               <td>{{ $contractor->contractor_type }}</td>
+              <td>
+                @if($contractor->parent_contractor_id)
+                  @php $parent = \App\Models\Contractor::find($contractor->parent_contractor_id); @endphp
+                  {{ $parent->company_name ?? $contractor->parent_contractor_id }}
+                @else
+                  -
+                @endif
+              </td>
               <td>{{ $contractor->contact_person ?? $contractor->mobile ?? '-' }}</td>
               <td><span class="badge bg-{{ $contractor->status === 'Active' ? 'success' : 'secondary' }}">{{ $contractor->status }}</span></td>
               <td class="text-end">
@@ -41,7 +52,7 @@
               </td>
             </tr>
             @empty
-            <tr><td colspan="6" class="text-center text-muted py-4">No contractors found.</td></tr>
+            <tr><td colspan="7" class="text-center text-muted py-4">No contractors found.</td></tr>
             @endforelse
           </tbody>
         </table>

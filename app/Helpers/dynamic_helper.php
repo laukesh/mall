@@ -113,13 +113,7 @@ if (!function_exists('getStatusName')) {
 if (!function_exists('getRoleName')) {
     function getRoleName($roleId) {
         $role = DB::table('roles')->where('id', $roleId)->first();
-        return $role ? $role->role : 'Unknown';
-    }
-}
-if (!function_exists('getRoleName')) {
-    function getRoleName($roleId) {
-        $role = DB::table('roles')->where('id', $roleId)->first();
-        return $role ? $role->role : 'Unknown';
+        return $role ? ($role->name ?? $role->role ?? 'Unknown') : 'Unknown';
     }
 }
 

@@ -23,15 +23,6 @@
             <input type="text" name="survey_number" class="form-control" value="{{ old('survey_number') }}" required>
           </div>
           <div class="col-md-4 form-group">
-            <label>Project</label>
-            <select name="project_id" class="form-control">
-              <option value="">-- Select Project --</option>
-              @foreach($projects as $project)
-                <option value="{{ $project->id }}" @selected(old('project_id') == $project->id)>{{ $project->project_name }}</option>
-              @endforeach
-            </select>
-          </div>
-          <div class="col-md-4 form-group">
             <label>Acquisition Status *</label>
             <select name="acquisition_status" class="form-control" required>
               @foreach(['Identified','Negotiation','Approved','Registered','Completed'] as $status)

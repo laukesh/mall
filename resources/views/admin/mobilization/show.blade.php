@@ -18,6 +18,7 @@
         <div class="card-body">
           <p><strong>Type:</strong> {{ $plan->mobilization_type }}</p>
           <p><strong>Status:</strong> <span class="badge bg-info">{{ $plan->status }}</span></p>
+          <p><strong>Work Progress:</strong> {{ number_format((float) ($plan->progress_percentage ?? 0), 1) }}%</p>
           <p><strong>Planned Dates:</strong> {{ $plan->planned_start_date ?? '-' }} to {{ $plan->planned_end_date ?? '-' }}</p>
           @if($plan->remarks)<p><strong>Remarks:</strong> {{ $plan->remarks }}</p>@endif
         </div>
@@ -49,6 +50,17 @@
       </div>
     </div>
   </div>
+
+  <x-pm-tracking-panel
+    :statusAction="route('admin.mobilization.status.update', $plan->id)"
+    :progressAction="route('admin.mobilization.progress.update', $plan->id)"
+    :currentStatus="$plan->status"
+    :statuses="['Draft','Approved','In Progress','Completed']"
+    :currentProgress="$plan->progress_percentage ?? 0"
+    :histories="$statusHistories ?? collect()"
+    statusTitle="Change Mobilization Status"
+    historyTitle="Mobilization Plan History"
+  />
 
   <div class="card mt-3"><div class="card-header"><h4>Resources</h4></div>
     <div class="card-body p-0">

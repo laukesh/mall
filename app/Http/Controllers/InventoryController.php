@@ -7,14 +7,21 @@ use App\Models\Material;
 use App\Models\MaterialCategory;
 use App\Models\MaterialIssue;
 use App\Models\MaterialIssueRequest;
+use App\Models\PmStatusHistory;
 use App\Models\Project;
 use App\Models\Warehouse;
 use App\Models\WarehouseStock;
+use App\Services\PmStatusHistoryService;
+use App\Traits\TracksPmHistory;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class InventoryController extends Controller
 {
+    use TracksPmHistory;
+
+    private const ISSUE_REQUEST_STATUSES = ['Pending', 'Approved', 'Rejected'];
+
     public function materials()
     {
         return view('admin.inventory.materials', [
@@ -113,16 +120,29 @@ class InventoryController extends Controller
         ]);
     }
 
+    public function showIssueRequest($id)
+    {
+        $issueRequest = MaterialIssueRequest::find($id);
+        if (! $issueRequest) {
+            return redirect()->route('admin.inventory.issue-requests')->with('error', 'Issue request not found.');
+        }
+
+        return view('admin.inventory.issue_request_show', [
+            'issueRequest' => $issueRequest,
+            'statusHistories' => PmStatusHistoryService::historiesFor(PmStatusHistory::ENTITY_MATERIAL_ISSUE_REQUEST, (int) $id),
+        ]);
+    }
+
     public function storeIssueRequest(Request $request)
     {
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'request_number' => 'required|string|max:30|unique:material_issue_requests,request_number',
             'request_date' => 'required|date',
-            'approval_status' => 'required|in:Pending,Approved,Rejected',
+            'approval_status' => 'required|in:' . implode(',', self::ISSUE_REQUEST_STATUSES),
         ]);
 
-        MaterialIssueRequest::create(array_merge($validated, [
+        $issueRequest = MaterialIssueRequest::create(array_merge($validated, [
             'requested_by' => id() ?: 1,
             'work_package_id' => $request->input('work_package_id') ?: null,
             'required_date' => $request->input('required_date'),
@@ -130,7 +150,29 @@ class InventoryController extends Controller
             'remarks' => $request->input('remarks'),
         ]));
 
-        return back()->with('success', 'Material issue request created.');
+        $this->pmLogStatus(PmStatusHistory::ENTITY_MATERIAL_ISSUE_REQUEST, $issueRequest->id, null, $issueRequest->approval_status, 'approval_status', 'Issue request created');
+
+        return redirect()->route('admin.inventory.issue-request.show', $issueRequest->id)->with('success', 'Material issue request created.');
+    }
+
+    public function updateIssueRequestStatus(Request $request, $id)
+    {
+        $issueRequest = MaterialIssueRequest::find($id);
+        if (! $issueRequest) {
+            return back()->with('error', 'Issue request not found.');
+        }
+
+        return $this->pmUpdateStatus($request, $issueRequest, PmStatusHistory::ENTITY_MATERIAL_ISSUE_REQUEST, 'approval_status', self::ISSUE_REQUEST_STATUSES, 'approval_status');
+    }
+
+    public function updateIssueRequestProgress(Request $request, $id)
+    {
+        $issueRequest = MaterialIssueRequest::find($id);
+        if (! $issueRequest) {
+            return back()->with('error', 'Issue request not found.');
+        }
+
+        return $this->pmUpdateProgress($request, $issueRequest, PmStatusHistory::ENTITY_MATERIAL_ISSUE_REQUEST);
     }
 
     public function issues()

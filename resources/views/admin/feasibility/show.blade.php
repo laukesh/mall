@@ -29,12 +29,24 @@
               {{ $study->recommendation }}
             </span>
           </p>
-          <p><strong>Status:</strong> {{ $study->status }}</p>
+          <p><strong>Status:</strong> <span class="badge bg-info">{{ $study->status }}</span></p>
+          <p><strong>Work Progress:</strong> {{ number_format((float) ($study->progress_percentage ?? 0), 1) }}%</p>
           @if($study->remarks)<p><strong>Remarks:</strong> {{ $study->remarks }}</p>@endif
         </div>
       </div>
     </div>
   </div>
+
+  <x-pm-tracking-panel
+    :statusAction="route('admin.feasibility.status.update', $study->id)"
+    :progressAction="route('admin.feasibility.progress.update', $study->id)"
+    :currentStatus="$study->status"
+    :statuses="['Draft','Submitted','Approved','Rejected']"
+    :currentProgress="$study->progress_percentage ?? 0"
+    :histories="$statusHistories ?? collect()"
+    statusTitle="Change Study Status"
+    historyTitle="Feasibility Study History"
+  />
 
   <div class="row mt-3">
     <div class="col-md-6">

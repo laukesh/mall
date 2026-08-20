@@ -18,12 +18,33 @@
         <div class="card-body">
           <p><strong>Discipline:</strong> {{ $package->discipline }}</p>
           <p><strong>Status:</strong> <span class="badge bg-info">{{ $package->status }}</span></p>
+          <p><strong>Work Progress:</strong> {{ number_format((float) ($package->progress_percentage ?? 0), 1) }}%</p>
           <p><strong>Planned Dates:</strong> {{ $package->planned_start_date ?? '-' }} to {{ $package->planned_end_date ?? '-' }}</p>
           <p><strong>Estimated Cost:</strong> {{ $package->estimated_cost ? number_format($package->estimated_cost, 2) : '-' }}</p>
           @if($package->description)<p><strong>Description:</strong> {{ $package->description }}</p>@endif
         </div>
       </div>
     </div>
+    <div class="col-md-6">
+      <x-pm-status-change
+        :action="route('admin.workpackage.status.update', $package->id)"
+        :currentStatus="$package->status"
+        :statuses="['Planned','In Progress','On Hold','Completed']"
+        title="Change Work Package Status"
+      />
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-6">
+      <x-pm-progress-change
+        :action="route('admin.workpackage.progress.update', $package->id)"
+        :currentProgress="$package->progress_percentage ?? 0"
+        title="Update Work Package Progress"
+      />
+    </div>
+  </div>
+  <div class="row mt-3">
     <div class="col-md-6">
       <div class="card"><div class="card-header"><h4>Add Task</h4></div>
         <div class="card-body">
@@ -81,5 +102,7 @@
       </table>
     </div>
   </div>
+
+  <x-pm-status-history-table :histories="$statusHistories ?? collect()" title="Work Package Status History" />
 </section>
 @endsection

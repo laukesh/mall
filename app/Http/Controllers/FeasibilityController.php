@@ -4,31 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Models\FeasibilityStudy;
 use App\Models\Land;
+use App\Models\PmStatusHistory;
 use App\Models\Project;
 use App\Models\RiskAssessment;
 use App\Models\SoilInvestigation;
+use App\Services\PmStatusHistoryService;
+use App\Traits\TracksPmHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class FeasibilityController extends Controller
 {
+    use TracksPmHistory;
+
+    private const STATUSES = ['Draft', 'Submitted', 'Approved', 'Rejected'];
+
     public function index()
     {
-        $data = [
+        return view('admin.feasibility.index', [
             'studies' => FeasibilityStudy::with('project')->orderByDesc('id')->get(),
-        ];
-
-        return view('admin.feasibility.index', $data);
+        ]);
     }
 
     public function create()
     {
-        $data = [
+        return view('admin.feasibility.create', [
             'lands' => Land::getAllData(),
             'projects' => Project::orderBy('project_name')->get(),
-        ];
-
-        return view('admin.feasibility.create', $data);
+        ]);
     }
 
     public function store(Request $request)
@@ -46,15 +49,26 @@ class FeasibilityController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validated, $request) {
-                FeasibilityStudy::create(array_merge($validated, [
+            $study = DB::transaction(function () use ($validated, $request) {
+                $study = FeasibilityStudy::create(array_merge($validated, [
                     'prepared_by' => id() ?: 1,
                     'status' => $request->input('status', 'Draft'),
                     'remarks' => $request->input('remarks'),
                 ]));
+
+                $this->pmLogStatus(
+                    PmStatusHistory::ENTITY_FEASIBILITY,
+                    $study->id,
+                    null,
+                    $study->status,
+                    'status',
+                    'Feasibility study created'
+                );
+
+                return $study;
             });
 
-            return redirect()->route('admin.feasibility.index')->with('success', 'Feasibility study created successfully.');
+            return redirect()->route('admin.feasibility.show', $study->id)->with('success', 'Feasibility study created successfully.');
         } catch (\Exception $e) {
             return $this->handleException($e, 'Error creating feasibility study.');
         }
@@ -63,39 +77,36 @@ class FeasibilityController extends Controller
     public function show($id)
     {
         $study = FeasibilityStudy::with('project')->find($id);
-        if (!$study) {
+        if (! $study) {
             return redirect()->route('admin.feasibility.index')->with('error', 'Feasibility study not found.');
         }
 
-        $data = [
+        return view('admin.feasibility.show', [
             'study' => $study,
             'soilTests' => SoilInvestigation::where('feasibility_id', $id)->get(),
             'risks' => RiskAssessment::where('feasibility_id', $id)->get(),
-        ];
-
-        return view('admin.feasibility.show', $data);
+            'statusHistories' => PmStatusHistoryService::historiesFor(PmStatusHistory::ENTITY_FEASIBILITY, (int) $id),
+        ]);
     }
 
     public function edit($id)
     {
         $study = FeasibilityStudy::with('project')->find($id);
-        if (!$study) {
+        if (! $study) {
             return redirect()->route('admin.feasibility.index')->with('error', 'Feasibility study not found.');
         }
 
-        $data = [
+        return view('admin.feasibility.edit', [
             'study' => $study,
             'lands' => Land::getAllData(),
             'projects' => Project::orderBy('project_name')->get(),
-        ];
-
-        return view('admin.feasibility.edit', $data);
+        ]);
     }
 
     public function update(Request $request, $id)
     {
         $study = FeasibilityStudy::getDataById($id);
-        if (!$study) {
+        if (! $study) {
             return redirect()->route('admin.feasibility.index')->with('error', 'Feasibility study not found.');
         }
 
@@ -109,20 +120,53 @@ class FeasibilityController extends Controller
             'estimated_duration_months' => 'required|integer|min:1',
             'expected_roi' => 'required|numeric',
             'recommendation' => 'required|in:Proceed,Revise,Reject',
-            'status' => 'required|in:Draft,Submitted,Approved,Rejected',
+            'status' => 'required|in:' . implode(',', self::STATUSES),
         ]);
 
+        $oldStatus = $study->status;
+        $oldProgress = $study->progress_percentage ?? 0;
+
         try {
-            DB::transaction(function () use ($study, $validated, $request) {
+            DB::transaction(function () use ($study, $validated, $request, $oldStatus, $oldProgress, $id) {
                 $study->update(array_merge($validated, [
                     'remarks' => $request->input('remarks'),
+                    'progress_percentage' => $request->input('progress_percentage', $oldProgress),
                 ]));
+
+                if ($oldStatus !== $validated['status']) {
+                    $this->pmLogStatus(PmStatusHistory::ENTITY_FEASIBILITY, (int) $id, $oldStatus, $validated['status'], 'status', 'Updated via edit form');
+                }
+
+                $newProgress = $request->input('progress_percentage', $oldProgress);
+                if ((float) $oldProgress !== (float) $newProgress) {
+                    $this->pmLogStatus(PmStatusHistory::ENTITY_FEASIBILITY, (int) $id, (string) $oldProgress, (string) $newProgress, 'progress_percentage', 'Updated via edit form');
+                }
             });
 
             return redirect()->route('admin.feasibility.show', $id)->with('success', 'Feasibility study updated successfully.');
         } catch (\Exception $e) {
             return $this->handleException($e, 'Error updating feasibility study.');
         }
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $study = FeasibilityStudy::find($id);
+        if (! $study) {
+            return back()->with('error', 'Feasibility study not found.');
+        }
+
+        return $this->pmUpdateStatus($request, $study, PmStatusHistory::ENTITY_FEASIBILITY, 'status', self::STATUSES);
+    }
+
+    public function updateProgress(Request $request, $id)
+    {
+        $study = FeasibilityStudy::find($id);
+        if (! $study) {
+            return back()->with('error', 'Feasibility study not found.');
+        }
+
+        return $this->pmUpdateProgress($request, $study, PmStatusHistory::ENTITY_FEASIBILITY);
     }
 
     public function destroy($id)

@@ -14,11 +14,27 @@
           <div class="col-md-8 form-group"><label>Company Name *</label><input type="text" name="company_name" class="form-control" value="{{ old('company_name') }}" required></div>
           <div class="col-md-4 form-group">
             <label>Contractor Type *</label>
-            <select name="contractor_type" class="form-control" required>
-              @foreach(['Main Contractor','Sub Contractor'] as $type)
-                <option value="{{ $type }}" @selected(old('contractor_type') == $type)>{{ $type }}</option>
+            <select name="contractor_type" id="contractor_type" class="form-control" required>
+              @if($isSuperAdmin)
+                @foreach(['Main Contractor','Sub Contractor'] as $type)
+                  <option value="{{ $type }}" @selected(old('contractor_type', $forceSubContractor ? 'Sub Contractor' : '') == $type)>{{ $type }}</option>
+                @endforeach
+              @else
+                <option value="Sub Contractor" selected>Sub Contractor</option>
+              @endif
+            </select>
+          </div>
+          <div class="col-md-8 form-group" id="parent_contractor_group" style="{{ ($forceSubContractor || old('contractor_type') === 'Sub Contractor') ? '' : 'display:none;' }}">
+            <label>Parent Main Contractor *</label>
+            <select name="parent_contractor_id" class="form-control">
+              <option value="">-- Select Main Contractor --</option>
+              @foreach($mainContractors as $main)
+                <option value="{{ $main->id }}" @selected(old('parent_contractor_id', $defaultParentId) == $main->id)>{{ $main->company_name }} ({{ $main->contractor_code }})</option>
               @endforeach
             </select>
+            @if($forceSubContractor)
+              <small class="text-muted">Sub-contractors are added under your company.</small>
+            @endif
           </div>
           <div class="col-md-4 form-group"><label>Contact Person</label><input type="text" name="contact_person" class="form-control" value="{{ old('contact_person') }}"></div>
           <div class="col-md-4 form-group"><label>Mobile</label><input type="text" name="mobile" class="form-control" value="{{ old('mobile') }}"></div>
@@ -49,3 +65,13 @@
   </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+document.getElementById('contractor_type')?.addEventListener('change', function () {
+  const group = document.getElementById('parent_contractor_group');
+  if (!group) return;
+  group.style.display = this.value === 'Sub Contractor' ? '' : 'none';
+});
+</script>
+@endpush

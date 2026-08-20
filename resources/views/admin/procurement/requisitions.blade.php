@@ -63,7 +63,7 @@
           <tbody>
             @forelse($requisitions as $req)
             <tr>
-              <td>{{ $req->requisition_no }}</td>
+              <td><a href="{{ route('admin.procurement.requisition.show', $req->id) }}">{{ $req->requisition_no }}</a></td>
               <td>{{ $req->project_id }}</td>
               <td>{{ $req->request_date }}</td>
               <td>{{ $req->priority ?? '-' }}</td>

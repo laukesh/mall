@@ -64,7 +64,7 @@
           <tbody>
             @forelse($requests as $req)
             <tr>
-              <td>{{ $req->request_number }}</td>
+              <td><a href="{{ route('admin.inventory.issue-request.show', $req->id) }}">{{ $req->request_number }}</a></td>
               <td>{{ $req->project_id }}</td>
               <td>{{ $req->request_date }}</td>
               <td>{{ $req->required_date ?? '-' }}</td>

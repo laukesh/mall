@@ -61,7 +61,7 @@
           <tbody>
             @forelse($inspections as $inspection)
             <tr>
-              <td>{{ $inspection->project_id }}</td>
+              <td><a href="{{ route('admin.hse.inspection.show', $inspection->id) }}">{{ $inspection->project_id }}</a></td>
               <td>{{ $inspection->inspection_date }}</td>
               <td>{{ $inspection->inspection_type }}</td>
               <td><span class="badge bg-{{ $inspection->overall_status === 'Safe' ? 'success' : 'danger' }}">{{ $inspection->overall_status }}</span></td>

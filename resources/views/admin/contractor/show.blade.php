@@ -17,6 +17,9 @@
       <div class="card"><div class="card-header"><h4>Contractor Details</h4></div>
         <div class="card-body">
           <p><strong>Type:</strong> {{ $contractor->contractor_type }}</p>
+          @if($parentContractor)
+          <p><strong>Parent Contractor:</strong> {{ $parentContractor->company_name }} ({{ $parentContractor->contractor_code }})</p>
+          @endif
           <p><strong>Contact:</strong> {{ $contractor->contact_person ?? '-' }} / {{ $contractor->mobile ?? '-' }}</p>
           <p><strong>Email:</strong> {{ $contractor->email ?? '-' }}</p>
           <p><strong>GST/PAN:</strong> {{ $contractor->gst_number ?? '-' }} / {{ $contractor->pan_number ?? '-' }}</p>
@@ -24,6 +27,35 @@
         </div>
       </div>
     </div>
+    <div class="col-md-6">
+      <x-pm-status-change
+        :action="route('admin.contractor.status.update', $contractor->id)"
+        :currentStatus="$contractor->status"
+        :statuses="['Active','Inactive','Blacklisted']"
+      />
+    </div>
+  </div>
+
+  @if(($subContractors ?? collect())->isNotEmpty())
+  <div class="card mt-3"><div class="card-header"><h4>Sub-Contractors</h4></div>
+    <div class="card-body p-0">
+      <table class="table mb-0">
+        <thead><tr><th>Code</th><th>Company</th><th>Status</th></tr></thead>
+        <tbody>
+          @foreach($subContractors as $sub)
+          <tr>
+            <td><a href="{{ route('admin.contractor.show', $sub->id) }}">{{ $sub->contractor_code }}</a></td>
+            <td>{{ $sub->company_name }}</td>
+            <td><span class="badge bg-info">{{ $sub->status }}</span></td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+  @endif
+
+  <div class="row mt-3">
     <div class="col-md-6">
       <div class="card"><div class="card-header"><h4>Add Contract</h4></div>
         <div class="card-body">
@@ -137,7 +169,7 @@
   <div class="card mt-3"><div class="card-header"><h4>Bills</h4></div>
     <div class="card-body p-0">
       <table class="table mb-0">
-        <thead><tr><th>Bill No.</th><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+        <thead><tr><th>Bill No.</th><th>Date</th><th>Type</th><th>Amount</th><th>Status</th><th>Change Status</th></tr></thead>
         <tbody>
           @forelse($bills as $bill)
           <tr>
@@ -146,13 +178,26 @@
             <td>{{ $bill->bill_type }}</td>
             <td>{{ number_format($bill->bill_amount ?? $bill->gross_amount ?? 0, 2) }}</td>
             <td><span class="badge bg-info">{{ $bill->status }}</span></td>
+            <td>
+              <form action="{{ route('admin.contractor.bill.status.update', $bill->id) }}" method="POST" class="d-flex gap-1">
+                @csrf
+                <select name="status" class="form-control form-control-sm">
+                  @foreach(['Submitted','Verified','Approved','Paid','Rejected'] as $status)
+                    <option value="{{ $status }}" @selected($bill->status == $status)>{{ $status }}</option>
+                  @endforeach
+                </select>
+                <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+              </form>
+            </td>
           </tr>
           @empty
-          <tr><td colspan="5" class="text-center text-muted">No bills recorded.</td></tr>
+          <tr><td colspan="6" class="text-center text-muted">No bills recorded.</td></tr>
           @endforelse
         </tbody>
       </table>
     </div>
   </div>
+
+  <x-pm-status-history-table :histories="$statusHistories ?? collect()" />
 </section>
 @endsection

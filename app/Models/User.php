@@ -108,4 +108,47 @@ class User extends Authenticatable implements JWTSubject
             'user_id'
         );
     }
+
+    public function pmContractor()
+    {
+        return $this->hasOne(Contractor::class, 'user_id');
+    }
+
+    public function isPmContractor(): bool
+    {
+        return $this->hasRole('Contractor') && $this->pmContractor !== null;
+    }
+
+    public function isPmMainContractor(): bool
+    {
+        return $this->isPmContractor() && $this->pmContractor->isMainContractor();
+    }
+
+    public function canManageSubContractors(): bool
+    {
+        return $this->isSuperAdmin() || $this->isPmMainContractor();
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        return trim((string) ($this->full_name ?: $this->name ?: '')) ?: 'Unknown';
+    }
+
+    public function getRoleLabelAttribute(): ?string
+    {
+        if ($this->relationLoaded('roles') && $this->roles->isNotEmpty()) {
+            return $this->roles->pluck('name')->implode(', ');
+        }
+
+        $roleNames = $this->getRoleNames();
+        if ($roleNames->isNotEmpty()) {
+            return $roleNames->implode(', ');
+        }
+
+        if ($this->relationLoaded('role') && $this->role) {
+            return $this->role->name ?? $this->role->role_name ?? null;
+        }
+
+        return $this->role_id ? getRoleName($this->role_id) : null;
+    }
 }

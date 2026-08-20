@@ -30,7 +30,7 @@
           <tbody>
             @forelse($documents as $document)
             <tr>
-              <td>{{ $document->document_number }}</td>
+              <td><a href="{{ route('admin.document.show', $document->id) }}">{{ $document->document_number }}</a></td>
               <td>{{ $document->document_title }}</td>
               <td>{{ $document->document_type ?? '-' }}</td>
               <td>{{ $document->current_version ?? '-' }}</td>

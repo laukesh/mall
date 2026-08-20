@@ -63,7 +63,7 @@
           <tbody>
             @forelse($incidents as $incident)
             <tr>
-              <td>{{ $incident->incident_number }}</td>
+              <td><a href="{{ route('admin.hse.incident.show', $incident->id) }}">{{ $incident->incident_number }}</a></td>
               <td>{{ $incident->project_id }}</td>
               <td>{{ $incident->incident_type }}</td>
               <td>{{ $incident->incident_date }}</td>

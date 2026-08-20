@@ -30,7 +30,7 @@
           <tbody>
             @forelse($packages as $package)
             <tr>
-              <td>{{ $package->package_code }}</td>
+              <td><a href="{{ route('admin.design.packages.show', $package->id) }}">{{ $package->package_code }}</a></td>
               <td>{{ $package->project?->project_name ?? '—' }}</td>
               <td>{{ $package->package_name }}</td>
               <td>{{ $package->package_type }}</td>

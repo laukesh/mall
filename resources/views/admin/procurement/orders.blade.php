@@ -66,7 +66,7 @@
           <tbody>
             @forelse($orders as $order)
             <tr>
-              <td>{{ $order->po_number }}</td>
+              <td><a href="{{ route('admin.procurement.order.show', $order->id) }}">{{ $order->po_number }}</a></td>
               <td>{{ $order->vendor_id }}</td>
               <td>{{ $order->project_id }}</td>
               <td>{{ $order->order_date }}</td>

@@ -43,6 +43,18 @@
               @endforeach
             </select>
           </div>
+          <div class="col-md-4 form-group"><label>Progress %</label><input type="number" step="0.1" min="0" max="100" name="progress_percentage" class="form-control" value="{{ old('progress_percentage', $project->progress_percentage) }}"></div>
+          <div class="col-12 form-group">
+            <label>Land Parcels</label>
+            <select name="land_ids[]" class="form-control" multiple size="5">
+              @foreach($lands as $land)
+                <option value="{{ $land->id }}" @selected(collect(old('land_ids', $selectedLandIds ?? []))->contains($land->id))>
+                  {{ $land->land_name }} ({{ $land->land_code }}) — {{ $land->village }}, {{ $land->district }}
+                </option>
+              @endforeach
+            </select>
+            <small class="text-muted">Assign land parcels to this project. Lands are managed under projects, not on the land form.</small>
+          </div>
           <div class="col-md-6 form-group"><label>Location</label><input type="text" name="location" class="form-control" value="{{ old('location', $project->location) }}"></div>
           <div class="col-md-3 form-group"><label>City</label><input type="text" name="city" class="form-control" value="{{ old('city', $project->city) }}"></div>
           <div class="col-md-3 form-group"><label>State</label><input type="text" name="state" class="form-control" value="{{ old('state', $project->state) }}"></div>

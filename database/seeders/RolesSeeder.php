@@ -38,6 +38,11 @@ class RolesSeeder extends Seeder
                 'profile.view',
                 'profile.update',
             ],
+            'Contractor' => [
+                'dashboard.view',
+                'profile.view',
+                'profile.update',
+            ],
         ];
 
         foreach ($roles as $roleName => $perms) {

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\ExpenseEntry;
 use App\Models\Payment;
+use App\Models\PmStatusHistory;
 use App\Models\Project;
 use App\Models\ProjectBudget;
+use App\Services\PmStatusHistoryService;
 use Illuminate\Http\Request;
 
 class FinanceController extends Controller
@@ -36,13 +38,53 @@ class FinanceController extends Controller
             'status' => 'required|in:Pending,Completed,Failed',
         ]);
 
-        Payment::create(array_merge($validated, [
+        $payment = Payment::create(array_merge($validated, [
             'reference_type' => $request->input('reference_type'),
             'reference_id' => $request->input('reference_id') ?: null,
             'transaction_reference' => $request->input('transaction_reference'),
         ]));
 
+        PmStatusHistoryService::log(
+            PmStatusHistory::ENTITY_PAYMENT,
+            $payment->id,
+            null,
+            $payment->status,
+            'status',
+            'Payment recorded'
+        );
+
         return back()->with('success', 'Payment recorded.');
+    }
+
+    public function updatePaymentStatus(Request $request, $id)
+    {
+        $payment = Payment::find($id);
+        if (! $payment) {
+            return back()->with('error', 'Payment not found.');
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:Pending,Completed,Failed',
+            'remarks' => 'nullable|string|max:500',
+        ]);
+
+        $oldStatus = $payment->status;
+        if ($oldStatus === $validated['status']) {
+            return back()->with('info', 'Status is already set to ' . $validated['status'] . '.');
+        }
+
+        Payment::where('id', $id)->update(['status' => $validated['status']]);
+
+        PmStatusHistoryService::log(
+            PmStatusHistory::ENTITY_PAYMENT,
+            (int) $id,
+            $oldStatus,
+            $validated['status'],
+            'status',
+            $validated['remarks'] ?? null
+        );
+
+        return back()->with('success', 'Payment status updated.');
     }
 
     public function expenses()

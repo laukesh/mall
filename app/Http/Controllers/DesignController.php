@@ -6,43 +6,45 @@ use App\Models\Boq;
 use App\Models\Consultant;
 use App\Models\DesignPackage;
 use App\Models\Drawing;
+use App\Models\PmStatusHistory;
 use App\Models\Project;
 use App\Models\Rfi;
 use App\Models\User;
+use App\Services\PmStatusHistoryService;
+use App\Traits\TracksPmHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DesignController extends Controller
 {
+    use TracksPmHistory;
+
+    private const PACKAGE_STATUSES = ['Draft', 'In Review', 'Approved', 'Issued', 'Completed'];
+    private const DRAWING_STATUSES = ['Draft', 'Under Review', 'Approved', 'Issued', 'Superseded'];
+
     public function index()
     {
-        $data = [
+        return view('admin.design.index', [
             'packages' => DesignPackage::with('project')->orderByDesc('id')->get(),
             'drawings' => Drawing::with('designPackage')->orderByDesc('id')->get(),
             'boqItems' => Boq::with('project')->orderByDesc('id')->get(),
             'rfis' => Rfi::with('project')->orderByDesc('id')->get(),
-        ];
-
-        return view('admin.design.index', $data);
+        ]);
     }
 
     public function packages()
     {
-        $data = [
+        return view('admin.design.packages', [
             'packages' => DesignPackage::with('project')->orderByDesc('id')->get(),
-        ];
-
-        return view('admin.design.packages', $data);
+        ]);
     }
 
     public function createPackage()
     {
-        $data = [
+        return view('admin.design.create', [
             'projects' => Project::orderBy('project_name')->get(),
             'consultants' => Consultant::getAllData(),
-        ];
-
-        return view('admin.design.create', $data);
+        ]);
     }
 
     public function storePackage(Request $request)
@@ -58,37 +60,71 @@ class DesignController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($validated, $request) {
-                DesignPackage::create(array_merge($validated, [
+            $package = DB::transaction(function () use ($validated, $request) {
+                $package = DesignPackage::create(array_merge($validated, [
                     'description' => $request->input('description'),
                     'status' => $request->input('status', 'Draft'),
                     'created_by' => id() ?: 1,
                 ]));
+
+                $this->pmLogStatus(PmStatusHistory::ENTITY_DESIGN_PACKAGE, $package->id, null, $package->status, 'status', 'Design package created');
+
+                return $package;
             });
 
-            return redirect()->route('admin.design.packages.index')->with('success', 'Design package created successfully.');
+            return redirect()->route('admin.design.packages.show', $package->id)->with('success', 'Design package created successfully.');
         } catch (\Exception $e) {
             return $this->handleException($e, 'Error creating design package.');
         }
     }
 
+    public function showPackage($id)
+    {
+        $package = DesignPackage::with(['project', 'consultant'])->find($id);
+        if (! $package) {
+            return redirect()->route('admin.design.packages.index')->with('error', 'Design package not found.');
+        }
+
+        return view('admin.design.package_show', [
+            'package' => $package,
+            'drawings' => Drawing::where('design_package_id', $id)->orderByDesc('id')->get(),
+            'statusHistories' => PmStatusHistoryService::historiesFor(PmStatusHistory::ENTITY_DESIGN_PACKAGE, (int) $id),
+        ]);
+    }
+
+    public function updatePackageStatus(Request $request, $id)
+    {
+        $package = DesignPackage::find($id);
+        if (! $package) {
+            return back()->with('error', 'Design package not found.');
+        }
+
+        return $this->pmUpdateStatus($request, $package, PmStatusHistory::ENTITY_DESIGN_PACKAGE, 'status', self::PACKAGE_STATUSES);
+    }
+
+    public function updatePackageProgress(Request $request, $id)
+    {
+        $package = DesignPackage::find($id);
+        if (! $package) {
+            return back()->with('error', 'Design package not found.');
+        }
+
+        return $this->pmUpdateProgress($request, $package, PmStatusHistory::ENTITY_DESIGN_PACKAGE);
+    }
+
     public function drawings()
     {
-        $data = [
+        return view('admin.design.drawings', [
             'drawings' => Drawing::with('designPackage')->orderByDesc('id')->get(),
             'packages' => DesignPackage::with('project')->orderByDesc('id')->get(),
-        ];
-
-        return view('admin.design.drawings', $data);
+        ]);
     }
 
     public function createDrawing()
     {
-        $data = [
+        return view('admin.design.create_drawing', [
             'packages' => DesignPackage::with('project')->orderByDesc('id')->get(),
-        ];
-
-        return view('admin.design.create_drawing', $data);
+        ]);
     }
 
     public function storeDrawing(Request $request)
@@ -109,6 +145,8 @@ class DesignController extends Controller
                 'upload_date' => now(),
             ]));
 
+            $this->pmLogStatus(PmStatusHistory::ENTITY_DRAWING, $drawing->id, null, $drawing->drawing_status, 'drawing_status', 'Drawing created');
+
             return redirect()->route('admin.design.drawings.show', $drawing->id)->with('success', 'Drawing created successfully.');
         } catch (\Exception $e) {
             return $this->handleException($e, 'Error creating drawing.');
@@ -118,26 +156,43 @@ class DesignController extends Controller
     public function showDrawing($id)
     {
         $drawing = Drawing::with('designPackage.project')->find($id);
-        if (!$drawing) {
+        if (! $drawing) {
             return redirect()->route('admin.design.drawings.index')->with('error', 'Drawing not found.');
         }
 
-        $data = [
+        return view('admin.design.show', [
             'drawing' => $drawing,
-        ];
+            'statusHistories' => PmStatusHistoryService::historiesFor(PmStatusHistory::ENTITY_DRAWING, (int) $id),
+        ]);
+    }
 
-        return view('admin.design.show', $data);
+    public function updateDrawingStatus(Request $request, $id)
+    {
+        $drawing = Drawing::find($id);
+        if (! $drawing) {
+            return back()->with('error', 'Drawing not found.');
+        }
+
+        return $this->pmUpdateStatus($request, $drawing, PmStatusHistory::ENTITY_DRAWING, 'drawing_status', self::DRAWING_STATUSES, 'drawing_status');
+    }
+
+    public function updateDrawingProgress(Request $request, $id)
+    {
+        $drawing = Drawing::find($id);
+        if (! $drawing) {
+            return back()->with('error', 'Drawing not found.');
+        }
+
+        return $this->pmUpdateProgress($request, $drawing, PmStatusHistory::ENTITY_DRAWING);
     }
 
     public function boqIndex()
     {
-        $data = [
+        return view('admin.design.boq', [
             'boqItems' => Boq::with('project')->orderByDesc('id')->get(),
             'projects' => Project::orderBy('project_name')->get(),
             'drawings' => Drawing::orderByDesc('id')->get(),
-        ];
-
-        return view('admin.design.boq', $data);
+        ]);
     }
 
     public function storeBoq(Request $request)
@@ -166,14 +221,12 @@ class DesignController extends Controller
 
     public function rfiIndex()
     {
-        $data = [
+        return view('admin.design.rfis', [
             'rfis' => Rfi::with('project')->orderByDesc('id')->get(),
             'projects' => Project::orderBy('project_name')->get(),
             'drawings' => Drawing::orderByDesc('id')->get(),
             'users' => User::getAll(),
-        ];
-
-        return view('admin.design.rfis', $data);
+        ]);
     }
 
     public function storeRfi(Request $request)
@@ -188,11 +241,13 @@ class DesignController extends Controller
         ]);
 
         try {
-            Rfi::create(array_merge($validated, [
+            $rfi = Rfi::create(array_merge($validated, [
                 'drawing_id' => $request->input('drawing_id') ?: null,
                 'raised_by' => id() ?: 1,
                 'status' => 'Open',
             ]));
+
+            $this->pmLogStatus(PmStatusHistory::ENTITY_RFI, $rfi->id, null, $rfi->status, 'status', 'RFI created');
 
             return redirect()->route('admin.design.rfi.index')->with('success', 'RFI created successfully.');
         } catch (\Exception $e) {

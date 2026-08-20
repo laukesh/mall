@@ -8,12 +8,29 @@ use App\Models\LandHistory;
 use App\Models\LandOwner;
 use App\Models\LandPayment;
 use App\Models\LandSurvey;
-use App\Models\Project;
+use App\Models\PmStatusHistory;
+use App\Services\PmStatusHistoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class LandAcquisitionController extends Controller
 {
+    public function handleException(\Throwable $exception)
+    {
+        // Log the exception
+        \Log::error('LandAcquisitionController Error: ' . $exception->getMessage());
+
+        // Return an API or web response
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage()
+            ], 500);
+        }
+
+        return redirect()->back()->with('error', $exception->getMessage());
+    }
+    
     public function index()
     {
         $data = [
@@ -25,11 +42,7 @@ class LandAcquisitionController extends Controller
 
     public function create()
     {
-        $data = [
-            'projects' => Project::getAllData(),
-        ];
-
-        return view('admin.land.create', $data);
+        return view('admin.land.create');
     }
 
     public function store(Request $request)
@@ -50,7 +63,6 @@ class LandAcquisitionController extends Controller
         try {
             DB::transaction(function () use ($validated, $request) {
                 $land = Land::create(array_merge($validated, [
-                    'project_id' => $request->input('project_id') ?: null,
                     'latitude' => $request->input('latitude'),
                     'longitude' => $request->input('longitude'),
                     'remarks' => $request->input('remarks'),
@@ -60,9 +72,18 @@ class LandAcquisitionController extends Controller
                     'land_id' => $land->id,
                     'event_type' => 'Created',
                     'event_date' => now(),
-                    'performed_by' => id() ?: 1,
+                    'performed_by' => user_id(),
                     'description' => 'Land record created',
                 ]);
+
+                PmStatusHistoryService::log(
+                    PmStatusHistory::ENTITY_LAND,
+                    $land->id,
+                    null,
+                    $land->acquisition_status,
+                    'acquisition_status',
+                    'Land record created'
+                );
             });
 
             return redirect()->route('admin.land.index')->with('success', 'Land record created successfully.');
@@ -84,7 +105,11 @@ class LandAcquisitionController extends Controller
             'surveys' => LandSurvey::where('land_id', $id)->get(),
             'documents' => LandDocument::where('land_id', $id)->get(),
             'payments' => LandPayment::where('land_id', $id)->get(),
-            'history' => LandHistory::where('land_id', $id)->orderByDesc('event_date')->get(),
+            'history' => LandHistory::with(['performer.roles', 'performer.role'])
+                ->where('land_id', $id)
+                ->orderByDesc('event_date')
+                ->get(),
+            'statusHistories' => PmStatusHistoryService::historiesFor(PmStatusHistory::ENTITY_LAND, (int) $id),
         ];
 
         return view('admin.land.show', $data);
@@ -97,12 +122,7 @@ class LandAcquisitionController extends Controller
             return redirect()->route('admin.land.index')->with('error', 'Land record not found.');
         }
 
-        $data = [
-            'land' => $land,
-            'projects' => Project::getAllData(),
-        ];
-
-        return view('admin.land.edit', $data);
+        return view('admin.land.edit', ['land' => $land]);
     }
 
     public function update(Request $request, $id)
@@ -125,20 +145,79 @@ class LandAcquisitionController extends Controller
             'acquisition_status' => 'required|in:Identified,Negotiation,Approved,Registered,Completed',
         ]);
 
+        $oldStatus = $land->acquisition_status;
+
         try {
-            DB::transaction(function () use ($land, $validated, $request) {
+            DB::transaction(function () use ($land, $validated, $request, $oldStatus, $id) {
                 $land->update(array_merge($validated, [
-                    'project_id' => $request->input('project_id') ?: null,
                     'latitude' => $request->input('latitude'),
                     'longitude' => $request->input('longitude'),
                     'remarks' => $request->input('remarks'),
                 ]));
+
+                if ($oldStatus !== $validated['acquisition_status']) {
+                    LandHistory::create([
+                        'land_id' => $id,
+                        'event_type' => 'Approval',
+                        'event_date' => now(),
+                        'performed_by' => user_id(),
+                        'description' => 'Acquisition status changed from ' . $oldStatus . ' to ' . $validated['acquisition_status'],
+                    ]);
+
+                    PmStatusHistoryService::log(
+                        PmStatusHistory::ENTITY_LAND,
+                        (int) $id,
+                        $oldStatus,
+                        $validated['acquisition_status'],
+                        'acquisition_status',
+                        'Updated via edit form'
+                    );
+                }
             });
 
             return redirect()->route('admin.land.show', $id)->with('success', 'Land record updated successfully.');
         } catch (\Exception $e) {
             return $this->handleException($e, 'Error updating land record.');
         }
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $land = Land::getDataById($id);
+        if (!$land) {
+            return back()->with('error', 'Land record not found.');
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:Identified,Negotiation,Approved,Registered,Completed',
+            'remarks' => 'nullable|string|max:500',
+        ]);
+
+        $oldStatus = $land->acquisition_status;
+        if ($oldStatus === $validated['status']) {
+            return back()->with('info', 'Status is already set to ' . $validated['status'] . '.');
+        }
+
+        Land::where('id', $id)->update(['acquisition_status' => $validated['status']]);
+
+        LandHistory::create([
+            'land_id' => $id,
+            'event_type' => 'Approval',
+            'event_date' => now(),
+            'performed_by' => user_id(),
+            'description' => 'Acquisition status changed from ' . $oldStatus . ' to ' . $validated['status'],
+        ]);
+
+        PmStatusHistoryService::log(
+            PmStatusHistory::ENTITY_LAND,
+            (int) $id,
+            $oldStatus,
+            $validated['status'],
+            'acquisition_status',
+            $validated['remarks'] ?? null
+        );
+
+        return back()->with('success', 'Land acquisition status updated.');
     }
 
     public function destroy($id)
@@ -201,7 +280,7 @@ class LandAcquisitionController extends Controller
                 'land_id' => $validated['land_id'],
                 'event_type' => 'Survey',
                 'event_date' => now(),
-                'performed_by' => id() ?: 1,
+                'performed_by' => user_id(),
                 'description' => 'Survey record added',
             ]);
 
@@ -228,7 +307,7 @@ class LandAcquisitionController extends Controller
 
             LandDocument::create(array_merge($validated, [
                 'expiry_date' => $request->input('expiry_date'),
-                'uploaded_by' => id() ?: 1,
+                'uploaded_by' => user_id(),
                 'file_path' => $filePath,
                 'status' => 'Pending',
             ]));
@@ -260,7 +339,7 @@ class LandAcquisitionController extends Controller
                 'land_id' => $validated['land_id'],
                 'event_type' => 'Payment',
                 'event_date' => now(),
-                'performed_by' => id() ?: 1,
+                'performed_by' => user_id(),
                 'description' => 'Payment record added',
             ]);
 

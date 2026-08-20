@@ -18,6 +18,7 @@
         <div class="card-body">
           <p><strong>Type:</strong> {{ $project->project_type ?? '-' }}</p>
           <p><strong>Status:</strong> <span class="badge bg-info">{{ $project->status }}</span></p>
+          <p><strong>Work Progress:</strong> {{ number_format((float) ($project->progress_percentage ?? 0), 1) }}%</p>
           <p><strong>Location:</strong> {{ $project->location ?? '-' }}, {{ $project->city ?? '' }}, {{ $project->state ?? '' }}</p>
           <p><strong>Planned Dates:</strong> {{ $project->planned_start_date ?? '-' }} to {{ $project->planned_end_date ?? '-' }}</p>
           <p><strong>Estimated Cost:</strong> {{ $project->estimated_cost ? number_format($project->estimated_cost, 2) : '-' }}</p>
@@ -26,6 +27,48 @@
         </div>
       </div>
     </div>
+    <div class="col-md-6">
+      <x-pm-status-change
+        :action="route('admin.project.status.update', $project->id)"
+        :currentStatus="$project->status"
+        :statuses="['Planning','Active','On Hold','Completed','Cancelled']"
+        title="Change Project Status"
+      />
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-6">
+      <x-pm-progress-change
+        :action="route('admin.project.progress.update', $project->id)"
+        :currentProgress="$project->progress_percentage ?? 0"
+        title="Update Project Progress"
+      />
+    </div>
+  </div>
+
+  @if(($lands ?? collect())->isNotEmpty())
+  <div class="card mt-3"><div class="card-header"><h4>Assigned Lands</h4></div>
+    <div class="card-body p-0">
+      <table class="table mb-0">
+        <thead><tr><th>Code</th><th>Name</th><th>Location</th><th>Area</th><th>Status</th></tr></thead>
+        <tbody>
+          @foreach($lands as $land)
+          <tr>
+            <td><a href="{{ route('admin.land.show', $land->id) }}">{{ $land->land_code }}</a></td>
+            <td>{{ $land->land_name }}</td>
+            <td>{{ $land->village }}, {{ $land->district }}</td>
+            <td>{{ number_format($land->total_area, 2) }} {{ $land->area_unit }}</td>
+            <td><span class="badge bg-info">{{ $land->acquisition_status }}</span></td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+  @endif
+
+  <div class="row mt-3">
     <div class="col-md-6">
       <div class="card"><div class="card-header"><h4>Add Phase</h4></div>
         <div class="card-body">
@@ -145,5 +188,7 @@
       </table>
     </div>
   </div>
+
+  <x-pm-status-history-table :histories="$statusHistories ?? collect()" title="Project Status History" />
 </section>
 @endsection

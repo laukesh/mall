@@ -20,10 +20,27 @@
           <p><strong>Location:</strong> {{ $land->village }}, {{ $land->taluka }}, {{ $land->district }}, {{ $land->state }}</p>
           <p><strong>Area:</strong> {{ number_format($land->total_area, 2) }} {{ $land->area_unit }}</p>
           <p><strong>Status:</strong> <span class="badge bg-info">{{ $land->acquisition_status }}</span></p>
+          @if($land->project_id ?? false)
+            @php $assignedProject = \App\Models\Project::find($land->project_id); @endphp
+            @if($assignedProject)
+              <p><strong>Project:</strong> <a href="{{ route('admin.project.show', $assignedProject->id) }}">{{ $assignedProject->project_name }}</a></p>
+            @endif
+          @endif
           @if($land->remarks)<p><strong>Remarks:</strong> {{ $land->remarks }}</p>@endif
         </div>
       </div>
     </div>
+    <div class="col-md-6">
+      <x-pm-status-change
+        :action="route('admin.land.status.update', $land->id)"
+        :currentStatus="$land->acquisition_status"
+        :statuses="['Identified','Negotiation','Approved','Registered','Completed']"
+        title="Change Acquisition Status"
+      />
+    </div>
+  </div>
+
+  <div class="row mt-3">
     <div class="col-md-6">
       <div class="card"><div class="card-header"><h4>Add Owner</h4></div>
         <div class="card-body">
@@ -204,13 +221,38 @@
     </div>
   </div>
 
-  <div class="card mt-3"><div class="card-header"><h4>History</h4></div>
-    <div class="card-body">
-      @forelse($history as $event)
-        <div class="mb-2"><strong>{{ $event->event_type }}</strong> — {{ $event->description }} <small class="text-muted">({{ $event->event_date }})</small></div>
-      @empty
-        <p class="text-muted mb-0">No history events.</p>
-      @endforelse
+  </div>
+
+  <x-pm-status-history-table :histories="$statusHistories ?? collect()" title="Land Status History" />
+
+  <div class="card mt-3"><div class="card-header"><h4>Event History</h4></div>
+    <div class="card-body p-0">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Event</th>
+            <th>Description</th>
+            <th>Performed By</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($history as $event)
+          <tr>
+            <td>{{ $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('d M Y H:i') : '-' }}</td>
+            <td><strong>{{ $event->event_type }}</strong></td>
+            <td>{{ $event->description ?? '-' }}</td>
+            <td>
+              <x-history-user :user="$event->performer" :userId="$event->performed_by" />
+            </td>
+            <td>{{ $event->performer?->role_label ?? '-' }}</td>
+          </tr>
+          @empty
+          <tr><td colspan="5" class="text-center text-muted">No history events.</td></tr>
+          @endforelse
+        </tbody>
+      </table>
     </div>
   </div>
 </section>

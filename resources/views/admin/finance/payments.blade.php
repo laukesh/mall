@@ -59,6 +59,7 @@
               <th>Mode</th>
               <th>Amount</th>
               <th>Status</th>
+              <th>Change Status</th>
             </tr>
           </thead>
           <tbody>
@@ -69,9 +70,20 @@
               <td>{{ $payment->payment_mode }}</td>
               <td>{{ number_format($payment->amount ?? 0, 2) }}</td>
               <td><span class="badge bg-info">{{ $payment->status }}</span></td>
+              <td>
+                <form action="{{ route('admin.finance.payment.status.update', $payment->id) }}" method="POST" class="d-flex gap-1">
+                  @csrf
+                  <select name="status" class="form-control form-control-sm">
+                    @foreach(['Pending','Completed','Failed'] as $status)
+                      <option value="{{ $status }}" @selected($payment->status == $status)>{{ $status }}</option>
+                    @endforeach
+                  </select>
+                  <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                </form>
+              </td>
             </tr>
             @empty
-            <tr><td colspan="5" class="text-center text-muted py-4">No payments found.</td></tr>
+            <tr><td colspan="6" class="text-center text-muted py-4">No payments found.</td></tr>
             @endforelse
           </tbody>
         </table>
